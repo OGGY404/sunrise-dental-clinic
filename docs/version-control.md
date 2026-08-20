@@ -156,10 +156,28 @@ server on GitHub Actions.
 
 ## 8. Commit history so far
 
-| Date | Branch | Commit | Step |
-|---|---|---|---|
-| 2026-08-20 | `feature/project-skeleton` | `chore: set up Spring Boot project skeleton` | 1 |
-| 2026-08-20 | `feature/database-layer` | `feat: add database schema, procedures and triggers` | 2 |
+| Date | Hash | Branch | Commit | Step |
+|---|---|---|---|---|
+| 2026-08-21 | `e69bc82` | `main` | `chore: set up Spring Boot project skeleton` | 1 |
+| 2026-08-21 | `c39cef3` | `feature/database-layer` | `feat: add database schema, stored procedures and triggers` | 2 |
+| 2026-08-21 | `8aea84a` | `develop` | Merge `feature/database-layer` into `develop` | — |
+| 2026-08-21 | `28da5ef` | `main` | Merge `develop` into `main`, tagged **v0.1.0** | — |
+
+Graph:
+
+```
+*   28da5ef (main, tag: v0.1.0) Merge branch 'develop' into main
+|\
+| * 8aea84a (develop) Merge branch 'feature/database-layer' into develop
+|/|
+| * c39cef3 (feature/database-layer) feat: add database schema, stored procedures and triggers
+|/
+* e69bc82 chore: set up Spring Boot project skeleton
+```
+
+The first commit is on `main` because a repository needs one commit before any
+branch can be made from it. Every feature after this one follows the full
+cycle: branch from `develop`, work, pull request, merge back.
 
 > **Note for the report:** the assessment rewards commits spread across several
 > days, showing the system growing a piece at a time. Keep committing on the day
