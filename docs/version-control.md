@@ -10,8 +10,10 @@ Sunrise Dental Clinic — CIS6003 Advanced Programming (WRIT1)
 | | |
 |---|---|
 | Hosting | GitHub, public repository |
+| Account | [`OGGY404`](https://github.com/OGGY404) |
 | Default branch | `main` |
-| URL | _(add the link here once the repository is created, and put it in the report)_ |
+| URL | `https://github.com/OGGY404/sunrise-dental-clinic` _(create the repository, then confirm this link and copy it into the report)_ |
+| Commit author | Gangul Kalhara &lt;gangulkalhara@gmail.com&gt; |
 
 ---
 
@@ -158,26 +160,35 @@ server on GitHub Actions.
 
 | Date | Hash | Branch | Commit | Step |
 |---|---|---|---|---|
-| 2026-08-21 | `e69bc82` | `main` | `chore: set up Spring Boot project skeleton` | 1 |
-| 2026-08-21 | `c39cef3` | `feature/database-layer` | `feat: add database schema, stored procedures and triggers` | 2 |
-| 2026-08-21 | `8aea84a` | `develop` | Merge `feature/database-layer` into `develop` | — |
-| 2026-08-21 | `28da5ef` | `main` | Merge `develop` into `main`, tagged **v0.1.0** | — |
+| 2026-08-21 | `5248eb2` | `main` | `chore: set up Spring Boot project skeleton` | 1 |
+| 2026-08-21 | `017e3f2` | `feature/database-layer` | `feat: add database schema, stored procedures and triggers` | 2 |
+| 2026-08-21 | `a758e70` | `develop` | Merge `feature/database-layer` into `develop` | — |
+| 2026-08-21 | `0a2cc5b` | `main` | Merge `develop` into `main`, tagged **v0.1.0** | — |
+| 2026-08-21 | `1cfc075` | `develop` | `docs: record the actual commit history and branch graph` | — |
 
 Graph:
 
 ```
-*   28da5ef (main, tag: v0.1.0) Merge branch 'develop' into main
-|\
-| * 8aea84a (develop) Merge branch 'feature/database-layer' into develop
+* 1cfc075 (develop) docs: record the actual commit history and branch graph
+| *   0a2cc5b (tag: v0.1.0, main) Merge branch 'develop' into main
+| |\
+| |/
 |/|
-| * c39cef3 (feature/database-layer) feat: add database schema, stored procedures and triggers
+* |   a758e70 Merge branch 'feature/database-layer' into develop
+|\ \
+| |/
+|/|
+| * 017e3f2 (feature/database-layer) feat: add database schema, stored procedures and triggers
 |/
-* e69bc82 chore: set up Spring Boot project skeleton
+* 5248eb2 chore: set up Spring Boot project skeleton
 ```
 
 The first commit is on `main` because a repository needs one commit before any
 branch can be made from it. Every feature after this one follows the full
 cycle: branch from `develop`, work, pull request, merge back.
+
+`main` deliberately sits behind `develop`. `main` only moves at a release, so
+the newest documentation commit waits on `develop` until the next tag.
 
 > **Note for the report:** the assessment rewards commits spread across several
 > days, showing the system growing a piece at a time. Keep committing on the day
