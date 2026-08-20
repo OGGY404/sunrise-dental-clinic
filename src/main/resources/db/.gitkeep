@@ -1,0 +1,2 @@
+Step 2 puts the SQL here: schema.sql (tables), procedures.sql (stored procedures and
+functions), triggers.sql (business-rule triggers), data.sql (seed staff and treatments).

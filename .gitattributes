@@ -1,0 +1,33 @@
+# Keep line endings consistent between Windows and the GitHub Actions build
+# server. Without this, a file saved on Windows can look "completely changed"
+# to Git on Linux, which makes the commit history hard to read.
+
+# Let Git decide for text files, and store LF in the repository
+* text=auto eol=lf
+
+# Windows-only files must keep CRLF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Unix-only files must keep LF
+*.sh   text eol=lf
+mvnw   text eol=lf
+
+# Binary files Git must never alter
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.pdf  binary
+*.docx binary
+*.jar  binary
+*.zip  binary
+*.ico  binary
+*.ttf  binary
+*.woff binary
+*.woff2 binary
+
+# Show meaningful diffs for Java and SQL
+*.java diff=java
+*.sql  text
