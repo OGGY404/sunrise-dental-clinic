@@ -158,29 +158,38 @@ server on GitHub Actions.
 
 ## 8. Commit history so far
 
-| Date | Hash | Branch | Commit | Step |
-|---|---|---|---|---|
-| 2026-08-21 | `5248eb2` | `main` | `chore: set up Spring Boot project skeleton` | 1 |
-| 2026-08-21 | `017e3f2` | `feature/database-layer` | `feat: add database schema, stored procedures and triggers` | 2 |
-| 2026-08-21 | `a758e70` | `develop` | Merge `feature/database-layer` into `develop` | — |
-| 2026-08-21 | `0a2cc5b` | `main` | Merge `develop` into `main`, tagged **v0.1.0** | — |
-| 2026-08-21 | `1cfc075` | `develop` | `docs: record the actual commit history and branch graph` | — |
+> **Before submitting, regenerate this section.** Do not trust the hashes below.
+> Run the command and paste the real output into the report:
+>
+> ```powershell
+> git log --oneline --graph --all --decorate
+> ```
 
-Graph:
+| Date | Branch | Commit | Step |
+|---|---|---|---|
+| 2026-08-21 | `main` | `chore: set up Spring Boot project skeleton` | 1 |
+| 2026-08-21 | `feature/database-layer` | `feat: add database schema, stored procedures and triggers` | 2 |
+| 2026-08-21 | `develop` | Merge `feature/database-layer` into `develop` | — |
+| 2026-08-21 | `main` | Merge `develop` into `main`, tagged **v0.1.0** | — |
+| 2026-08-21 | `develop` | `docs: record the actual commit history and branch graph` | — |
+| 2026-08-21 | `develop` | `docs: add repository details and refresh the commit hashes` | — |
+
+Graph at the time of writing:
 
 ```
-* 1cfc075 (develop) docs: record the actual commit history and branch graph
-| *   0a2cc5b (tag: v0.1.0, main) Merge branch 'develop' into main
+* d1bb9d4 (develop) docs: add repository details and refresh the commit hashes
+* 62747f1 docs: record the actual commit history and branch graph
+| *   661e2f8 (tag: v0.1.0, main) Merge branch 'develop' into main
 | |\
 | |/
 |/|
-* |   a758e70 Merge branch 'feature/database-layer' into develop
+* |   4160491 Merge branch 'feature/database-layer' into develop
 |\ \
 | |/
 |/|
-| * 017e3f2 (feature/database-layer) feat: add database schema, stored procedures and triggers
+| * 9bd22a0 (feature/database-layer) feat: add database schema, stored procedures and triggers
 |/
-* 5248eb2 chore: set up Spring Boot project skeleton
+* f4d44a9 chore: set up Spring Boot project skeleton
 ```
 
 The first commit is on `main` because a repository needs one commit before any
@@ -188,7 +197,13 @@ branch can be made from it. Every feature after this one follows the full
 cycle: branch from `develop`, work, pull request, merge back.
 
 `main` deliberately sits behind `develop`. `main` only moves at a release, so
-the newest documentation commit waits on `develop` until the next tag.
+the newest documentation commits wait on `develop` until the next tag.
+
+**Why the hashes are not fixed:** the author name and email were corrected after
+the first commits were made. Rewriting them gave every commit a new hash. That
+was safe here only because nothing had been pushed yet — **once a repository is
+pushed to GitHub, never rewrite history**, because anyone who has cloned it ends
+up with a copy that no longer matches. This is worth a sentence in the report.
 
 > **Note for the report:** the assessment rewards commits spread across several
 > days, showing the system growing a piece at a time. Keep committing on the day
