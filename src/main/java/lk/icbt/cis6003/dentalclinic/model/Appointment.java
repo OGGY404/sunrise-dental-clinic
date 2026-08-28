@@ -107,6 +107,16 @@ public class Appointment {
     public Appointment() {
     }
 
+    /**
+     * Starts building an appointment.
+     *
+     * DESIGN PATTERN: Builder. See the Builder class at the bottom of this file
+     * for why an eight-parameter constructor was rejected.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public Long getAppointmentId() {
         return appointmentId;
     }
@@ -255,5 +265,132 @@ public class Appointment {
                 + ", date=" + appointmentDate
                 + ", time=" + appointmentTime
                 + ", status=" + status + "}";
+    }
+
+    /**
+     * Builds an Appointment one named value at a time.
+     *
+     * DESIGN PATTERN: Builder.
+     *
+     * WHY NOT JUST A CONSTRUCTOR
+     * An appointment needs eight things. A constructor taking all eight would
+     * look like this at the call site:
+     *
+     *     new Appointment(no, patient, dentist, treatment, date, time, status, notes)
+     *
+     * Nothing there stops the dentist and the treatment being swapped, or the
+     * date and the time. Both mistakes compile perfectly and only show up as a
+     * wrong booking in front of a patient. With the builder each value is named
+     * where it is given, so a swap is visible while reading the code.
+     *
+     * The builder also refuses to hand back an object that is missing something
+     * required, which means an incomplete Appointment never exists at all,
+     * rather than existing and failing later with a confusing database error.
+     *
+     * CRITICAL EVALUATION (for the report): the cost is roughly forty extra
+     * lines for one class, and a second place to update when a field is added.
+     * It is worth it here because this is the object the whole system is built
+     * around, and because the compiler cannot catch the mistakes it prevents.
+     * It would not be worth it for a small class such as ClinicSetting.
+     */
+    public static class Builder {
+
+        private String appointmentNo;
+        private Patient patient;
+        private Dentist dentist;
+        private Treatment treatment;
+        private LocalDate appointmentDate;
+        private LocalTime appointmentTime;
+        private AppointmentStatus status = AppointmentStatus.BOOKED;
+        private String notes;
+        private User createdBy;
+
+        public Builder appointmentNo(String appointmentNo) {
+            this.appointmentNo = appointmentNo;
+            return this;
+        }
+
+        public Builder patient(Patient patient) {
+            this.patient = patient;
+            return this;
+        }
+
+        public Builder dentist(Dentist dentist) {
+            this.dentist = dentist;
+            return this;
+        }
+
+        public Builder treatment(Treatment treatment) {
+            this.treatment = treatment;
+            return this;
+        }
+
+        /** The date of the visit. Named "on" so the call reads like English. */
+        public Builder on(LocalDate appointmentDate) {
+            this.appointmentDate = appointmentDate;
+            return this;
+        }
+
+        /** The time of the visit. Named "at" so the call reads like English. */
+        public Builder at(LocalTime appointmentTime) {
+            this.appointmentTime = appointmentTime;
+            return this;
+        }
+
+        /** Optional. A new booking is BOOKED unless told otherwise. */
+        public Builder status(AppointmentStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        /** Optional. */
+        public Builder notes(String notes) {
+            this.notes = notes;
+            return this;
+        }
+
+        /** Optional. The member of staff who took the booking. */
+        public Builder createdBy(User createdBy) {
+            this.createdBy = createdBy;
+            return this;
+        }
+
+        /**
+         * Checks everything required is present, then produces the appointment.
+         *
+         * Each check names the missing thing in its message, so the developer
+         * who sees the error knows immediately what was left out.
+         */
+        public Appointment build() {
+            require(appointmentNo != null && !appointmentNo.isBlank(),
+                    "An appointment needs an appointment number.");
+            require(patient != null, "An appointment needs a patient.");
+            require(dentist != null, "An appointment needs a dentist.");
+            require(treatment != null, "An appointment needs a treatment.");
+            require(appointmentDate != null, "An appointment needs a date.");
+            require(appointmentTime != null, "An appointment needs a time.");
+
+            Appointment appointment = new Appointment();
+            appointment.setAppointmentNo(appointmentNo);
+            appointment.setDentist(dentist);
+            appointment.setTreatment(treatment);
+            appointment.setAppointmentDate(appointmentDate);
+            appointment.setAppointmentTime(appointmentTime);
+            appointment.setStatus(status);
+            appointment.setNotes(notes);
+            appointment.setCreatedBy(createdBy);
+
+            // Sets both sides of the patient link at once, so the object in
+            // memory always agrees with what will be written to the database.
+            patient.addAppointment(appointment);
+
+            return appointment;
+        }
+
+        private void require(boolean condition, String message) {
+            if (!condition) {
+                throw new IllegalStateException(message);
+            }
+        }
     }
 }
