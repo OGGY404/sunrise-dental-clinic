@@ -32,8 +32,15 @@ public class User {
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
-    /** BCrypt hash, always 60 characters. Never the password itself. */
-    @Column(name = "password_hash", nullable = false, length = 60)
+    /**
+     * BCrypt hash, always 60 characters. Never the password itself.
+     *
+     * The column is CHAR(60), not VARCHAR(60), because a BCrypt hash is always
+     * exactly that long, so there is no reason to store a length with it.
+     * columnDefinition has to say so, otherwise Hibernate expects VARCHAR and
+     * refuses to start against the real MySQL database.
+     */
+    @Column(name = "password_hash", nullable = false, length = 60, columnDefinition = "CHAR(60)")
     private String passwordHash;
 
     @Column(name = "full_name", nullable = false, length = 100)
