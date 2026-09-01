@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  The pieces every screen shares: the head, the bar across the top, the
+  message strip and the footer.
+
+  Writing them once here means the navigation is the same on every page and a
+  change to it happens in one file. Each page pulls them in with th:replace.
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|${pageTitle} - Sunrise Dental Clinic|">Sunrise Dental Clinic</title>
+    <link rel="stylesheet" th:href="@{/css/clinic.css}">
+</head>
+
+<body>
+
+<!--
+  The bar across the top. This is the "menu driven" part the brief asks for:
+  every job a member of staff can do is one click away from wherever they are.
+
+  The Reports link is only drawn for an administrator. Hiding it is a courtesy,
+  not the protection: the real rule is in SecurityConfig, so typing the address
+  by hand does not get a receptionist in either.
+-->
+<header th:fragment="nav" class="topbar">
+    <div class="brand">
+        Sunrise Dental Clinic
+        <small>Colombo</small>
+    </div>
+
+    <nav>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/appointments/new}">New appointment</a>
+        <a th:href="@{/appointments/search}">Find appointment</a>
+        <a th:href="@{/appointments/schedule}">Day schedule</a>
+        <a th:href="@{/patients}">Patients</a>
+        <a th:href="@{/bills/unpaid}">Unpaid bills</a>
+        <a th:href="@{/reports}" sec:authorize="hasRole('ADMIN')">Reports</a>
+        <a th:href="@{/help}">Help</a>
+    </nav>
+
+    <div class="who">
+        <span sec:authentication="name">staff</span>
+        <span class="role" sec:authorize="hasRole('ADMIN')">ADMIN</span>
+        <span class="role" sec:authorize="hasRole('RECEPTIONIST')">RECEPTION</span>
+
+        <!--
+          FR6 - leave the system safely.
+
+          This is a form and not a link on purpose. Signing out changes
+          something, so it is a POST and it carries the CSRF token, which means
+          another website cannot sign a receptionist out without them noticing.
+        -->
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button type="submit" class="secondary small">Sign out</button>
+        </form>
+    </div>
+</header>
+
+<!--
+  The message strip.
+
+  "message" is good news and "errorMessage" is a refusal. Both are put here, at
+  the top of the page the member of staff is already looking at, rather than on
+  a separate page they would have to navigate back from.
+-->
+<div th:fragment="messages">
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+    <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+</div>
+
+<footer th:fragment="footer" class="page-footer">
+    Sunrise Dental Clinic &middot; Appointment and Patient Management System
+    &middot; CIS6003 Advanced Programming
+</footer>
+
+</body>
+</html>

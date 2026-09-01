@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--
+  FR2 - register a new appointment. This is a DATA ENTRY screen.
+
+  The brief asks for data entry and viewing results to be separate screens.
+  This one only takes details in. When the booking is saved the browser is
+  redirected to appointments/view, which is the screen that shows the result.
+
+  Every box that the validator can refuse shows its own message underneath it,
+  and keeps what the receptionist typed, so nothing has to be entered twice.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Register an appointment')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Register an appointment</h1>
+    <p class="page-note">
+        Every visit gets its own appointment number. A patient who has been here
+        before is recognised from their name and telephone number, so their
+        treatment history stays in one place.
+    </p>
+
+    <form th:action="@{/appointments/new}" th:object="${bookingRequest}" method="post" novalidate>
+
+        <div class="card">
+            <h2>The patient</h2>
+
+            <div class="two-columns">
+                <div class="field">
+                    <label for="fullName">Full name</label>
+                    <input type="text" id="fullName" th:field="*{fullName}"
+                           th:classappend="${#fields.hasErrors('fullName')} ? 'wrong'"
+                           placeholder="For example: Kamal Silva" autofocus>
+                    <span class="field-error" th:if="${#fields.hasErrors('fullName')}"
+                          th:errors="*{fullName}">name problem</span>
+                </div>
+
+                <div class="field">
+                    <label for="contactNumber">
+                        Contact number
+                        <span class="hint">&mdash; 0771234567 or +94771234567</span>
+                    </label>
+                    <input type="tel" id="contactNumber" th:field="*{contactNumber}"
+                           th:classappend="${#fields.hasErrors('contactNumber')} ? 'wrong'"
+                           placeholder="0771234567">
+                    <span class="field-error" th:if="${#fields.hasErrors('contactNumber')}"
+                          th:errors="*{contactNumber}">number problem</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="address">Address</label>
+                <input type="text" id="address" th:field="*{address}"
+                       th:classappend="${#fields.hasErrors('address')} ? 'wrong'"
+                       placeholder="No. 42, Galle Road, Colombo 03">
+                <span class="field-error" th:if="${#fields.hasErrors('address')}"
+                      th:errors="*{address}">address problem</span>
+            </div>
+
+            <div class="three-columns">
+                <div class="field">
+                    <label for="email">Email <span class="hint">&mdash; optional</span></label>
+                    <input type="email" id="email" th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? 'wrong'"
+                           placeholder="kamal@example.lk">
+                    <span class="field-error" th:if="${#fields.hasErrors('email')}"
+                          th:errors="*{email}">email problem</span>
+                </div>
+
+                <div class="field">
+                    <label for="dateOfBirth">Date of birth <span class="hint">&mdash; optional</span></label>
+                    <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}"
+                           th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'wrong'">
+                    <span class="field-error" th:if="${#fields.hasErrors('dateOfBirth')}"
+                          th:errors="*{dateOfBirth}">date problem</span>
+                </div>
+
+                <div class="field">
+                    <label for="gender">Gender <span class="hint">&mdash; optional</span></label>
+                    <select id="gender" th:field="*{gender}">
+                        <option value="">Not recorded</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>The visit</h2>
+
+            <div class="two-columns">
+                <div class="field">
+                    <label for="dentistId">Dentist</label>
+                    <select id="dentistId" th:field="*{dentistId}"
+                            th:classappend="${#fields.hasErrors('dentistId')} ? 'wrong'">
+                        <option value="">Please choose a dentist</option>
+                        <option th:each="dentist : ${dentists}"
+                                th:value="${dentist.dentistId}"
+                                th:text="|${dentist.fullName} - ${dentist.specialisation}|">Dentist</option>
+                    </select>
+                    <span class="field-error" th:if="${#fields.hasErrors('dentistId')}"
+                          th:errors="*{dentistId}">dentist problem</span>
+                </div>
+
+                <div class="field">
+                    <label for="treatmentId">Treatment</label>
+                    <select id="treatmentId" th:field="*{treatmentId}"
+                            th:classappend="${#fields.hasErrors('treatmentId')} ? 'wrong'">
+                        <option value="">Please choose a treatment</option>
+                        <option th:each="treatment : ${treatments}"
+                                th:value="${treatment.treatmentId}"
+                                th:text="|${treatment.name} - Rs. ${#numbers.formatDecimal(treatment.cost, 1, 'COMMA', 2, 'POINT')}|">Treatment</option>
+                    </select>
+                    <span class="field-error" th:if="${#fields.hasErrors('treatmentId')}"
+                          th:errors="*{treatmentId}">treatment problem</span>
+                    <span class="hint">The consultation fee is added to this when the bill is produced.</span>
+                </div>
+            </div>
+
+            <div class="two-columns">
+                <div class="field">
+                    <label for="appointmentDate">Date</label>
+                    <input type="date" id="appointmentDate" th:field="*{appointmentDate}"
+                           th:classappend="${#fields.hasErrors('appointmentDate')} ? 'wrong'">
+                    <span class="field-error" th:if="${#fields.hasErrors('appointmentDate')}"
+                          th:errors="*{appointmentDate}">date problem</span>
+                </div>
+
+                <div class="field">
+                    <label for="appointmentTime">
+                        Time
+                        <span class="hint">&mdash; the clinic is open 08:00 to 18:00, in half hours</span>
+                    </label>
+                    <input type="time" id="appointmentTime" th:field="*{appointmentTime}"
+                           step="1800" min="08:00" max="18:00"
+                           th:classappend="${#fields.hasErrors('appointmentTime')} ? 'wrong'">
+                    <span class="field-error" th:if="${#fields.hasErrors('appointmentTime')}"
+                          th:errors="*{appointmentTime}">time problem</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="notes">Notes <span class="hint">&mdash; optional</span></label>
+                <textarea id="notes" th:field="*{notes}"
+                          placeholder="For example: complains of pain in the lower left molar"></textarea>
+                <span class="field-error" th:if="${#fields.hasErrors('notes')}"
+                      th:errors="*{notes}">notes problem</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="submit">Register the appointment</button>
+            <a class="button secondary" th:href="@{/}">Cancel</a>
+        </div>
+    </form>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

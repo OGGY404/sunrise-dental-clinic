@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!--
+  FR4, first half - producing the bill. This is a DATA ENTRY screen.
+
+  Notice what it does NOT ask for: any of the amounts. The screen sends only
+  the appointment number and, if the clinic has agreed one, a discount. Every
+  figure on the receipt is worked out by the business tier from the stored
+  price list. If the screen could send the price, anyone able to open this page
+  could decide what a root canal costs.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Produce a bill')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Produce the bill</h1>
+    <p class="page-note">
+        Check that this is the right visit, then produce the bill. A visit can
+        only be billed once.
+    </p>
+
+    <div class="card">
+        <h2>The visit being billed</h2>
+        <div class="details">
+            <div>
+                <div class="detail-label">Appointment</div>
+                <div class="detail-value" th:text="${appointment.appointmentNo}">APT-</div>
+            </div>
+            <div>
+                <div class="detail-label">Patient</div>
+                <div class="detail-value" th:text="${appointment.patient.fullName}">Patient</div>
+            </div>
+            <div>
+                <div class="detail-label">Date of visit</div>
+                <div class="detail-value"
+                     th:text="${#temporals.format(appointment.appointmentDate, 'd MMM yyyy')}">date</div>
+            </div>
+            <div>
+                <div class="detail-label">Treatment</div>
+                <div class="detail-value" th:text="${appointment.treatmentName}">Treatment</div>
+            </div>
+            <div>
+                <div class="detail-label">Price list cost</div>
+                <div class="detail-value"
+                     th:text="|Rs. ${#numbers.formatDecimal(appointment.treatmentCost, 1, 'COMMA', 2, 'POINT')}|">Rs.</div>
+            </div>
+            <div>
+                <div class="detail-label">Status</div>
+                <div class="detail-value">
+                    <span class="tag" th:classappend="${appointment.status}"
+                          th:text="${appointment.status}">COMPLETED</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Anything agreed with the patient</h2>
+        <form th:action="@{/bills/new}" method="post">
+            <input type="hidden" name="appointmentNo" th:value="${appointment.appointmentNo}">
+
+            <div class="field" style="max-width:320px">
+                <label for="discount">
+                    Agreed discount
+                    <span class="hint">&mdash; leave empty if there is none</span>
+                </label>
+                <input type="text" id="discount" name="discount" placeholder="0.00">
+                <span class="hint">
+                    This is on top of any reduction the pricing rule already applies,
+                    such as the loyalty discount from the fifth completed visit.
+                </span>
+            </div>
+
+            <div class="actions">
+                <button type="submit">Produce the bill</button>
+                <a class="button secondary"
+                   th:href="@{/appointments/{no}(no=${appointment.appointmentNo})}">Back to the visit</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

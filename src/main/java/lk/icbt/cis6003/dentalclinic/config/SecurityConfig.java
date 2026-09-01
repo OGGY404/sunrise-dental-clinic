@@ -80,6 +80,7 @@ public class SecurityConfig {
                 // not inside the controllers, so it still applies to a screen
                 // that has not been built yet.
                 .requestMatchers("/api/admin/**", "/api/reports/**", "/admin/**").hasRole("ADMIN")
+                .requestMatchers("/reports/**").hasRole("ADMIN")
 
                 // Everything else needs a login. This is deliberately the last
                 // rule, so a new screen is protected by default and has to be
@@ -87,8 +88,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
 
             .formLogin(login -> login
-                // Spring Security draws the login page for now. Step 7 replaces
-                // it with the clinic's own Thymeleaf page.
+                // The clinic's own login page, drawn by LoginWebController and
+                // templates/login.html. Spring Security still receives the POST
+                // and checks the password; only the page itself is ours.
+                .loginPage("/login")
                 .defaultSuccessUrl("/", false)
                 .permitAll())
 

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--
+  Revenue by treatment.
+
+  Every figure on this page was worked out by the stored procedure
+  sp_report_revenue_by_treatment. There is no arithmetic in the Java that leads
+  here and none in this template either: the page only chooses the dates and
+  displays what MySQL sent back.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Revenue by treatment')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Revenue by treatment</h1>
+    <p class="page-note">
+        Paid bills only, between
+        <strong th:text="${#temporals.format(from, 'd MMM yyyy')}">from</strong> and
+        <strong th:text="${#temporals.format(to, 'd MMM yyyy')}">to</strong>.
+    </p>
+
+    <div class="card no-print">
+        <form th:action="@{/reports/revenue}" method="get">
+            <div class="three-columns">
+                <div class="field">
+                    <label for="from">From</label>
+                    <input type="date" id="from" name="from" th:value="${from}">
+                </div>
+                <div class="field">
+                    <label for="to">To</label>
+                    <input type="date" id="to" name="to" th:value="${to}">
+                </div>
+                <div class="field" style="display:flex; align-items:flex-end">
+                    <button type="submit">Show the report</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <p class="empty" th:if="${rows.isEmpty()}">
+            No bills were paid in this period, so there is nothing to report.
+        </p>
+
+        <table th:unless="${rows.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Code</th>
+                <th>Treatment</th>
+                <th class="number">Bills</th>
+                <th class="number">Treatment</th>
+                <th class="number">Consultation</th>
+                <th class="number">Discount</th>
+                <th class="number">Total earned</th>
+                <th class="number">Average bill</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${rows}">
+                <td th:text="${row.treatmentCode}">TRT-</td>
+                <td th:text="${row.treatmentName}">Treatment</td>
+                <td class="number" th:text="${row.timesBilled}">0</td>
+                <td class="number"
+                    th:text="${#numbers.formatDecimal(row.treatmentRevenue, 1, 'COMMA', 2, 'POINT')}">0</td>
+                <td class="number"
+                    th:text="${#numbers.formatDecimal(row.consultationRevenue, 1, 'COMMA', 2, 'POINT')}">0</td>
+                <td class="number"
+                    th:text="${#numbers.formatDecimal(row.totalDiscount, 1, 'COMMA', 2, 'POINT')}">0</td>
+                <td class="number"
+                    th:text="${#numbers.formatDecimal(row.totalRevenue, 1, 'COMMA', 2, 'POINT')}">0</td>
+                <td class="number"
+                    th:text="${#numbers.formatDecimal(row.averageBill, 1, 'COMMA', 2, 'POINT')}">0</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions no-print">
+        <button type="button" onclick="window.print()">Print this report</button>
+        <a class="button secondary" th:href="@{/reports}">Back to reports</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

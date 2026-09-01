@@ -16,6 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -46,8 +47,16 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
  * The difference between 400 and 422 matters for the screen: a 400 means "you
  * typed it wrong, correct the box", a 422 means "the clinic will not allow
  * this".
+ *
+ * WHY THIS ONLY COVERS THE REST CONTROLLERS
+ * Step 7 added the Thymeleaf screens, and a receptionist looking at a screen
+ * must never be shown JSON. So this class is limited to classes annotated with
+ * @RestController, and the screens have their own handler, WebExceptionHandler,
+ * which renders the clinic's error page instead. Without that limit, whichever
+ * handler Spring found first would answer for both, and one of the two
+ * audiences would get the wrong thing.
  */
-@RestControllerAdvice
+@RestControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);

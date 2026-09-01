@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+  The chase list: every bill that has been produced but not settled, oldest
+  first, so the front desk works through the longest-standing debt first.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Unpaid bills')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Unpaid bills</h1>
+    <p class="page-note">Oldest first, because that is the money to chase first.</p>
+
+    <div class="card">
+        <p class="empty" th:if="${bills.isEmpty()}">
+            Every bill has been paid. Nothing is outstanding.
+        </p>
+
+        <table th:unless="${bills.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Bill</th>
+                <th>Issued</th>
+                <th>Patient</th>
+                <th>Treatment</th>
+                <th class="number">Amount</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="bill : ${bills}">
+                <td><a th:href="@{/bills/{no}(no=${bill.billNo})}" th:text="${bill.billNo}">BIL-</a></td>
+                <td th:text="${#temporals.format(bill.issuedAt, 'd MMM yyyy')}">date</td>
+                <td th:text="${bill.patientName}">Patient</td>
+                <td th:text="${bill.treatmentName}">Treatment</td>
+                <td class="number"
+                    th:text="|Rs. ${#numbers.formatDecimal(bill.totalAmount, 1, 'COMMA', 2, 'POINT')}|">Rs.</td>
+                <td>
+                    <a class="button small" th:href="@{/bills/{no}(no=${bill.billNo})}">Open</a>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4">Total owed to the clinic</td>
+                <td class="number"
+                    th:text="|Rs. ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}|">Rs.</td>
+                <td></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="actions">
+        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

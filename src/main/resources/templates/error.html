@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+  The error page.
+
+  Most problems never reach here, because the screens deal with the expected
+  refusals themselves and keep the member of staff on the form they were
+  already using. What is left is the genuinely unexpected: a mistyped web
+  address, or a real fault.
+
+  It shows a sentence and a way back, and never a stack trace. Technical
+  details go to the log, where a developer can read them, and not to a monitor
+  that a patient may be standing in front of.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Something went wrong')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div class="card" style="max-width:620px; margin:40px auto; text-align:center">
+        <h1 th:text="${heading} ?: 'Something went wrong'">Something went wrong</h1>
+
+        <p class="page-note" style="margin:14px 0 0"
+           th:text="${message} ?: 'The page you asked for could not be shown.'">
+            The page you asked for could not be shown.
+        </p>
+
+        <div class="actions" style="justify-content:center">
+            <a class="button" th:href="@{/}">Back to the menu</a>
+            <a class="button secondary" th:href="@{/help}">Open help</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

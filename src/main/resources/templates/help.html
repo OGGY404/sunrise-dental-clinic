@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<!--
+  FR5 - the help section.
+
+  The brief asks for step-by-step instructions for new staff, so this is
+  written for somebody on their first morning at the desk. It is a list of the
+  jobs they will actually be asked to do, in the order the day tends to bring
+  them, and not a list of the system's features.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Help')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <h1>Help</h1>
+    <p class="page-note">
+        Step-by-step instructions for using the clinic system. If something here
+        does not match what you see on screen, ask the administrator.
+    </p>
+
+    <div class="card">
+        <h2>Booking a visit for a patient</h2>
+        <ol class="steps">
+            <li>
+                <div class="step-title">Open the booking form</div>
+                <p>Click <strong>New appointment</strong> in the green bar at the top of any screen.</p>
+            </li>
+            <li>
+                <div class="step-title">Type the patient's details</div>
+                <p>
+                    Name, address and contact number are required. Ask for the
+                    telephone number carefully: together with the name it is how
+                    the system recognises a patient who has been here before, so
+                    that all their treatment stays in one record.
+                </p>
+            </li>
+            <li>
+                <div class="step-title">Choose the dentist, the treatment, the date and the time</div>
+                <p>
+                    The clinic is open from 08:00 to 18:00 and appointments start
+                    on the half hour. Only dentists who are still practising and
+                    treatments on the current price list appear in the lists.
+                </p>
+            </li>
+            <li>
+                <div class="step-title">Press Register the appointment</div>
+                <p>
+                    If a box is wrong it turns red and the reason appears
+                    underneath it; correct that box and press the button again.
+                    Nothing you have typed is lost.
+                </p>
+            </li>
+            <li>
+                <div class="step-title">Write the appointment number on the patient's card</div>
+                <p>
+                    It looks like APT-20260908-0001. The patient needs it to be
+                    found quickly next time.
+                </p>
+            </li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>If the time you want is already taken</h2>
+        <p class="page-note">
+            The system will say <em>"That dentist is already booked..."</em> and
+            keep you on the form. This is not a mistake you have made; someone
+            else has that slot. Choose another time, or another dentist, and
+            press the button again. Two patients can never be given the same
+            dentist at the same moment, even if two people press Register at
+            exactly the same second.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>When the patient arrives, and when they do not</h2>
+        <ol class="steps">
+            <li>
+                <div class="step-title">Find the visit</div>
+                <p>
+                    Click <strong>Find appointment</strong> and type the number, or
+                    open <strong>Day schedule</strong> and click the appointment in
+                    today's list.
+                </p>
+            </li>
+            <li>
+                <div class="step-title">After the treatment, press Mark the visit as completed</div>
+                <p>
+                    A visit has to be completed before it can be billed. That is
+                    deliberate: it stops the clinic charging for work it has not
+                    done.
+                </p>
+            </li>
+            <li>
+                <div class="step-title">If the patient never came, press The patient did not arrive</div>
+                <p>
+                    This records a no-show. The slot is not given back, because
+                    the dentist's time was already spent waiting.
+                </p>
+            </li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Producing and settling a bill</h2>
+        <ol class="steps">
+            <li>
+                <div class="step-title">Open the completed visit and press Produce the bill</div>
+                <p>
+                    You do not type any amounts. The system works out the treatment
+                    cost and the consultation fee from the price list.
+                </p>
+            </li>
+            <li>
+                <div class="step-title">Enter a discount only if the clinic has agreed one</div>
+                <p>Leave the box empty if there is none. This is the normal case.</p>
+            </li>
+            <li>
+                <div class="step-title">Press Print this bill and hand it to the patient</div>
+                <p>The menu and the buttons are left off the printed page.</p>
+            </li>
+            <li>
+                <div class="step-title">When the patient pays, choose how and press Record the payment</div>
+                <p>
+                    Cash, card or insurance. A bill can only be paid once. Bills
+                    that are still owed are listed under
+                    <strong>Unpaid bills</strong>, oldest first.
+                </p>
+            </li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Cancelling or moving an appointment</h2>
+        <p class="page-note">
+            Open the visit, scroll down, and use <strong>Move the appointment</strong>
+            or <strong>Cancel the appointment</strong>. A cancellation needs a
+            reason, because it is written into the record and the clinic may need
+            to know later why a slot was given away. Cancelling frees the time for
+            another patient straight away.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Looking up a patient's history</h2>
+        <p class="page-note">
+            Click <strong>Patients</strong> and search by telephone number, or by
+            part of the name. Open the patient to see every visit they have ever
+            had, newest first. This is what the old paper system could not do.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Finishing your shift (FR6)</h2>
+        <p class="page-note">
+            Press <strong>Sign out</strong> at the right-hand end of the green bar.
+            Always sign out before leaving the desk, so that nobody can use the
+            system under your name. If you walk away and forget, the system signs
+            you out by itself after thirty minutes.
+        </p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

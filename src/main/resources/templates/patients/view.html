@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+  FR7 - one patient and everything that has ever been done for them.
+
+  This is the screen the paper system could not produce. On paper, a patient
+  entered twice had their history split in half and the dentist could not see
+  what was done last visit. Here the patient is one record with every visit
+  under it, newest first.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Patient record')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1 th:text="${patient.fullName}">Patient</h1>
+    <p class="page-note" th:text="${patient.patientCode}">PAT-</p>
+
+    <div class="card">
+        <h2>Details</h2>
+        <div class="details">
+            <div>
+                <div class="detail-label">Contact number</div>
+                <div class="detail-value" th:text="${patient.contactNumber}">077</div>
+            </div>
+            <div>
+                <div class="detail-label">Address</div>
+                <div class="detail-value" th:text="${patient.address}">Address</div>
+            </div>
+            <div th:if="${patient.email}">
+                <div class="detail-label">Email</div>
+                <div class="detail-value" th:text="${patient.email}">email</div>
+            </div>
+            <div th:if="${patient.dateOfBirth}">
+                <div class="detail-label">Date of birth</div>
+                <div class="detail-value"
+                     th:text="${#temporals.format(patient.dateOfBirth, 'd MMM yyyy')}">date</div>
+            </div>
+            <div th:if="${patient.age}">
+                <div class="detail-label">Age</div>
+                <div class="detail-value" th:text="${patient.age}">31</div>
+            </div>
+            <div th:if="${patient.gender}">
+                <div class="detail-label">Gender</div>
+                <div class="detail-value" th:text="${patient.gender}">MALE</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 th:text="|Treatment history (${history.size()} visit(s))|">Treatment history</h2>
+
+        <p class="empty" th:if="${history.isEmpty()}">
+            This patient has no visits recorded yet.
+        </p>
+
+        <table th:unless="${history.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Appointment</th>
+                <th>Treatment</th>
+                <th>Dentist</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="visit : ${history}">
+                <td th:text="${#temporals.format(visit.appointmentDate, 'd MMM yyyy')}">date</td>
+                <td th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
+                <td><a th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
+                       th:text="${visit.appointmentNo}">APT-</a></td>
+                <td th:text="${visit.treatmentName}">Treatment</td>
+                <td th:text="${visit.dentistName}">Dentist</td>
+                <td><span class="tag" th:classappend="${visit.status}"
+                          th:text="${visit.status}">BOOKED</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <a class="button" th:href="@{/appointments/new}">Book another appointment</a>
+        <a class="button secondary" th:href="@{/patients}">Back to patient search</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--
+  FR3, second half - the appointment details. This is a VIEWING RESULTS screen,
+  kept separate from the forms that lead to it, which is what the brief asks
+  for.
+
+  It is also where the visit is worked on: completed, cancelled, moved, or
+  billed. Each of those is a form that posts and then comes back here, so the
+  member of staff never loses their place.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Appointment details')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1 th:text="${appointment.appointmentNo}">APT-</h1>
+    <p class="page-note">
+        <span class="tag" th:classappend="${appointment.status}"
+              th:text="${appointment.status}">BOOKED</span>
+        &nbsp;registered on
+        <span th:text="${#temporals.format(appointment.createdAt, 'd MMM yyyy, HH:mm')}">date</span>
+    </p>
+
+    <div class="card">
+        <h2>The visit</h2>
+        <div class="details">
+            <div>
+                <div class="detail-label">Date</div>
+                <div class="detail-value"
+                     th:text="${#temporals.format(appointment.appointmentDate, 'EEEE, d MMMM yyyy')}">date</div>
+            </div>
+            <div>
+                <div class="detail-label">Time</div>
+                <div class="detail-value"
+                     th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm')}">09:00</div>
+            </div>
+            <div>
+                <div class="detail-label">Dentist</div>
+                <div class="detail-value" th:text="${appointment.dentistName}">Dentist</div>
+            </div>
+            <div>
+                <div class="detail-label">Treatment</div>
+                <div class="detail-value" th:text="${appointment.treatmentName}">Treatment</div>
+            </div>
+            <div>
+                <div class="detail-label">Treatment cost</div>
+                <div class="detail-value"
+                     th:text="|Rs. ${#numbers.formatDecimal(appointment.treatmentCost, 1, 'COMMA', 2, 'POINT')}|">Rs.</div>
+            </div>
+        </div>
+
+        <div th:if="${appointment.notes}" style="margin-top:18px">
+            <div class="detail-label">Notes</div>
+            <div class="detail-value" th:text="${appointment.notes}">notes</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>The patient</h2>
+        <div class="details">
+            <div>
+                <div class="detail-label">Patient number</div>
+                <div class="detail-value">
+                    <a th:href="@{/patients/{code}(code=${appointment.patient.patientCode})}"
+                       th:text="${appointment.patient.patientCode}">PAT-</a>
+                </div>
+            </div>
+            <div>
+                <div class="detail-label">Name</div>
+                <div class="detail-value" th:text="${appointment.patient.fullName}">Name</div>
+            </div>
+            <div>
+                <div class="detail-label">Contact number</div>
+                <div class="detail-value" th:text="${appointment.patient.contactNumber}">077</div>
+            </div>
+            <div>
+                <div class="detail-label">Address</div>
+                <div class="detail-value" th:text="${appointment.patient.address}">Address</div>
+            </div>
+            <div th:if="${appointment.patient.age}">
+                <div class="detail-label">Age</div>
+                <div class="detail-value" th:text="${appointment.patient.age}">31</div>
+            </div>
+        </div>
+    </div>
+
+    <!--
+      What can be done next depends on where the visit has got to, so only the
+      buttons that would actually work are drawn. The business tier refuses the
+      rest anyway; not showing them just saves the receptionist from being told
+      no.
+    -->
+    <div class="card" th:if="${appointment.status.name() == 'BOOKED'}">
+        <h2>The patient has arrived</h2>
+        <div class="actions">
+            <form th:action="@{/appointments/{no}/complete(no=${appointment.appointmentNo})}" method="post">
+                <button type="submit">Mark the visit as completed</button>
+            </form>
+            <form th:action="@{/appointments/{no}/no-show(no=${appointment.appointmentNo})}" method="post">
+                <button type="submit" class="secondary">The patient did not arrive</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card" th:if="${appointment.status.name() == 'COMPLETED'}">
+        <h2>Billing</h2>
+        <p class="page-note">The visit has taken place, so it can now be billed.</p>
+        <div class="actions">
+            <a class="button"
+               th:href="@{/bills/new(appointmentNo=${appointment.appointmentNo})}">Produce the bill</a>
+        </div>
+    </div>
+
+    <div class="card" th:if="${appointment.status.name() == 'BOOKED'}">
+        <h2>Move this appointment</h2>
+        <form th:action="@{/appointments/{no}/reschedule(no=${appointment.appointmentNo})}" method="post">
+            <div class="two-columns">
+                <div class="field">
+                    <label for="newDate">New date</label>
+                    <input type="date" id="newDate" name="newDate"
+                           th:value="${appointment.appointmentDate}" required>
+                </div>
+                <div class="field">
+                    <label for="newTime">New time</label>
+                    <input type="time" id="newTime" name="newTime" step="1800"
+                           min="08:00" max="18:00"
+                           th:value="${appointment.appointmentTime}" required>
+                </div>
+            </div>
+            <div class="actions">
+                <button type="submit" class="secondary">Move the appointment</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" th:if="${appointment.status.name() == 'BOOKED'}">
+        <h2>Cancel this appointment</h2>
+        <p class="page-note">
+            The slot becomes free for another patient straight away. A reason has
+            to be given, because it is written into the record.
+        </p>
+        <form th:action="@{/appointments/{no}/cancel(no=${appointment.appointmentNo})}" method="post">
+            <div class="field">
+                <label for="reason">Reason</label>
+                <input type="text" id="reason" name="reason" required maxlength="200"
+                       placeholder="For example: the patient telephoned to cancel">
+            </div>
+            <div class="actions">
+                <button type="submit" class="danger">Cancel the appointment</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="actions">
+        <a class="button secondary" th:href="@{/appointments/search}">Find another appointment</a>
+        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

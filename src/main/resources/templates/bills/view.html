@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--
+  FR4, second half - the printed bill. This is a VIEWING RESULTS screen.
+
+  It is laid out as the piece of paper the patient is handed, and the print
+  rules in clinic.css remove the navigation, the buttons and the page
+  background so that only the receipt reaches the printer.
+
+  The three amounts are shown separately as well as the total, because a
+  patient who asks "why is it 29,750?" must be able to see the treatment cost,
+  the consultation fee and the discount that make it up.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Bill')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <div class="receipt">
+        <div class="receipt-head">
+            <div class="clinic-name">Sunrise Dental Clinic</div>
+            <div class="clinic-place">Colombo, Sri Lanka</div>
+            <div class="receipt-word">Patient bill</div>
+        </div>
+
+        <div class="details" style="margin-bottom:22px">
+            <div>
+                <div class="detail-label">Bill number</div>
+                <div class="detail-value" th:text="${bill.billNo}">BIL-</div>
+            </div>
+            <div>
+                <div class="detail-label">Issued</div>
+                <div class="detail-value"
+                     th:text="${#temporals.format(bill.issuedAt, 'd MMM yyyy, HH:mm')}">date</div>
+            </div>
+            <div>
+                <div class="detail-label">Patient</div>
+                <div class="detail-value" th:text="${bill.patientName}">Patient</div>
+            </div>
+            <div>
+                <div class="detail-label">Appointment</div>
+                <div class="detail-value" th:text="${bill.appointmentNo}">APT-</div>
+            </div>
+        </div>
+
+        <div class="amount-line">
+            <span th:text="${bill.treatmentName}">Treatment</span>
+            <span th:text="|Rs. ${#numbers.formatDecimal(bill.treatmentCost, 1, 'COMMA', 2, 'POINT')}|">Rs.</span>
+        </div>
+        <div class="amount-line">
+            <span>Consultation fee</span>
+            <span th:text="|Rs. ${#numbers.formatDecimal(bill.consultationFee, 1, 'COMMA', 2, 'POINT')}|">Rs.</span>
+        </div>
+        <div class="amount-line" th:if="${bill.discount != null and bill.discount.signum() > 0}">
+            <span>Less discount</span>
+            <span th:text="|- Rs. ${#numbers.formatDecimal(bill.discount, 1, 'COMMA', 2, 'POINT')}|">Rs.</span>
+        </div>
+
+        <div class="amount-line total">
+            <span>Total</span>
+            <span th:text="|Rs. ${#numbers.formatDecimal(bill.totalAmount, 1, 'COMMA', 2, 'POINT')}|">Rs.</span>
+        </div>
+
+        <div style="margin-top:18px; text-align:center">
+            <span class="tag" th:classappend="${bill.paymentStatus}"
+                  th:text="${bill.paymentStatus}">UNPAID</span>
+            <span th:if="${bill.paymentMethod}"
+                  th:text="|paid by ${bill.paymentMethod} on ${#temporals.format(bill.paidAt, 'd MMM yyyy, HH:mm')}|">paid</span>
+        </div>
+
+        <div class="receipt-foot">
+            Thank you for visiting Sunrise Dental Clinic.<br>
+            This bill was produced by the clinic system and needs no signature.
+        </div>
+    </div>
+
+    <!--
+      Taking the money. Only drawn while the bill is unpaid, because a settled
+      bill cannot be settled again and the business tier would refuse it.
+    -->
+    <div class="card no-print" th:if="${bill.paymentStatus.name() == 'UNPAID'}"
+         style="max-width:640px; margin:18px auto 0">
+        <h2>Record the payment</h2>
+        <form th:action="@{/bills/{no}/pay(no=${bill.billNo})}" method="post">
+            <div class="field" style="max-width:260px">
+                <label for="method">How did the patient pay?</label>
+                <select id="method" name="method" required>
+                    <option value="CASH">Cash</option>
+                    <option value="CARD">Card</option>
+                    <option value="INSURANCE">Insurance</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button type="submit">Record the payment</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="actions no-print" style="max-width:640px; margin-left:auto; margin-right:auto">
+        <button type="button" onclick="window.print()">Print this bill</button>
+        <a class="button secondary"
+           th:href="@{/appointments/{no}(no=${bill.appointmentNo})}">Back to the visit</a>
+        <a class="button secondary" th:href="@{/bills/unpaid}">Unpaid bills</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
