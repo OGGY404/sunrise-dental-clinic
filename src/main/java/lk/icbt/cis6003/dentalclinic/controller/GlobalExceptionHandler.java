@@ -151,6 +151,50 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * The address matches nothing in the whole application.
+     *
+     * This is listed by name rather than left to the catch-all, because
+     * NoResourceFoundException extends ServletException and not
+     * ErrorResponseException, so the handler below does not cover it. Without
+     * this, every mistyped address came back as 500 and looked like a server
+     * fault instead of a typing mistake. The security tests caught it.
+     */
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNothingAtThatAddress(HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError(
+                HttpStatus.NOT_FOUND.value(), "Not found",
+                "There is nothing at that address.", request.getRequestURI()));
+    }
+
+    /**
+     * Another problem Spring itself already knows the right status for, such as
+     * a ResponseStatusException raised deeper in the framework.
+     */
+    @ExceptionHandler(org.springframework.web.ErrorResponseException.class)
+    public ResponseEntity<ApiError> handleSpringsOwnError(org.springframework.web.ErrorResponseException problem,
+                                                          HttpServletRequest request) {
+        HttpStatus status = HttpStatus.valueOf(problem.getStatusCode().value());
+        String message = (status == HttpStatus.NOT_FOUND)
+                ? "There is nothing at that address."
+                : problem.getBody().getDetail();
+
+        return ResponseEntity.status(status).body(new ApiError(
+                status.value(), status.getReasonPhrase(), message, request.getRequestURI()));
+    }
+
+    /** The address exists but not for this kind of request, for example GET instead of POST. */
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiError> handleWrongMethod(
+            org.springframework.web.HttpRequestMethodNotSupportedException problem,
+            HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ApiError(
+                HttpStatus.METHOD_NOT_ALLOWED.value(), "Method not allowed",
+                "That address cannot be used with " + problem.getMethod() + ".",
+                request.getRequestURI()));
+    }
+
+    /**
      * The person is logged in, but this is not theirs to do.
      *
      * This is handled by name so it does not fall through to the catch-all
