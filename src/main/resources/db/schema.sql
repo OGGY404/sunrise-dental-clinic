@@ -18,6 +18,34 @@
 
 
 -- ---------------------------------------------------------------------------
+--  DATABASE COLLATION - this must come first
+--
+--  Every table below is created as utf8mb4_unicode_ci. The database itself,
+--  however, is created by MySQL with its own default, which on MySQL 8 is
+--  utf8mb4_0900_ai_ci. Those two are not the same.
+--
+--  That difference breaks the stored routines. A parameter such as
+--  fn_get_setting(p_key VARCHAR(60)) takes its collation from the database
+--  default, so comparing it with clinic_settings.setting_key, which is
+--  utf8mb4_unicode_ci, fails with:
+--
+--      Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT)
+--      and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='
+--
+--  Registering an appointment fires a trigger that calls that function, so on
+--  a normal MySQL 8 installation every booking failed. It was found the first
+--  time a booking was made against the real database.
+--
+--  Setting the database collation to match the tables fixes it for every
+--  routine at once. The database name is deliberately left out, so this line
+--  applies to whichever database the application is configured to use.
+--  procedures.sql and triggers.sql drop and recreate everything on each start,
+--  so they pick this up straight away.
+-- ---------------------------------------------------------------------------
+ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;
+
+
+-- ---------------------------------------------------------------------------
 --  clinic_settings
 --  Clinic-wide values that staff may need to change without a code rebuild,
 --  for example the consultation fee. Read by the Singleton configuration
