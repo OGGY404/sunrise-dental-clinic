@@ -165,6 +165,37 @@ Then open <http://localhost:8080>. You will be asked to sign in.
 | `admin`     | `Admin@123` | ADMIN        | everything, including reports |
 | `reception` | `Recep@123` | RECEPTIONIST | bookings and billing          |
 
+### The screens
+
+Sign in and everything is one click away from the green bar at the top.
+
+| Address | Screen | Requirement |
+|---|---|---|
+| `/login` | sign in | FR1 |
+| `/` | main menu, today's diary, what is owed | menu-driven system |
+| `/appointments/new` | register a visit (data entry) | FR2 |
+| `/appointments/search` | find by appointment number (data entry) | FR3 |
+| `/appointments/{no}` | the visit, and complete / cancel / move it | FR3, FR7 |
+| `/appointments/schedule` | the day's diary, ready to print | reports |
+| `/patients` | search by telephone or name | |
+| `/patients/{code}` | one patient and their whole history | FR7 |
+| `/bills/new` | produce a bill (data entry) | FR4 |
+| `/bills/{billNo}` | the printable receipt | FR4 |
+| `/bills/unpaid` | what is still owed, oldest first | reports |
+| `/reports` | revenue by treatment, dentist workload | reports, **admin only** |
+| `/help` | step-by-step instructions for new staff | FR5 |
+| Sign out button | ends the session safely | FR6 |
+
+Data entry and viewing results are deliberately separate screens, and every
+save redirects to the result page. That is not decoration: it means pressing
+refresh on a result page cannot book a second appointment or produce a second
+bill.
+
+The two management reports are produced by the stored procedures
+`sp_report_revenue_by_treatment` and `sp_report_dentist_workload`, so the
+grouping and totalling happen inside MySQL and only the finished summary is
+sent back.
+
 ### The web services
 
 Everything below needs a signed-in session. Anything that changes data also
@@ -208,7 +239,7 @@ Every failure comes back in the same shape, so a screen only ever has to read
 .\mvnw.cmd test
 ```
 
-205 tests. They all run on an in-memory H2 database, so **MySQL does not need
+248 tests. They all run on an in-memory H2 database, so **MySQL does not need
 to be running** to test. The coverage report is written to
 `target/site/jacoco/index.html`.
 
@@ -222,7 +253,7 @@ to be running** to test. The coverage report is written to
 - [x] **Step 4** — Service layer with design patterns (tests first)
 - [x] **Step 5** — REST controllers and validation (tests first)
 - [x] **Step 6** — Login and sessions with Spring Security
-- [ ] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
+- [x] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
 - [ ] **Step 8** — Notifications and extra features
 - [ ] **Step 9** — GitHub Actions workflow and deployment
 - [ ] **Step 10** — UML diagrams

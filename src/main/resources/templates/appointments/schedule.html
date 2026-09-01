@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+  The daily appointment schedule, one of the reports the brief asks for.
+
+  This is the page that gets printed each morning and put on the dentist's
+  door, so the print rules in clinic.css hide the navigation and the buttons
+  and leave only the list on the paper.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Day schedule')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Day schedule</h1>
+    <p class="page-note" th:text="${#temporals.format(date, 'EEEE, d MMMM yyyy')}">date</p>
+
+    <div class="card no-print">
+        <form th:action="@{/appointments/schedule}" method="get">
+            <div class="three-columns">
+                <div class="field">
+                    <label for="date">Day</label>
+                    <input type="date" id="date" name="date" th:value="${date}">
+                </div>
+                <div class="field">
+                    <label for="dentistId">Dentist</label>
+                    <select id="dentistId" name="dentistId">
+                        <option value="">Every dentist</option>
+                        <option th:each="dentist : ${dentists}"
+                                th:value="${dentist.dentistId}"
+                                th:selected="${dentistId != null and dentistId == dentist.dentistId}"
+                                th:text="${dentist.fullName}">Dentist</option>
+                    </select>
+                </div>
+                <div class="field" style="display:flex; align-items:flex-end">
+                    <button type="submit">Show the day</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2 th:text="|${appointments.size()} appointment(s)|">0 appointments</h2>
+
+        <p class="empty" th:if="${appointments.isEmpty()}">
+            Nothing is booked for this day.
+        </p>
+
+        <table th:unless="${appointments.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Appointment</th>
+                <th>Patient</th>
+                <th>Contact</th>
+                <th>Dentist</th>
+                <th>Treatment</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="visit : ${appointments}">
+                <td th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
+                <td><a th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
+                       th:text="${visit.appointmentNo}">APT-</a></td>
+                <td th:text="${visit.patient.fullName}">Patient</td>
+                <td th:text="${visit.patient.contactNumber}">077</td>
+                <td th:text="${visit.dentistName}">Dentist</td>
+                <td th:text="${visit.treatmentName}">Treatment</td>
+                <td><span class="tag" th:classappend="${visit.status}"
+                          th:text="${visit.status}">BOOKED</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions no-print">
+        <button type="button" onclick="window.print()">Print this schedule</button>
+        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

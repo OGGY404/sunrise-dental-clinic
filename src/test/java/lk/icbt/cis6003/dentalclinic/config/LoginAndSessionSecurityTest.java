@@ -183,6 +183,25 @@ class LoginAndSessionSecurityTest {
         }
 
         @Test
+        @DisplayName("a receptionist cannot open the management reports")
+        @WithMockUser(username = "reception", roles = "RECEPTIONIST")
+        void receptionistCannotOpenReports() throws Exception {
+            // The reports show clinic-wide money and how each dentist is
+            // performing. A receptionist needs neither in order to book a
+            // patient in, so the screens are closed to them.
+            mockMvc.perform(get("/reports"))
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("an admin can open the management reports")
+        @WithMockUser(username = "admin", roles = "ADMIN")
+        void adminCanOpenReports() throws Exception {
+            mockMvc.perform(get("/reports"))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
         @DisplayName("an admin is allowed into the admin only area")
         @WithMockUser(username = "admin", roles = "ADMIN")
         void adminIsAllowedIntoAdminArea() throws Exception {

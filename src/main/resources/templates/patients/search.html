@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+  Finding a patient.
+
+  The screen opens with an empty result list and does not show every patient in
+  the clinic. That would be slow after a year of use, and it would put
+  everybody's name, address and telephone number on the screen for no reason.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Patients')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Patients</h1>
+    <p class="page-note">
+        Search by telephone number when you have it. A number is read off the
+        patient's own phone, while a name can be spelled several ways and shared
+        by two different people.
+    </p>
+
+    <div class="card">
+        <form th:action="@{/patients}" method="get">
+            <div class="two-columns">
+                <div class="field">
+                    <label for="contact">Telephone number</label>
+                    <input type="tel" id="contact" name="contact" th:value="${contact}"
+                           placeholder="0771234567" autofocus>
+                </div>
+                <div class="field">
+                    <label for="name">or part of the name</label>
+                    <input type="text" id="name" name="name" th:value="${name}"
+                           placeholder="Kamal">
+                </div>
+            </div>
+            <div class="actions">
+                <button type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" th:if="${results != null}">
+        <h2 th:text="|${results.size()} patient(s) found|">results</h2>
+
+        <p class="empty" th:if="${results.isEmpty()}">
+            Nobody matched that search. If this is a new patient, they are added
+            automatically the first time you
+            <a th:href="@{/appointments/new}">register an appointment</a> for them.
+        </p>
+
+        <table th:unless="${results.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Patient number</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Address</th>
+                <th>Age</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="patient : ${results}">
+                <td><a th:href="@{/patients/{code}(code=${patient.patientCode})}"
+                       th:text="${patient.patientCode}">PAT-</a></td>
+                <td th:text="${patient.fullName}">Name</td>
+                <td th:text="${patient.contactNumber}">077</td>
+                <td th:text="${patient.address}">Address</td>
+                <td th:text="${patient.age} ?: '-'">31</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
