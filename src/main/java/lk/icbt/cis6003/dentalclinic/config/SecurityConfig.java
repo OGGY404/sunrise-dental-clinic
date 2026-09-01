@@ -13,6 +13,8 @@ import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.RequestMatcherDelegatingAccessDeniedHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -103,7 +105,24 @@ public class SecurityConfig {
                 .sessionFixation(fixation -> fixation.changeSessionId()))
 
             .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                // Spring Security's default handler XOR-masks the token before
+                // putting it on the page, while the cookie keeps the plain one,
+                // so the two do not match and a caller reading the cookie is
+                // always refused. The plain handler makes the cookie usable,
+                // which is the whole reason for choosing a cookie repository.
+                //
+                // The masking exists to make the BREACH compression attack
+                // harder. That attack needs the token to be reflected in a
+                // compressed response body, and these pages do not do that, so
+                // the protection being given up here is not one this system
+                // was relying on.
+                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+
+            // Forces the token cookie to be written on every response. Without
+            // this the cookie vanishes at login and every later save is
+            // refused. See CsrfCookieFilter for the full explanation.
+            .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
 
             .exceptionHandling(handling -> handling
                 // A web service call that is not signed in gets 401 and JSON.
