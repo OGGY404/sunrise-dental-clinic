@@ -108,48 +108,109 @@ and Lombok would hide the getters and setters.
 
 ### Prerequisites
 
-Install these first:
+1. **JDK 17** - [Eclipse Temurin 17](https://adoptium.net/temurin/releases/?version=17)
+2. **MySQL 8** - [dev.mysql.com/downloads](https://dev.mysql.com/downloads/)
+3. **Git** - [git-scm.com/download/win](https://git-scm.com/download/win)
 
-1. **JDK 17** — [Eclipse Temurin 17](https://adoptium.net/temurin/releases/?version=17)
-2. **Apache Maven 3.9+** — [maven.apache.org/download](https://maven.apache.org/download.cgi)
-3. **MySQL 8** — [dev.mysql.com/downloads/installer](https://dev.mysql.com/downloads/installer/)
-4. **Git** — [git-scm.com/download/win](https://git-scm.com/download/win)
+Maven does **not** need to be installed. The project includes the Maven
+wrapper, so use `mvnw.cmd` everywhere instead of `mvn` and the right Maven
+version downloads itself the first time.
 
-Check they work by opening a new terminal and running:
+Check what you have:
 
 ```powershell
 java -version
-mvn -v
-mysql --version
 git --version
 ```
 
-### Set your database password
+### If you cannot install MySQL as a service
 
-Copy the template and put your own MySQL password in it:
+Installing MySQL normally needs administrator rights. If you do not have them,
+download the **Windows ZIP archive** of MySQL 8.4 instead of the installer,
+unzip it, and run it from that folder. That is how this machine is set up, in
+`D:\DevTools`, with a small config file and two helper scripts:
+
+- `D:\DevTools\start-mysql.cmd` - starts MySQL (run this before the app)
+- `D:\DevTools\stop-mysql.cmd` - stops it cleanly
+
+Because it is not a Windows service, **MySQL does not start by itself when the
+computer is switched on**. Start it first, every time.
+
+### Set your database password
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Then open `.env` and change `DB_PASSWORD=changeme` to your real MySQL password.
-The `.env` file is ignored by Git, so the password is never uploaded to GitHub.
+Open `.env` and set `DB_PASSWORD` to your MySQL password. The `.env` file is
+ignored by Git, so the password is never uploaded to GitHub. If your local root
+account has no password, leave it empty.
+
+The application creates the `sunrise_dental` database itself on first start,
+then builds the tables, the stored procedures and functions, and the triggers,
+and loads the reference data. Nothing has to be created by hand.
 
 ### Start the application
 
 ```powershell
-mvn spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
-Then open <http://localhost:8080> in your browser.
+Then open <http://localhost:8080>. You will be asked to sign in.
+
+**Starting logins** (change these before any real use - see `db/data.sql`):
+
+| Username    | Password    | Role         | Can do                        |
+|-------------|-------------|--------------|-------------------------------|
+| `admin`     | `Admin@123` | ADMIN        | everything, including reports |
+| `reception` | `Recep@123` | RECEPTIONIST | bookings and billing          |
+
+### The web services
+
+Everything below needs a signed-in session. Anything that changes data also
+needs the CSRF token, which the server sends in the `XSRF-TOKEN` cookie and
+expects back in the `X-XSRF-TOKEN` header.
+
+| Method | Address | What it does |
+|---|---|---|
+| POST | `/api/appointments` | FR2 register a visit |
+| GET | `/api/appointments/{no}` | FR3 display a visit |
+| GET | `/api/appointments?date=&dentistId=` | the day schedule report |
+| POST | `/api/appointments/{no}/cancel` | FR7 cancel |
+| POST | `/api/appointments/{no}/reschedule` | FR7 move to another slot |
+| POST | `/api/appointments/{no}/complete` | the visit took place |
+| POST | `/api/appointments/{no}/no-show` | the patient never arrived |
+| GET | `/api/patients/{code}` | one patient record |
+| GET | `/api/patients?name=` or `?contact=` | search |
+| GET | `/api/patients/{code}/history` | FR7 treatment history |
+| POST | `/api/bills` | FR4 produce the bill |
+| GET | `/api/bills/{billNo}` | FR4 print the receipt |
+| GET | `/api/bills/for-appointment/{no}` | the receipt for a visit |
+| GET | `/api/bills/unpaid` | what is still owed |
+| POST | `/api/bills/{billNo}/pay` | record the payment |
+| GET | `/api/dentists`, `/api/treatments` | the two dropdown lists |
+
+Every failure comes back in the same shape, so a screen only ever has to read
+`message`:
+
+| Status | Meaning |
+|---|---|
+| 400 | the form is wrong; `fieldErrors` names each box that failed |
+| 401 | not signed in |
+| 403 | signed in, but not allowed, or the CSRF token was missing |
+| 404 | that reference number does not exist |
+| 409 | that dentist is already booked at that time |
+| 422 | understood, but a clinic rule refuses it |
 
 ### Run the tests
 
 ```powershell
-mvn test
+.\mvnw.cmd test
 ```
 
-The coverage report is written to `target/site/jacoco/index.html`.
+205 tests. They all run on an in-memory H2 database, so **MySQL does not need
+to be running** to test. The coverage report is written to
+`target/site/jacoco/index.html`.
 
 ---
 
@@ -157,10 +218,10 @@ The coverage report is written to `target/site/jacoco/index.html`.
 
 - [x] **Step 1** — Repository, `.gitignore`, README, Spring Boot skeleton
 - [x] **Step 2** — Database schema, stored procedures, triggers
-- [ ] **Step 3** — Domain entities and repositories (tests first)
-- [ ] **Step 4** — Service layer with design patterns (tests first)
-- [ ] **Step 5** — REST controllers and validation (tests first)
-- [ ] **Step 6** — Login and sessions with Spring Security
+- [x] **Step 3** — Domain entities and repositories (tests first)
+- [x] **Step 4** — Service layer with design patterns (tests first)
+- [x] **Step 5** — REST controllers and validation (tests first)
+- [x] **Step 6** — Login and sessions with Spring Security
 - [ ] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
 - [ ] **Step 8** — Notifications and extra features
 - [ ] **Step 9** — GitHub Actions workflow and deployment
