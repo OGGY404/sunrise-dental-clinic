@@ -1,0 +1,385 @@
+/* ===========================================================================
+   Sunrise Dental Clinic - screen styles
+   CIS6003 Advanced Programming (WRIT1)
+
+   One stylesheet for the whole system, so every screen looks the same and a
+   change to the colours happens in one place.
+
+   The colours are chosen for a reception desk: a calm blue-green for the
+   clinic itself, and strong red and green kept only for messages, so that a
+   warning is never competing with decoration for attention.
+   =========================================================================== */
+
+:root {
+    --clinic:        #0f766e;   /* the clinic's main colour        */
+    --clinic-dark:   #115e59;
+    --clinic-light:  #ccfbf1;
+    --ink:           #1f2937;   /* ordinary text                   */
+    --ink-soft:      #6b7280;   /* labels and quiet text           */
+    --line:          #e5e7eb;   /* borders and table rules         */
+    --paper:         #ffffff;
+    --page:          #f6f7f9;
+    --good:          #047857;
+    --good-bg:       #ecfdf5;
+    --bad:           #b91c1c;
+    --bad-bg:        #fef2f2;
+    --warn:          #b45309;
+    --warn-bg:       #fffbeb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--page);
+    line-height: 1.5;
+}
+
+/* --- the bar across the top ---------------------------------------------- */
+
+.topbar {
+    background: var(--clinic);
+    color: #fff;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+}
+
+.topbar .brand {
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px 0;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.topbar .brand small {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: .85;
+    letter-spacing: .04em;
+}
+
+.topbar nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+
+.topbar nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.topbar nav a:hover { background: var(--clinic-dark); }
+
+.topbar .who {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.topbar .who .role {
+    background: var(--clinic-dark);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    letter-spacing: .04em;
+}
+
+/* --- page frame ---------------------------------------------------------- */
+
+main { max-width: 1080px; margin: 0 auto; padding: 24px; }
+
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 17px; margin: 26px 0 10px; }
+
+.page-note { color: var(--ink-soft); margin: 0 0 20px; font-size: 14px; }
+
+.card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+}
+
+.card > h2:first-child { margin-top: 0; }
+
+/* --- messages ------------------------------------------------------------ */
+
+.message, .error, .warning {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    border-left: 4px solid;
+    font-size: 14px;
+}
+
+.message { background: var(--good-bg); border-color: var(--good); color: var(--good); }
+.error   { background: var(--bad-bg);  border-color: var(--bad);  color: var(--bad); }
+.warning { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+
+/* --- forms --------------------------------------------------------------- */
+
+.field { margin-bottom: 16px; }
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+}
+
+.field .hint { font-weight: 400; color: var(--ink-soft); }
+
+input[type=text], input[type=password], input[type=date], input[type=time],
+input[type=number], input[type=tel], input[type=email], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--ink);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--clinic);
+    box-shadow: 0 0 0 3px var(--clinic-light);
+}
+
+textarea { resize: vertical; min-height: 70px; }
+
+/* A box the validator complained about, so the eye goes straight to it. */
+.field input.wrong, .field select.wrong { border-color: var(--bad); background: var(--bad-bg); }
+
+.field .field-error {
+    display: block;
+    color: var(--bad);
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.three-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 20px; }
+
+@media (max-width: 700px) {
+    .two-columns, .three-columns { grid-template-columns: 1fr; }
+}
+
+/* --- buttons ------------------------------------------------------------- */
+
+.button, button {
+    background: var(--clinic);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button:hover, button:hover { background: var(--clinic-dark); }
+
+.button.secondary, button.secondary {
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid #cbd5e1;
+}
+
+.button.secondary:hover, button.secondary:hover { background: #f1f5f9; }
+
+.button.danger, button.danger { background: var(--bad); }
+.button.danger:hover, button.danger:hover { background: #991b1b; }
+
+.button.small, button.small { padding: 6px 12px; font-size: 13px; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+
+/* --- tables -------------------------------------------------------------- */
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+th {
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 2px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+td { padding: 10px; border-bottom: 1px solid var(--line); }
+
+tr:last-child td { border-bottom: none; }
+
+td.number, th.number { text-align: right; font-variant-numeric: tabular-nums; }
+
+tfoot td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: none; }
+
+.empty { color: var(--ink-soft); padding: 22px 0; text-align: center; font-style: italic; }
+
+/* --- status labels ------------------------------------------------------- */
+
+.tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+
+.tag.BOOKED    { background: #dbeafe; color: #1d4ed8; }
+.tag.COMPLETED { background: var(--good-bg); color: var(--good); }
+.tag.CANCELLED { background: #f3f4f6; color: var(--ink-soft); }
+.tag.NO_SHOW   { background: var(--warn-bg); color: var(--warn); }
+.tag.PAID      { background: var(--good-bg); color: var(--good); }
+.tag.UNPAID    { background: var(--bad-bg); color: var(--bad); }
+
+/* --- the menu screen ----------------------------------------------------- */
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+.tile {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+}
+
+.tile:hover { border-color: var(--clinic); box-shadow: 0 2px 10px rgba(15, 118, 110, .12); }
+
+.tile .tile-title { font-weight: 700; margin-bottom: 4px; }
+.tile .tile-note { font-size: 13px; color: var(--ink-soft); }
+
+.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px; }
+
+.count {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--clinic);
+    border-radius: 10px;
+    padding: 16px 20px;
+}
+
+.count .count-number { font-size: 27px; font-weight: 700; line-height: 1.1; }
+.count .count-label { font-size: 13px; color: var(--ink-soft); margin-top: 3px; }
+
+/* --- the sign in screen -------------------------------------------------- */
+
+.signin-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(140deg, var(--clinic) 0%, var(--clinic-dark) 100%);
+    padding: 20px;
+}
+
+.signin-box {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 34px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .22);
+}
+
+.signin-box .clinic-name { font-size: 21px; font-weight: 700; color: var(--clinic); }
+.signin-box .clinic-place { color: var(--ink-soft); font-size: 13px; margin-bottom: 24px; }
+.signin-box button { width: 100%; margin-top: 6px; padding: 11px; }
+
+.signin-help {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-soft);
+}
+
+/* --- the receipt --------------------------------------------------------- */
+
+.receipt { max-width: 640px; margin: 0 auto; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 30px 34px; }
+.receipt .receipt-head { text-align: center; border-bottom: 2px solid var(--clinic); padding-bottom: 14px; margin-bottom: 20px; }
+.receipt .receipt-head .clinic-name { font-size: 20px; font-weight: 700; color: var(--clinic); }
+.receipt .receipt-head .clinic-place { font-size: 13px; color: var(--ink-soft); }
+.receipt .receipt-head .receipt-word { margin-top: 8px; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; color: var(--ink-soft); }
+.receipt .amount-line { display: flex; justify-content: space-between; padding: 7px 0; }
+.receipt .amount-line.total { border-top: 2px solid var(--line); margin-top: 8px; padding-top: 12px; font-size: 18px; font-weight: 700; }
+.receipt .receipt-foot { margin-top: 26px; padding-top: 14px; border-top: 1px dashed var(--line); text-align: center; font-size: 12px; color: var(--ink-soft); }
+
+/* --- description lists used on the details screens ----------------------- */
+
+.details { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px 24px; }
+.details .detail-label { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+.details .detail-value { font-size: 15px; margin-top: 2px; }
+
+/* --- the help screen ----------------------------------------------------- */
+
+.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+
+.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 18px 44px;
+    border-left: 2px solid var(--line);
+    margin-left: 13px;
+}
+
+.steps li:last-child { border-left-color: transparent; padding-bottom: 0; }
+
+.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -14px;
+    top: -2px;
+    width: 26px;
+    height: 26px;
+    background: var(--clinic);
+    color: #fff;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.steps li .step-title { font-weight: 700; margin-bottom: 3px; }
+.steps li p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
+/* --- footer -------------------------------------------------------------- */
+
+.page-footer { text-align: center; padding: 26px; color: var(--ink-soft); font-size: 12px; }
+
+/* --- printing ------------------------------------------------------------
+   The bill is handed to the patient, so when it is printed the navigation,
+   the buttons and the page background must not be on the paper.
+   ------------------------------------------------------------------------- */
+
+@media print {
+    .topbar, .actions, .page-footer, .no-print { display: none !important; }
+    body { background: #fff; font-size: 12pt; }
+    main { max-width: none; padding: 0; }
+    .receipt, .card { border: none; box-shadow: none; padding: 0; }
+    a { text-decoration: none; color: inherit; }
+}

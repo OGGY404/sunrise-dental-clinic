@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+  The main menu (the "menu driven" system the brief asks for).
+
+  It shows the two numbers the front desk needs first thing in the morning -
+  how many patients are coming today, and how much money is still owed - and
+  then every job they can do, one click away.
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head th:replace="~{fragments :: head('Home')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Good day, <span sec:authentication="name">staff</span></h1>
+    <p class="page-note" th:text="|Today is ${#temporals.format(today, 'EEEE, d MMMM yyyy')}|">Today</p>
+
+    <div class="counts">
+        <div class="count">
+            <div class="count-number" th:text="${todayAppointments.size()}">0</div>
+            <div class="count-label">appointments booked for today</div>
+        </div>
+        <div class="count">
+            <div class="count-number" th:text="${unpaidBills.size()}">0</div>
+            <div class="count-label">bills not yet paid</div>
+        </div>
+        <div class="count">
+            <div class="count-number"
+                 th:text="|Rs. ${#numbers.formatDecimal(unpaidTotal, 1, 'COMMA', 2, 'POINT')}|">Rs. 0</div>
+            <div class="count-label">still owed to the clinic</div>
+        </div>
+    </div>
+
+    <h2>What would you like to do?</h2>
+    <div class="tiles">
+        <a class="tile" th:href="@{/appointments/new}">
+            <div class="tile-title">Register an appointment</div>
+            <div class="tile-note">Book a visit for a new or returning patient.</div>
+        </a>
+        <a class="tile" th:href="@{/appointments/search}">
+            <div class="tile-title">Find an appointment</div>
+            <div class="tile-note">Look a visit up by its appointment number.</div>
+        </a>
+        <a class="tile" th:href="@{/appointments/schedule}">
+            <div class="tile-title">Day schedule</div>
+            <div class="tile-note">The diary for one day, ready to print.</div>
+        </a>
+        <a class="tile" th:href="@{/patients}">
+            <div class="tile-title">Patients</div>
+            <div class="tile-note">Search a patient and read their treatment history.</div>
+        </a>
+        <a class="tile" th:href="@{/bills/unpaid}">
+            <div class="tile-title">Unpaid bills</div>
+            <div class="tile-note">What is still owed, oldest first.</div>
+        </a>
+        <a class="tile" th:href="@{/reports}" sec:authorize="hasRole('ADMIN')">
+            <div class="tile-title">Management reports</div>
+            <div class="tile-note">Takings by treatment, and how busy each dentist was.</div>
+        </a>
+        <a class="tile" th:href="@{/help}">
+            <div class="tile-title">Help</div>
+            <div class="tile-note">Step-by-step instructions for new staff.</div>
+        </a>
+    </div>
+
+    <h2 th:text="|Today's diary (${todayAppointments.size()})|">Today's diary</h2>
+    <div class="card">
+        <p class="empty" th:if="${todayAppointments.isEmpty()}">
+            There are no appointments booked for today.
+        </p>
+
+        <table th:unless="${todayAppointments.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Appointment</th>
+                <th>Patient</th>
+                <th>Dentist</th>
+                <th>Treatment</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="visit : ${todayAppointments}">
+                <td th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
+                <td><a th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
+                       th:text="${visit.appointmentNo}">APT-</a></td>
+                <td th:text="${visit.patient.fullName}">Patient</td>
+                <td th:text="${visit.dentistName}">Dentist</td>
+                <td th:text="${visit.treatmentName}">Treatment</td>
+                <td><span class="tag" th:classappend="${visit.status}"
+                          th:text="${visit.status}">BOOKED</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

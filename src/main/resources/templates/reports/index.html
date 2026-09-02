@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+  The reports menu. Administrators only.
+
+  Both reports are produced by stored procedures, so the grouping and the
+  totalling happen inside MySQL where the data already is, and only the
+  finished summary is sent back to be displayed.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Reports')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Management reports</h1>
+    <p class="page-note">
+        These reports show clinic-wide takings and staff performance, so they are
+        open to administrators only.
+    </p>
+
+    <div class="tiles">
+        <a class="tile" th:href="@{/reports/revenue(from=${from}, to=${to})}">
+            <div class="tile-title">Revenue by treatment</div>
+            <div class="tile-note">
+                What the clinic earned from each kind of treatment. Counts paid
+                bills only, because money owed is not money earned.
+            </div>
+        </a>
+        <a class="tile" th:href="@{/reports/workload(from=${from}, to=${to})}">
+            <div class="tile-title">Dentist workload</div>
+            <div class="tile-note">
+                How many visits each dentist had, how many were completed, and
+                what that work brought in.
+            </div>
+        </a>
+        <a class="tile" th:href="@{/appointments/schedule}">
+            <div class="tile-title">Daily schedule</div>
+            <div class="tile-note">
+                The diary for one day, for printing. Open to all staff.
+            </div>
+        </a>
+        <a class="tile" th:href="@{/bills/unpaid}">
+            <div class="tile-title">Unpaid bills</div>
+            <div class="tile-note">
+                What is still owed to the clinic, oldest first.
+            </div>
+        </a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

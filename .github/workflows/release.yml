@@ -1,0 +1,70 @@
+# =============================================================================
+#  Release the Sunrise Dental Clinic system
+#  CIS6003 Advanced Programming (WRIT1)
+#
+#  This is the deployment half of the pipeline. Pushing a version tag builds
+#  the application one more time from a clean checkout and publishes the
+#  runnable jar as a GitHub Release, so that every released version can be
+#  downloaded again exactly as it was.
+#
+#  To release:
+#      git tag -a v0.9.0 -m "Step 9: CI/CD pipeline"
+#      git push origin v0.9.0
+#
+#  Deployment beyond this point is a single command, because Spring Boot builds
+#  a self-contained jar with the web server inside it:
+#      java -jar dental-clinic-0.0.1-SNAPSHOT.jar
+#  The README records the environment variables a real server would set.
+# =============================================================================
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  # Needed to create the release and attach the jar to it. Nothing else is
+  # granted, because a workflow should be able to do its job and no more.
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish the release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # The tests are run again here on purpose. A tag can be pushed from any
+      # machine, and a released version must never be one that nobody proved.
+      - name: Run the tests
+        run: ./mvnw --batch-mode --no-transfer-progress test
+
+      - name: Build the jar
+        run: ./mvnw --batch-mode --no-transfer-progress package -DskipTests
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" target/*.jar \
+            --title "Sunrise Dental Clinic ${GITHUB_REF_NAME}" \
+            --notes "Automatically built and published from ${GITHUB_SHA} by GitHub Actions.
+
+          To run this version:
+
+              java -jar dental-clinic-*.jar
+
+          MySQL 8 must be running. The database, its tables, stored procedures,
+          functions and triggers are all created on first start. See README.md
+          for the environment variables that set the database connection."

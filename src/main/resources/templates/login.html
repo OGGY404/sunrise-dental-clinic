@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+  FR1 - the sign in screen.
+
+  This is the only page in the system that can be opened without signing in.
+
+  The form posts to /login, which Spring Security is listening on. There is no
+  controller of ours behind that address: the framework checks the password
+  against the BCrypt hash and creates the session. Writing that ourselves would
+  only be a second place where passwords are handled.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Sunrise Dental Clinic</title>
+    <link rel="stylesheet" th:href="@{/css/clinic.css}">
+</head>
+
+<body class="signin-page">
+
+<div class="signin-box">
+
+    <div class="clinic-name">Sunrise Dental Clinic</div>
+    <div class="clinic-place">Colombo &middot; Staff sign in</div>
+
+    <!--
+      Spring Security adds ?error when the sign in failed.
+
+      The message deliberately does not say whether the username exists. If a
+      wrong name and a wrong password looked different, somebody guessing could
+      first find out which usernames are real and then attack only those.
+    -->
+    <div class="error" th:if="${param.error}">
+        That username and password do not match. Please try again.
+    </div>
+
+    <div class="message" th:if="${param.logout}">
+        You have been signed out. Thank you.
+    </div>
+
+    <div class="warning" th:if="${param.expired}">
+        You were signed out because the screen was left for too long.
+        Please sign in again.
+    </div>
+
+    <form th:action="@{/login}" method="post">
+
+        <div class="field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username"
+                   autocomplete="username" autofocus required>
+        </div>
+
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"
+                   autocomplete="current-password" required>
+        </div>
+
+        <button type="submit">Sign in</button>
+    </form>
+
+    <div class="signin-help">
+        Only clinic staff may use this system. If you cannot sign in, ask the
+        administrator to check your account.
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--
+  FR3, first half - the screen where the receptionist types the appointment
+  number. This is a DATA ENTRY screen; the visit itself is shown by
+  appointments/view.
+
+  When the number is found the browser is redirected to that visit, so the
+  address bar then holds the appointment and the page can be refreshed or
+  bookmarked. When it is not found the receptionist stays here, where the box
+  is, instead of being sent to an error page.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Find an appointment')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Find an appointment</h1>
+    <p class="page-note">
+        Type the appointment number from the patient's card or receipt. It looks
+        like APT-20260908-0001.
+    </p>
+
+    <div class="card">
+        <form th:action="@{/appointments/search}" method="get">
+            <div class="field">
+                <label for="appointmentNo">Appointment number</label>
+                <input type="text" id="appointmentNo" name="appointmentNo"
+                       th:value="${appointmentNo}"
+                       placeholder="APT-20260908-0001" autofocus required>
+            </div>
+
+            <div class="actions">
+                <button type="submit">Find the appointment</button>
+                <a class="button secondary" th:href="@{/appointments/schedule}">
+                    I do not know the number, show me the day
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Cannot find it?</h2>
+        <p class="page-note" style="margin:0">
+            If the patient does not have their number, open
+            <a th:href="@{/appointments/schedule}">Day schedule</a> and pick the
+            day they came, or search for them under
+            <a th:href="@{/patients}">Patients</a> and read their treatment history.
+        </p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

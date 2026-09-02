@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  Dentist workload, from the stored procedure sp_report_dentist_workload.
+
+  Cancellations and no-shows are shown in their own columns rather than added
+  together with completed visits. A dentist with many no-shows is not an idle
+  dentist; it is a reminder problem, and the clinic can only see the difference
+  if the two are kept apart.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Dentist workload')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Dentist workload</h1>
+    <p class="page-note">
+        Between
+        <strong th:text="${#temporals.format(from, 'd MMM yyyy')}">from</strong> and
+        <strong th:text="${#temporals.format(to, 'd MMM yyyy')}">to</strong>.
+    </p>
+
+    <div class="card no-print">
+        <form th:action="@{/reports/workload}" method="get">
+            <div class="three-columns">
+                <div class="field">
+                    <label for="from">From</label>
+                    <input type="date" id="from" name="from" th:value="${from}">
+                </div>
+                <div class="field">
+                    <label for="to">To</label>
+                    <input type="date" id="to" name="to" th:value="${to}">
+                </div>
+                <div class="field" style="display:flex; align-items:flex-end">
+                    <button type="submit">Show the report</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <p class="empty" th:if="${rows.isEmpty()}">
+            There are no active dentists to report on.
+        </p>
+
+        <table th:unless="${rows.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Code</th>
+                <th>Dentist</th>
+                <th>Specialisation</th>
+                <th class="number">Booked</th>
+                <th class="number">Completed</th>
+                <th class="number">Cancelled</th>
+                <th class="number">No shows</th>
+                <th class="number">Attended</th>
+                <th class="number">Chair time</th>
+                <th class="number">Earned</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${rows}">
+                <td th:text="${row.dentistCode}">DEN-</td>
+                <td th:text="${row.dentistName}">Dentist</td>
+                <td th:text="${row.specialisation}">Speciality</td>
+                <td class="number" th:text="${row.totalAppointments}">0</td>
+                <td class="number" th:text="${row.completed}">0</td>
+                <td class="number" th:text="${row.cancelled}">0</td>
+                <td class="number" th:text="${row.noShows}">0</td>
+                <td class="number"
+                    th:text="${row.attendanceRate() != null} ? ${row.attendanceRate() + '%'} : '-'">-</td>
+                <td class="number" th:text="|${row.totalMinutesBooked} min|">0 min</td>
+                <td class="number"
+                    th:text="${#numbers.formatDecimal(row.revenueGenerated, 1, 'COMMA', 2, 'POINT')}">0</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions no-print">
+        <button type="button" onclick="window.print()">Print this report</button>
+        <a class="button secondary" th:href="@{/reports}">Back to reports</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
