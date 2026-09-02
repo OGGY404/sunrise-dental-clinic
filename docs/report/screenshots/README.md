@@ -2,14 +2,20 @@
 
 CIS6003 Advanced Programming (WRIT1) · Sunrise Dental Clinic
 
-**23 screenshots, captured automatically** from the running application on
-2 September 2026, at 2880 × high resolution (Retina scale), so they stay sharp
-when scaled down into a Word document.
+**26 screenshots, all captured automatically** on 2 September 2026. Nothing is
+left to do by hand.
 
-They were taken by [`../capture-screenshots.mjs`](../capture-screenshots.mjs)
-driving the copy of Chrome already installed on this machine. Nothing was
-staged: the clinic data behind them was created through the real web service by
-[`../seed-demo-data.sh`](../seed-demo-data.sh).
+- **1–23** are browser screens, taken by
+  [`../capture-screenshots.mjs`](../capture-screenshots.mjs) driving the copy of
+  Chrome already installed on this machine, at 2880px so they stay sharp when
+  scaled into Word.
+- **24–26** are real console windows, captured by
+  [`../capture-terminals.ps1`](../capture-terminals.ps1). Each command is run in
+  a maximised console and the screen is captured — these are genuine screen
+  captures of genuine output, not renderings.
+
+Nothing is staged: the clinic data behind the screens was created through the
+real web service by [`../seed-demo-data.sh`](../seed-demo-data.sh).
 
 ---
 
@@ -40,6 +46,9 @@ staged: the clinic data behind them was created through the real web service by
 | `21-github-actions.png` | CI workflows, all green | Task D |
 | `22-github-release.png` | release v0.9.0 with the runnable jar | Task D, deployment |
 | `23-github-commit-history.png` | the commit history | Task D |
+| `24-tests-passing.png` | **`Tests run: 248, Failures: 0, Errors: 0`** and `BUILD SUCCESS` | Task C |
+| `25-tdd-red-commit.png` | the red commit: **7 files, all tests, nothing in `src/main`** | Task C, TDD |
+| `26-database-triggers-audit.png` | all 10 triggers, the audit rows they wrote, and the generated column | Task B, advanced DB |
 
 ### Two worth pointing at in the writing
 
@@ -69,13 +78,13 @@ Following the figure list in [`../report-skeleton.md`](../report-skeleton.md):
 | 6 | `../../uml/png/07-sequence-generate-bill.png` |
 | 7 | `../../uml/png/08-sequence-cancel-appointment.png` *(appendix)* |
 | 8 | `../../uml/png/04-class-design-patterns.png` |
-| 9 | **take by hand** — the database (see below) |
+| 9 | `26-database-triggers-audit.png` |
 | 10 | `04-booking-form-rejected.png` |
 | 11 | `02-dashboard-menu.png` |
 | 12 | `05-appointment-details-booked.png` |
 | 13 | `12-bill-print-preview.png` |
-| 14 | **take by hand** — the red commit (see below) |
-| 15 | **take by hand** — tests passing (see below) |
+| 14 | `25-tdd-red-commit.png` |
+| 15 | `24-tests-passing.png` |
 | 16 | `20-jacoco-coverage.png` |
 | 17 | `21-github-actions.png` |
 | 18 | `23-github-commit-history.png` |
@@ -87,43 +96,22 @@ appendix.
 
 ---
 
-## The three left to take by hand
+## Nothing is left to take by hand
 
-These are terminal windows, so they cannot be captured by a browser. Each takes
-about ten seconds: run the command, then press **Win + Shift + S**, drag over
-the window, and paste into Word.
+The three terminal figures used to need a manual **Win + Shift + S**. They are
+now captured by [`../capture-terminals.ps1`](../capture-terminals.ps1), which
+runs each command in a maximised console and captures the screen.
 
-**Figure 15 — the tests passing**
+Two things were worth solving along the way, and are worth knowing if you ever
+script this again:
 
-```powershell
-cd "D:\ICBT\Advance programming\02_SunriseDentalClinic_Resit\SunriseDentalClinic"
-.\mvnw.cmd test
-```
-
-Capture the end: `Tests run: 248, Failures: 0, Errors: 0` and `BUILD SUCCESS`.
-
-**Figure 14 — the TDD red commit**
-
-```powershell
-git show 2d3904e --stat
-```
-
-Capture the file list. Every file is a test file and there is nothing in
-`src/main` — that is the whole point.
-
-**Figure 9 — the database doing the work**
-
-```powershell
-D:\DevTools\mysql-8.4.9-winx64\bin\mysql.exe -u root --protocol=TCP -h 127.0.0.1 -P 3306 -D sunrise_dental -e "SHOW TRIGGERS\G" | more
-```
-
-Or, better for the report, the audit trail the triggers wrote by themselves:
-
-```powershell
-D:\DevTools\mysql-8.4.9-winx64\bin\mysql.exe -u root --protocol=TCP -h 127.0.0.1 -P 3306 -D sunrise_dental -e "SELECT appointment_no, action, old_status, new_status, changed_at FROM appointment_audit ORDER BY audit_id;"
-```
-
----
+1. **The window handle is useless on Windows 11.** The console is hosted by
+   Windows Terminal, so the `powershell.exe` that was started owns no window
+   and `MainWindowHandle` is `0`. Opening the console maximised and capturing
+   the whole screen sidesteps it entirely.
+2. **`git show` opens a pager and waits forever.** It needs `--no-pager`, and a
+   short `--format` as well, or the long commit message pushes the file list —
+   the whole point of the picture — off the bottom of the screen.
 
 ## Taking them all again
 

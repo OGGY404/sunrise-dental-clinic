@@ -460,10 +460,11 @@ Harvard format, alphabetical by author, with access dates for anything online.
 
 ---
 
-# Figure list — 20 of the 23 are already captured
+# Figure list — every figure is already captured
 
-**Done.** `docs/report/screenshots/` holds 23 screenshots, taken automatically
-from the running application. `docs/uml/png/` holds the 8 diagrams. See
+**All done.** `docs/report/screenshots/` holds 26 screenshots, taken
+automatically from the running application and from real console windows.
+`docs/uml/png/` holds the 8 diagrams. Nothing is left to capture by hand. See
 [`screenshots/README.md`](screenshots/README.md) for what each one shows.
 
 | Fig | What | File | Status |
@@ -476,13 +477,13 @@ from the running application. `docs/uml/png/` holds the 8 diagrams. See
 | 6 | Sequence — bill | `docs/uml/png/07-sequence-generate-bill.png` | ready |
 | 7 | Sequence — cancel *(appendix)* | `docs/uml/png/08-sequence-cancel-appointment.png` | ready |
 | 8 | Class diagram — design patterns | `docs/uml/png/04-class-design-patterns.png` | ready |
-| 9 | The database: triggers / audit trail | — | **take by hand, 10 sec** |
+| 9 | The database: 10 triggers, audit trail, generated column | `screenshots/26-database-triggers-audit.png` | ready |
 | 10 | Booking form with 5 fields rejected | `screenshots/04-booking-form-rejected.png` | ready |
 | 11 | Main menu and today's diary | `screenshots/02-dashboard-menu.png` | ready |
 | 12 | Appointment details, BOOKED | `screenshots/05-appointment-details-booked.png` | ready |
 | 13 | The printed bill | `screenshots/12-bill-print-preview.png` | ready |
-| 14 | The TDD red commit | — | **take by hand, 10 sec** |
-| 15 | 248 tests passing | — | **take by hand, 30 sec** |
+| 14 | The TDD red commit: 7 files, all tests | `screenshots/25-tdd-red-commit.png` | ready |
+| 15 | 248 tests passing, BUILD SUCCESS | `screenshots/24-tests-passing.png` | ready |
 | 16 | JaCoCo coverage | `screenshots/20-jacoco-coverage.png` | ready |
 | 17 | GitHub Actions, all green | `screenshots/21-github-actions.png` | ready |
 | 18 | Commit history | `screenshots/23-github-commit-history.png` | ready |
@@ -495,9 +496,8 @@ treatment history, the receipt on screen, the unpaid list, the help section,
 the error page, a receptionist refused the reports, the reports menu, and both
 management reports.
 
-The three "by hand" ones are terminal windows, so a browser cannot capture
-them. The exact commands are in
-[`screenshots/README.md`](screenshots/README.md) — run, then **Win + Shift + S**.
+Every figure in the list is a file on disk. Drop them straight into Word, add
+the caption, and refer to each one in the text.
 
 # Before you submit — final checklist
 
