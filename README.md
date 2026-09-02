@@ -358,7 +358,7 @@ Actions.
 - [x] **Step 9** — GitHub Actions workflow and deployment
 - [x] **Step 10** — UML diagrams
 - [x] **Step 11** — Test plan, traceability matrix, screenshots
-- [ ] **Step 12** — Final report
+- [~] **Step 12** — Final report (skeleton in `docs/report/`, the writing is the student's own)
 
 ---
 
