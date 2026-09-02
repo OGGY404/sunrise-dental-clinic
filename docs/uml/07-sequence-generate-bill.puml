@@ -1,0 +1,186 @@
+@startuml 07-sequence-generate-bill
+'============================================================================
+'  Sunrise Dental Clinic - SEQUENCE DIAGRAM 3: producing the bill
+'  CIS6003 Advanced Programming (WRIT1), Task A.  Covers FR4.
+'
+'  The thing to notice is what the screen sends: an appointment number, and a
+'  discount if one was agreed. No amounts. Every figure on the receipt is
+'  worked out by the business tier from the stored price list, and the total is
+'  then worked out a second time by MySQL itself in a generated column.
+'
+'  If the screen could send the price, anybody able to open the page could
+'  decide what a root canal costs.
+'============================================================================
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam participant {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+}
+skinparam actor {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam database {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sequence 3 - Calculate and print the bill (FR4)
+
+actor "Receptionist" as User
+box "Presentation tier" #F8FAFC
+    participant "bills/generate.html" as Page
+    participant "Billing\nWebController" as Ctrl
+end box
+box "Business logic tier" #F5F3FF
+    participant "Billing\nService" as Service
+    participant "BillingStrategy\nFactory" as Factory
+    participant "BillingStrategy\n(Surgical)" as Strategy
+    participant "Clinic\nConfiguration" as Config
+    participant "Reference\nNumberGenerator" as RefNo
+end box
+box "Data access tier" #F0F9FF
+    participant "Appointment\nRepository" as ARepo
+    participant "Bill\nRepository" as BRepo
+end box
+database "MySQL 8" as DB
+
+User -> Page : opens the completed visit\nand presses "Produce the bill"
+activate Page
+Page -> Ctrl : POST /bills/new\n(appointmentNo, discount)
+activate Ctrl
+
+Ctrl -> Service : generateBill(appointmentNo, discount, staff)
+activate Service
+
+Service -> ARepo : findByAppointmentNo(appointmentNo)
+activate ARepo
+ARepo -> DB : SELECT ... JOIN patient, dentist, treatment
+activate DB
+DB --> ARepo : the visit
+deactivate DB
+ARepo --> Service : Appointment
+deactivate ARepo
+
+== The two rules that can refuse a bill ==
+
+Service -> Service : checkTheVisitCanBeBilled()
+
+alt#Gold #FFF1F2 the visit has not taken place yet
+    Service --> Ctrl : throw BusinessRuleException
+    Ctrl --> Page : back to the form, with the message
+    User <- Page : "Appointment ... has not taken place yet.\nMark it as completed before producing a bill."
+    note right of Service
+      Billing a visit that has not happened
+      would let the clinic take money for
+      work it has not done.
+    end note
+
+else #F0FDF4 the visit is COMPLETED
+    Service -> BRepo : findByAppointmentAppointmentId(id)
+    activate BRepo
+    BRepo --> Service : an existing bill, or nothing
+    deactivate BRepo
+
+    alt#Gold #FFF1F2 this visit has already been billed
+        Service --> Ctrl : throw BusinessRuleException
+        Ctrl --> Page : "... has already been billed.\nOpen the existing bill instead."
+
+    else #F0FDF4 not billed yet
+        == Choosing the pricing rule, and applying it ==
+
+        Service -> Factory : strategyFor(treatment)
+        activate Factory
+        Factory -> Factory : is this treatment surgical,\nconsultation only, or standard?
+        Factory --> Service : the BillingStrategy to use
+        deactivate Factory
+        note right of Factory
+          <<Factory>> - one place decides which
+          rule a treatment gets. BillingService
+          never names a rule.
+        end note
+
+        Service -> Config : getConsultationFee()
+        activate Config
+        Config --> Service : Rs. 1,500.00
+        deactivate Config
+
+        Service -> ARepo : how many visits has this\npatient completed?
+        activate ARepo
+        ARepo -> DB : SELECT ... WHERE patient_id = ?
+        ARepo --> Service : the count, for the loyalty discount
+        deactivate ARepo
+
+        Service -> Strategy : calculate(billingContext)
+        activate Strategy
+        note right of Strategy
+          <<Strategy>> + <<Template Method>>.
+          calculate() is final in the abstract
+          parent, so every rule works out its
+          amounts in the same order and rounds
+          money in one place. The surgical rule
+          fills in one step differently: it adds
+          a 15% sterilisation supplement first.
+        end note
+        Strategy -> Strategy : treatmentCostFor()   25,000 + 15% = 28,750
+        Strategy -> Strategy : consultationFeeFor()  1,500
+        Strategy -> Strategy : loyaltyDiscountFor()  0, this is visit 1
+        Strategy --> Service : BillCharge\n(28,750 / 1,500 / 0)
+        deactivate Strategy
+
+        Service -> Service : add the agreed discount (500)\nrefuse it if negative, or bigger\nthan the bill itself
+
+        Service -> RefNo : nextBillNo()
+        activate RefNo
+        RefNo -> DB : CALL sp_next_bill_no()
+        activate DB
+        DB -> DB : lock the counter row, add one
+        DB --> RefNo : "BIL-20260902-0001"
+        deactivate DB
+        RefNo --> Service : the bill number
+        deactivate RefNo
+
+        Service -> BRepo : save(bill)
+        activate BRepo
+        BRepo -> DB : INSERT INTO bills\n(treatment_cost, consultation_fee, discount, ...)
+        activate DB
+        DB -> DB : UNIQUE key on appointment_id\nenforces one visit, one bill
+        DB -> DB : generated column works out\ntotal_amount = 28,750 + 1,500 - 500
+        DB --> BRepo : saved, total 29,750
+        deactivate DB
+        BRepo --> Service : Bill
+        deactivate BRepo
+        note right of DB
+          Java never writes total_amount. MySQL
+          calculates it from the three stored
+          amounts, so the total can never drift
+          out of step with its parts, no matter
+          which program wrote the row.
+        end note
+
+        Service --> Ctrl : the saved Bill
+        deactivate Service
+
+        Ctrl --> Page : 302 redirect to\n/bills/BIL-20260902-0001
+        Page -> User : the printable receipt
+
+        User -> Page : presses "Print this bill"
+        Page -> Page : window.print()
+        note right of Page
+          The print stylesheet removes the menu,
+          the buttons and the page background,
+          so only the receipt reaches the paper.
+        end note
+    end
+end
+
+deactivate Ctrl
+deactivate Page
+
+@enduml

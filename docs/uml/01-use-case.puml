@@ -1,0 +1,164 @@
+@startuml 01-use-case
+'============================================================================
+'  Sunrise Dental Clinic - USE CASE DIAGRAM
+'  CIS6003 Advanced Programming (WRIT1), Task A
+'
+'  Shows who uses the system and what they can do with it.
+'
+'  A NOTE ON <<include>> AND <<extend>>, WHICH ARE OFTEN USED THE WRONG WAY
+'
+'    <<include>>  the base use case ALWAYS performs the included one. It is
+'                 shared behaviour that has been factored out. The arrow points
+'                 FROM the base use case TO the one it includes.
+'
+'    <<extend>>   the extending use case happens only SOMETIMES, at a point in
+'                 the base use case, when some condition holds. The arrow
+'                 points FROM the extending use case TO the base one, which is
+'                 the opposite direction, because the base does not know it
+'                 exists.
+'
+'  So "Register appointment" always finds or creates the patient record, and
+'  that is an include. It only suggests another time when the slot has just
+'  gone, and that is an extend.
+'============================================================================
+
+'Layout is done by the Graphviz engine bundled with PlantUML.
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+}
+skinparam actor {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sunrise Dental Clinic - Appointment and Patient Management System
+
+'--- the people and systems outside ----------------------------------------
+
+actor "Receptionist" as Reception
+actor "Administrator" as Admin
+actor "Email service" as Mail <<external>>
+
+' An administrator can do everything a receptionist can, and more. That is a
+' generalisation, so every association drawn to Receptionist applies to the
+' Administrator too and does not have to be drawn twice.
+Admin --|> Reception
+
+rectangle "Sunrise Dental Clinic System" {
+
+    '--- signing in and out ------------------------------------------------
+    usecase "Sign in\n(FR1)" as UC_SignIn
+    usecase "Sign out\n(FR6)" as UC_SignOut
+    usecase "Open help\n(FR5)" as UC_Help
+
+    '--- appointments -------------------------------------------------------
+    usecase "Register\nappointment\n(FR2)" as UC_Register
+    usecase "Find and display\nappointment\n(FR3)" as UC_Display
+    usecase "Cancel\nappointment\n(FR7)" as UC_Cancel
+    usecase "Reschedule\nappointment\n(FR7)" as UC_Reschedule
+    usecase "Mark visit\ncompleted" as UC_Complete
+    usecase "Record\nno-show" as UC_NoShow
+
+    '--- billing ------------------------------------------------------------
+    usecase "Produce bill\n(FR4)" as UC_Bill
+    usecase "Print bill\n(FR4)" as UC_PrintBill
+    usecase "Record\npayment" as UC_Pay
+    usecase "View unpaid\nbills" as UC_Unpaid
+
+    '--- patients -----------------------------------------------------------
+    usecase "Search\npatient" as UC_SearchPatient
+    usecase "View treatment\nhistory\n(FR7)" as UC_History
+
+    '--- reports ------------------------------------------------------------
+    usecase "View day\nschedule" as UC_DaySchedule
+    usecase "View revenue\nreport" as UC_Revenue
+    usecase "View dentist\nworkload report" as UC_Workload
+
+    '--- behaviour that is always part of something else (<<include>>) ------
+    usecase "Find or create\npatient record" as UC_FindPatient
+    usecase "Check dentist\navailability" as UC_CheckSlot
+    usecase "Allocate reference\nnumber" as UC_RefNo
+    usecase "Calculate\ncharge" as UC_Calculate
+
+    '--- behaviour that happens only sometimes (<<extend>>) -----------------
+    usecase "Suggest another\ntime" as UC_Suggest
+    usecase "Apply agreed\ndiscount" as UC_Discount
+    usecase "Apply loyalty\ndiscount" as UC_Loyalty
+    usecase "Send appointment\nnotification" as UC_Notify
+}
+
+'--- who does what ----------------------------------------------------------
+
+Reception --> UC_SignIn
+Reception --> UC_SignOut
+Reception --> UC_Help
+Reception --> UC_Register
+Reception --> UC_Display
+Reception --> UC_Cancel
+Reception --> UC_Reschedule
+Reception --> UC_Complete
+Reception --> UC_NoShow
+Reception --> UC_Bill
+Reception --> UC_PrintBill
+Reception --> UC_Pay
+Reception --> UC_Unpaid
+Reception --> UC_SearchPatient
+Reception --> UC_History
+Reception --> UC_DaySchedule
+
+' Only an administrator sees clinic-wide takings and staff performance.
+Admin --> UC_Revenue
+Admin --> UC_Workload
+
+' The mail server is a supporting actor: the system talks to it, it never
+' starts anything itself.
+UC_Notify --> Mail
+
+'--- always performed as part of the base use case --------------------------
+
+UC_Register ..> UC_FindPatient : <<include>>
+UC_Register ..> UC_CheckSlot   : <<include>>
+UC_Register ..> UC_RefNo       : <<include>>
+UC_Reschedule ..> UC_CheckSlot : <<include>>
+UC_Bill ..> UC_Calculate       : <<include>>
+UC_Bill ..> UC_RefNo           : <<include>>
+UC_History ..> UC_SearchPatient : <<include>>
+
+'--- performed only when a condition holds ----------------------------------
+
+UC_Suggest  ..> UC_Register  : <<extend>>\n(the chosen slot\nis already taken)
+UC_Notify   ..> UC_Register  : <<extend>>\n(the patient gave\nan email address)
+UC_Discount ..> UC_Bill      : <<extend>>\n(the clinic agreed\na reduction)
+UC_Loyalty  ..> UC_Calculate : <<extend>>\n(fifth or later\ncompleted visit)
+
+'--- assumptions worth stating on the diagram itself ------------------------
+'  These are written as a legend rather than as notes attached to a use case.
+'  An attached note is pinned next to its use case, and with this many
+'  associations that pushed the whole layout out of shape.
+
+legend bottom
+  |= |= Assumption recorded on this diagram |
+  | 1 | **Signing in is assumed throughout.** Every use case except "Sign in" requires the |
+  |   | member of staff to be signed in already. Drawing that as an <<include>> from all |
+  |   | seventeen would bury the diagram in arrows, so it is stated once here. |
+  | 2 | **Availability is checked twice, deliberately.** The service layer checks first, so |
+  |   | the receptionist gets a sentence they can act on. The database checks last, with a |
+  |   | UNIQUE index, so two people saving in the same instant still cannot double book. |
+  | 3 | **The administrator is a receptionist as well.** The generalisation means every |
+  |   | association drawn to Receptionist applies to Administrator too. |
+  | 4 | **The email service is a supporting actor.** The system talks to it; it never starts |
+  |   | anything. Notifications are switched off until real mail credentials are supplied. |
+  | 5 | **Dentists are not actors.** They read the printed day schedule; they do not sign in. |
+  |   | Giving them their own login is recorded as future work, not modelled here. |
+end legend
+
+@enduml

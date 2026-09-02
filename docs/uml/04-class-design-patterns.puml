@@ -1,0 +1,224 @@
+@startuml 04-class-design-patterns
+'============================================================================
+'  Sunrise Dental Clinic - CLASS DIAGRAM: the design patterns
+'  CIS6003 Advanced Programming (WRIT1), Task A and Task B
+'
+'  Six patterns are used in this system. Two of them are shown on other
+'  diagrams because that is where they belong: Builder on diagram 02, with the
+'  Appointment it builds, and Repository and MVC on diagram 03, with the tiers.
+'
+'  The four shown here are the ones that work together and are hard to see in
+'  the code one file at a time: the Factory that chooses a pricing rule, the
+'  Strategy that is that rule, the Template Method that stops the three rules
+'  drifting apart, and the Observer that announces a booking.
+'============================================================================
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+    HeaderBackgroundColor #CCFBF1
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sunrise Dental Clinic - Design patterns in the business tier
+
+'============================================================================
+'  FACTORY + STRATEGY + TEMPLATE METHOD: how a bill is priced
+'============================================================================
+
+class BillingService {
+    - billingStrategyFactory : BillingStrategyFactory
+    --
+    + generateBill(appointmentNo : String, manualDiscount : BigDecimal, issuedBy : User) : Bill
+}
+
+class BillingStrategyFactory <<(P,#B45309) Factory>> {
+    - {static} SURGICAL_TREATMENTS : Set<String>
+    - {static} CONSULTATION_TREATMENTS : Set<String>
+    --
+    + strategyFor(treatment : Treatment) : BillingStrategy
+}
+
+interface BillingStrategy <<(P,#B45309) Strategy>> {
+    + getName() : String
+    + calculate(context : BillingContext) : BillCharge
+}
+
+abstract class AbstractBillingStrategy <<(P,#B45309) Template Method>> {
+    # {static} LOYALTY_VISIT_THRESHOLD : int = 5
+    # {static} LOYALTY_DISCOUNT_RATE : BigDecimal = 0.10
+    --
+    + {final} calculate(context : BillingContext) : BillCharge
+    # {abstract} treatmentCostFor(context : BillingContext) : BigDecimal
+    # {abstract} consultationFeeFor(context : BillingContext) : BigDecimal
+    # {abstract} baseExplanation(context : BillingContext) : String
+    # loyaltyDiscountFor(context : BillingContext, treatmentCost : BigDecimal) : BigDecimal
+    # explanationFor(context : BillingContext, discount : BigDecimal) : String
+}
+
+class StandardBillingStrategy {
+    + getName() : String
+    # treatmentCostFor(context : BillingContext) : BigDecimal
+    # consultationFeeFor(context : BillingContext) : BigDecimal
+    # baseExplanation(context : BillingContext) : String
+}
+
+class SurgicalBillingStrategy {
+    - {static} STERILISATION_RATE : BigDecimal = 0.15
+    --
+    + getName() : String
+    # treatmentCostFor(context : BillingContext) : BigDecimal
+    # consultationFeeFor(context : BillingContext) : BigDecimal
+    # baseExplanation(context : BillingContext) : String
+}
+
+class ConsultationOnlyBillingStrategy {
+    + getName() : String
+    # treatmentCostFor(context : BillingContext) : BigDecimal
+    # consultationFeeFor(context : BillingContext) : BigDecimal
+    # baseExplanation(context : BillingContext) : String
+}
+
+class BillingContext {
+    - treatment : Treatment
+    - consultationFee : BigDecimal
+    - completedVisitCount : int
+    --
+    + getTreatment() : Treatment
+    + getConsultationFee() : BigDecimal
+    + getCompletedVisitCount() : int
+}
+
+class BillCharge {
+    - treatmentCost : BigDecimal
+    - consultationFee : BigDecimal
+    - discount : BigDecimal
+    - strategyName : String
+    - explanation : String
+    --
+    + getTotal() : BigDecimal
+    - {static} money(amount : BigDecimal) : BigDecimal
+}
+
+'============================================================================
+'  OBSERVER: how a booking is announced
+'============================================================================
+
+class AppointmentService <<(S,#0F766E) Subject>> {
+    - observers : List<AppointmentObserver>
+    --
+    + register(request : BookingRequest, createdBy : User) : Appointment
+    - announce(event : Consumer<AppointmentObserver>) : void
+}
+
+interface AppointmentObserver <<(P,#B45309) Observer>> {
+    + onAppointmentBooked(appointment : Appointment) : void
+    + onAppointmentCancelled(appointment : Appointment) : void
+    + onAppointmentRescheduled(appointment : Appointment) : void
+}
+
+class EmailAppointmentObserver {
+    - enabled : boolean
+    + onAppointmentBooked(appointment : Appointment) : void
+    + onAppointmentCancelled(appointment : Appointment) : void
+}
+
+class LoggingAppointmentObserver {
+    + onAppointmentBooked(appointment : Appointment) : void
+    + onAppointmentCancelled(appointment : Appointment) : void
+    + onAppointmentRescheduled(appointment : Appointment) : void
+}
+
+'============================================================================
+'  SINGLETON: the clinic's settings
+'============================================================================
+
+class ClinicConfiguration <<(P,#B45309) Singleton>> {
+    - clinicName : String
+    - consultationFee : BigDecimal
+    - openingTime : LocalTime
+    - closingTime : LocalTime
+    - appointmentSlotMinutes : int
+    --
+    + load() : void
+    + reload() : void
+    + isWithinOpeningHours(time : LocalTime) : boolean
+    + isOnSlotBoundary(time : LocalTime) : boolean
+}
+
+'============================================================================
+'  RELATIONSHIPS
+'============================================================================
+
+BillingService --> BillingStrategyFactory : asks which rule
+BillingStrategyFactory ..> BillingStrategy : <<creates>>
+BillingService ..> BillingContext : builds
+BillingService ..> BillCharge : receives
+
+AbstractBillingStrategy ..|> BillingStrategy
+StandardBillingStrategy --|> AbstractBillingStrategy
+SurgicalBillingStrategy --|> AbstractBillingStrategy
+ConsultationOnlyBillingStrategy --|> AbstractBillingStrategy
+
+BillingStrategy ..> BillingContext : reads
+BillingStrategy ..> BillCharge : produces
+
+AppointmentService "1" o--> "0..*" AppointmentObserver : announces to
+EmailAppointmentObserver ..|> AppointmentObserver
+LoggingAppointmentObserver ..|> AppointmentObserver
+
+AppointmentService --> ClinicConfiguration : opening hours
+BillingService --> ClinicConfiguration : consultation fee
+
+'============================================================================
+
+note bottom of AbstractBillingStrategy
+  calculate() is final. Every pricing rule
+  therefore works out its amounts in the
+  same order, applies the loyalty discount
+  the same way, and rounds money in one
+  place. A subclass fills in three steps and
+  cannot change the shape of the sum.
+end note
+
+note right of SurgicalBillingStrategy
+  The three rules genuinely differ, which is
+  what makes Strategy honest here rather
+  than decorative:
+
+  Standard      treatment + consultation
+  Surgical      adds 15% sterilisation first
+  Consultation  waives the fee, because
+                charging it on top of a
+                check-up bills the patient
+                twice for one thing
+end note
+
+note right of AppointmentService
+  The subject does not know who is
+  listening. Spring finds every
+  AppointmentObserver and hands them over,
+  so adding SMS reminders means writing one
+  class and changing nothing here.
+
+  announce() calls each observer inside its
+  own try. A mail server being down must
+  never undo an appointment the patient is
+  expecting.
+end note
+
+legend bottom
+  |= |= Pattern |= Why it fits here |= What it cost |
+  | 1 | Factory | one place decides which pricing rule a treatment gets | the categories are hardcoded in a Set; a column on treatments would be better |
+  | 2 | Strategy | three genuinely different pricing rules, chosen at run time | the arithmetic is no longer visible when reading BillingService |
+  | 3 | Template Method | stops the three rules drifting apart on rounding and loyalty | one more layer of inheritance to follow |
+  | 4 | Observer | booking announces itself without knowing who cares | reading register() does not reveal that an email is sent |
+  | 5 | Singleton | one set of clinic settings, read constantly, changed rarely | cached values go stale if a manager edits MySQL directly; reload() exists for that |
+end legend
+
+@enduml

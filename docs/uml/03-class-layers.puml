@@ -1,0 +1,214 @@
+@startuml 03-class-layers
+'============================================================================
+'  Sunrise Dental Clinic - CLASS DIAGRAM: the three tiers
+'  CIS6003 Advanced Programming (WRIT1), Task A and Task B
+'
+'  The domain model is on diagram 02 and the design patterns are on diagram
+'  04. This one answers a single question: how is the code arranged, and what
+'  is allowed to depend on what.
+'
+'  The one thing to read from it is that every arrow points downwards.
+'  Presentation depends on business, business depends on data, and nothing
+'  ever points back up. That is what three-tier actually means, and it is why
+'  the clinic rules can be tested with no web server and no database at all.
+'
+'  Only a few methods are shown per class, enough to say what each one is for.
+'  Full signatures are on diagram 02 for the domain and diagram 04 for the
+'  patterns.
+'============================================================================
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+    HeaderBackgroundColor #CCFBF1
+}
+skinparam package {
+    BackgroundColor #FAFAFA
+    BorderColor #9CA3AF
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sunrise Dental Clinic - Three-tier architecture
+
+'============================================================================
+package "PRESENTATION TIER" as P <<Rectangle>> {
+
+    package "controller.web  -  the screens staff use" as PW {
+        class DashboardWebController <<MVC>>
+        class AppointmentWebController <<MVC>>
+        class PatientWebController <<MVC>>
+        class BillingWebController <<MVC>>
+        class ReportWebController <<MVC>>
+        class LoginWebController <<MVC>>
+        class WebExceptionHandler
+    }
+
+    package "controller  -  the web services" as PR {
+        class AppointmentRestController
+        class PatientRestController
+        class BillingRestController
+        class ReferenceDataRestController
+        class GlobalExceptionHandler
+        class CurrentUserResolver
+    }
+}
+
+'============================================================================
+package "BUSINESS LOGIC TIER  (service)" as B <<Rectangle>> {
+
+    class AppointmentService <<Observer subject>> {
+        + register(request, createdBy) : Appointment
+        + findByNumber(appointmentNo) : Appointment
+        + cancel(appointmentNo, reason) : Appointment
+        + reschedule(appointmentNo, date, time) : Appointment
+        + markCompleted(appointmentNo) : Appointment
+    }
+
+    class BillingService {
+        + generateBill(appointmentNo, discount, issuedBy) : Bill
+        + markPaid(billNo, method) : Bill
+        + findUnpaidBills() : List<Bill>
+    }
+
+    class PatientService {
+        + findOrCreate(request) : Patient
+        + findByCode(patientCode) : Patient
+        + searchByName(namePart) : List<Patient>
+    }
+
+    class ReferenceDataService {
+        + bookableDentists() : List<Dentist>
+        + bookableTreatments() : List<Treatment>
+    }
+
+    class ReportService {
+        + revenueByTreatment(from, to) : List<RevenueByTreatmentRow>
+        + dentistWorkload(from, to) : List<DentistWorkloadRow>
+    }
+
+    class ClinicConfiguration <<Singleton>>
+    class BillingStrategyFactory <<Factory>>
+    interface AppointmentObserver <<Observer>>
+    interface ReferenceNumberGenerator
+}
+
+'============================================================================
+package "DATA ACCESS TIER  (repository)" as D <<Rectangle>> {
+    interface AppointmentRepository <<Repository>>
+    interface PatientRepository <<Repository>>
+    interface BillRepository <<Repository>>
+    interface DentistRepository <<Repository>>
+    interface TreatmentRepository <<Repository>>
+    interface UserRepository <<Repository>>
+    interface ClinicSettingRepository <<Repository>>
+}
+
+'============================================================================
+package "MySQL 8" as M <<Rectangle>> {
+    class "Tables" as Tables <<database>>
+    class "Stored procedures\nand functions" as Procs <<database>>
+    class "Triggers and\ngenerated columns" as Triggers <<database>>
+}
+
+'============================================================================
+'  Presentation -> Business
+'============================================================================
+
+DashboardWebController --> AppointmentService
+DashboardWebController --> BillingService
+AppointmentWebController --> AppointmentService
+AppointmentWebController --> ReferenceDataService
+PatientWebController --> PatientService
+BillingWebController --> BillingService
+ReportWebController --> ReportService
+
+AppointmentRestController --> AppointmentService
+PatientRestController --> PatientService
+BillingRestController --> BillingService
+ReferenceDataRestController --> ReferenceDataService
+CurrentUserResolver --> UserRepository
+
+'============================================================================
+'  Business -> Data
+'============================================================================
+
+AppointmentService --> AppointmentRepository
+AppointmentService --> DentistRepository
+AppointmentService --> TreatmentRepository
+AppointmentService --> PatientService
+AppointmentService --> ClinicConfiguration
+AppointmentService --> ReferenceNumberGenerator
+AppointmentService --> AppointmentObserver : notifies
+
+BillingService --> BillRepository
+BillingService --> AppointmentRepository
+BillingService --> BillingStrategyFactory
+BillingService --> ReferenceNumberGenerator
+
+PatientService --> PatientRepository
+ReferenceDataService --> DentistRepository
+ReferenceDataService --> TreatmentRepository
+ClinicConfiguration --> ClinicSettingRepository
+
+'============================================================================
+'  Data -> MySQL
+'============================================================================
+
+AppointmentRepository --> Tables
+PatientRepository --> Tables
+BillRepository --> Tables
+DentistRepository --> Tables
+TreatmentRepository --> Tables
+UserRepository --> Tables
+ClinicSettingRepository --> Tables
+
+ReferenceNumberGenerator --> Procs : CALL
+ReportService --> Procs : CALL
+Tables ..> Triggers : "writes fire these"
+
+'============================================================================
+
+note right of PR
+  Two families of controller, on
+  purpose. The screens are how staff
+  use the clinic; the web services
+  are how another program would,
+  which is the "distributed
+  application" the brief asks for.
+
+  Both call the same services, so a
+  clinic rule cannot be true on one
+  and false on the other.
+end note
+
+note bottom of B
+  Nothing in this tier imports anything
+  from the tier above. There is no
+  HttpServletRequest, no Model and no
+  view name anywhere in it.
+
+  That is what lets 248 tests run with
+  no web server and no database.
+end note
+
+legend bottom
+  |= |= Architectural decision, and why it was made that way |
+  | 1 | **The dependency arrows only ever point downwards.** A service never calls a controller. |
+  |   | Without that rule the tiers would exist in the folder names only. |
+  | 2 | **Two controller families, one business tier.** A rule such as "a visit must be completed |
+  |   | before it can be billed" is written once, in BillingService, and both the screen and the |
+  |   | web service obey it. |
+  | 3 | **The database is a tier, not a store.** Reference numbers come from stored procedures |
+  |   | and the reports are stored procedures, because a counter that two receptionists share |
+  |   | must be locked by the database, not by Java. |
+  | 4 | **The cost.** A one-field change touches four files: entity, repository, service and |
+  |   | screen. That is the price of the separation, and it is paid on every small change. |
+end legend
+
+@enduml

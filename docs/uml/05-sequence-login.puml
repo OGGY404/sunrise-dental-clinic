@@ -1,0 +1,141 @@
+@startuml 05-sequence-login
+'============================================================================
+'  Sunrise Dental Clinic - SEQUENCE DIAGRAM 1: signing in (FR1)
+'  CIS6003 Advanced Programming (WRIT1), Task A
+'
+'  Shows what happens between a receptionist typing their password and the
+'  clinic menu appearing.
+'
+'  The point worth noticing is how little of this is our code. Spring Security
+'  runs the whole exchange; we supply one class that fetches the staff record,
+'  and one that writes down the time. The password is never compared by any
+'  code we wrote, which is deliberate: comparing hashes correctly, in constant
+'  time, is exactly the kind of thing that should not be hand-written.
+'============================================================================
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam participant {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+}
+skinparam actor {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sequence 1 - Sign in (FR1)
+
+actor "Receptionist" as User
+participant "login.html\n(browser)" as Browser
+participant "CsrfFilter" as Csrf <<Spring Security>>
+participant "UsernamePassword\nAuthenticationFilter" as AuthFilter <<Spring Security>>
+participant "ClinicUser\nDetailsService" as UDS
+participant "UserRepository" as Repo
+database "MySQL" as DB
+participant "BCryptPassword\nEncoder" as Bcrypt <<Spring Security>>
+participant "HttpSession" as Session
+participant "LoginAudit\nListener" as Audit
+
+User -> Browser : types username\nand password
+activate Browser
+
+Browser -> Csrf : POST /login\n(username, password, _csrf)
+activate Csrf
+
+Csrf -> Csrf : compare the submitted token\nwith the one in the cookie
+
+alt#Gold #FFF1F2 the CSRF token is missing or wrong
+    Csrf --> Browser : 403 Forbidden
+    note right of Csrf
+      Stops another website from
+      submitting this form using
+      the receptionist's cookie.
+    end note
+else the token matches
+    Csrf -> AuthFilter : continue
+    deactivate Csrf
+    activate AuthFilter
+
+    AuthFilter -> UDS : loadUserByUsername(username)
+    activate UDS
+
+    UDS -> Repo : findByUsername(username)
+    activate Repo
+    Repo -> DB : SELECT * FROM users\nWHERE username = ?
+    activate DB
+    DB --> Repo : row, or nothing
+    deactivate DB
+    Repo --> UDS : Optional<User>
+    deactivate Repo
+
+    alt#Gold #FFF1F2 no such account
+        UDS --> AuthFilter : throw UsernameNotFoundException\n("Bad credentials")
+        note right of UDS
+          The message never says whether
+          the username exists. If it did,
+          somebody guessing could first
+          learn which names are real and
+          then attack only those.
+        end note
+    else the account exists
+        UDS -> UDS : add the "ROLE_" prefix\nthat Spring Security expects
+        UDS --> AuthFilter : UserDetails\n(hash, ROLE_RECEPTIONIST, enabled)
+    end
+    deactivate UDS
+
+    AuthFilter -> Bcrypt : matches(typed password, stored hash)
+    activate Bcrypt
+    Bcrypt --> AuthFilter : true or false
+    deactivate Bcrypt
+
+    alt#Gold #DCFCE7 the password matches and the account is enabled
+        AuthFilter -> Session : changeSessionId()
+        activate Session
+        Session --> AuthFilter : new session id
+        deactivate Session
+
+        note right of Session
+          A new session id is issued at this
+          exact moment. Any id captured before
+          the sign in is now worthless, which
+          is the defence against session
+          fixation.
+        end note
+
+        AuthFilter -> Audit : AuthenticationSuccessEvent
+        activate Audit
+        Audit -> DB : UPDATE users\nSET last_login_at = NOW()
+        deactivate Audit
+
+        AuthFilter --> Browser : 302 redirect to /
+        Browser -> User : the clinic menu
+    else wrong password, or the account is switched off
+        AuthFilter -> Audit : AuthenticationFailureEvent
+        activate Audit
+        Audit -> Audit : write the attempt to the log\n(never the password)
+        deactivate Audit
+        AuthFilter --> Browser : 302 redirect to /login?error
+        Browser -> User : "That username and password\ndo not match."
+    end
+    deactivate AuthFilter
+end
+
+deactivate Browser
+
+legend bottom
+  |= |= What this diagram is showing |
+  | 1 | **The password is never compared by our code.** BCryptPasswordEncoder does it, in constant |
+  |   | time, so the answer cannot be guessed by measuring how long the comparison took. |
+  | 2 | **A wrong username and a wrong password are indistinguishable from outside.** Both end in |
+  |   | the same redirect and the same sentence on screen. |
+  | 3 | **The session id changes on sign in**, so an id captured beforehand cannot be reused. |
+  | 4 | **Only two of the nine participants are our classes**: ClinicUserDetailsService and |
+  |   | LoginAuditListener. Everything else is the framework, which is the right place for it. |
+end legend
+
+@enduml
