@@ -1,0 +1,163 @@
+# =============================================================================
+#  Continuous integration for the Sunrise Dental Clinic system
+#  CIS6003 Advanced Programming (WRIT1)
+#
+#  Runs on every push and every pull request, so that a change is proved to
+#  build and pass its tests before it is merged, not afterwards.
+#
+#  There are three jobs, and the order matters:
+#
+#    1. tests     - the 248 unit and web tests, on in-memory H2. Fast, and
+#                   needs no database, so it fails within a minute if a clinic
+#                   rule has been broken.
+#
+#    2. database  - the same application against a REAL MySQL 8, checking the
+#                   half of this system that is written in SQL: the schema, the
+#                   stored procedures, the triggers and the generated columns.
+#                   H2 cannot check any of that, because it builds its tables
+#                   from the Java entities and so can only ever agree with
+#                   them. Two real bugs reached the running application through
+#                   that gap; this job is there so a third one does not.
+#
+#    3. package   - only if both of the above passed, build the runnable jar
+#                   and keep it as a downloadable artifact. That is the version
+#                   that would be deployed.
+# =============================================================================
+
+name: Build and test
+
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop ]
+  # Lets the workflow be started by hand from the Actions tab, which is useful
+  # when demonstrating it.
+  workflow_dispatch:
+
+jobs:
+
+  # ---------------------------------------------------------------------------
+  #  1. The fast tests. No database needed.
+  # ---------------------------------------------------------------------------
+  tests:
+    name: Unit and web tests (H2)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          # Keeps the downloaded Maven dependencies between runs, so later
+          # builds take about a minute instead of three.
+          cache: maven
+
+      - name: Run the tests
+        run: ./mvnw --batch-mode --no-transfer-progress test
+
+      # "always()" matters: the reports are most useful precisely when the
+      # tests have just failed, so they must be uploaded even then.
+      - name: Keep the test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/site/jacoco/
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  #  2. The database itself, against real MySQL 8.
+  # ---------------------------------------------------------------------------
+  database:
+    name: Schema, procedures and triggers (real MySQL 8)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: sunrise_dental_ci
+        ports:
+          - 3306:3306
+        # GitHub will not start the job until MySQL answers, so the test never
+        # fails simply because the database was still starting up.
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # This starts the application exactly as it starts on a real machine:
+      # schema.sql, procedures.sql, triggers.sql and data.sql are run, and then
+      # Hibernate checks every entity against every table. The MySQL image
+      # creates its database with MySQL 8's own default collation, which is the
+      # very situation that used to break every booking, so this job proves the
+      # fix on a clean server every time.
+      - name: Run the MySQL integration tests
+        run: ./mvnw --batch-mode --no-transfer-progress test -Dtest=MySqlDatabaseIT
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: '3306'
+          DB_NAME: sunrise_dental_ci
+          DB_USERNAME: root
+          DB_PASSWORD: ''
+
+      - name: Keep the test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysql-test-reports
+          path: target/surefire-reports/
+          retention-days: 30
+
+  # ---------------------------------------------------------------------------
+  #  3. Build the thing that would actually be deployed.
+  # ---------------------------------------------------------------------------
+  package:
+    name: Package the runnable jar
+    runs-on: ubuntu-latest
+    # Nothing is packaged unless both test jobs passed. A jar that fails its
+    # tests must never become a downloadable build.
+    needs: [ tests, database ]
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # The tests have already run twice in this workflow, so they are skipped
+      # here rather than run a third time.
+      - name: Build the jar
+        run: ./mvnw --batch-mode --no-transfer-progress package -DskipTests
+
+      - name: Keep the jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunrise-dental-clinic-jar
+          path: target/*.jar
+          retention-days: 30
