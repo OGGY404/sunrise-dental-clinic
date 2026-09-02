@@ -6,7 +6,7 @@ Everything Task C asks for, with the evidence it is based on.
 
 | Document | What it is | Task C requirement |
 |---|---|---|
-| [`test-plan.md`](test-plan.md) | 102 test cases: ID, precondition, steps, data, expected, actual, pass/fail, and the automated test that runs each one | test plan |
+| [`test-plan.md`](test-plan.md) | 111 test cases: ID, precondition, steps, data, expected, actual, pass/fail, and the automated test that runs each one | test plan |
 | [`test-data.md`](test-data.md) | where every test value came from — equivalence partitions, boundary values, and the devised cases | devised and derived test data |
 | [`traceability-matrix.md`](traceability-matrix.md) | every requirement → design → code → tests | traceability matrix |
 | [`tdd-evidence.md`](tdd-evidence.md) | the six red→green commit pairs, with hashes and timestamps | how TDD was used |
@@ -20,15 +20,15 @@ Everything Task C asks for, with the evidence it is based on.
 
 | | |
 |---|---|
-| Test classes | **30** |
-| Automated test methods | **254** |
+| Test classes | **32** |
+| Automated test methods | **268** |
 | Failures / errors | **0** |
-| Instruction coverage | **80.9%** |
-| Branch coverage | **61.5%** |
+| Instruction coverage | **78.8%** |
+| Branch coverage | **62.2%** |
 | Runs automatically | on every push and pull request |
 
 ```powershell
-.\mvnw.cmd test                              # 248 tests, no database needed
+.\mvnw.cmd test                              # 262 tests, no database needed
 .\mvnw.cmd test -Dtest=MySqlDatabaseIT       # 6 more, against real MySQL 8
 ```
 
@@ -38,7 +38,7 @@ Everything Task C asks for, with the evidence it is based on.
 
 Five levels, each there for a reason the others cannot cover.
 
-1. **Unit tests (114).** One class at a time, collaborators replaced by Mockito
+1. **Unit tests (123).** One class at a time, collaborators replaced by Mockito
    mocks. Every clinic rule lives here. They need no database and no web
    server, which is only possible because the three tiers are genuinely
    separate — so the test suite is itself evidence for the architecture.
@@ -47,7 +47,7 @@ Five levels, each there for a reason the others cannot cover.
    JPA mappings and the derived query methods actually return what their long
    names promise.
 
-3. **Web slice tests (77).** `@WebMvcTest`, one controller with its services
+3. **Web slice tests (82).** `@WebMvcTest`, one controller with its services
    mocked. These check the job of the presentation tier only: read the request,
    refuse bad input, call one service, return the right status and view.
 
@@ -67,7 +67,7 @@ are kept for what the fast ones genuinely cannot see.
 ### Why level 5 exists
 
 It was added after the fact, and honestly so. Three bugs reached the running
-application while 248 tests were passing:
+application while the suite was passing:
 
 - `password_hash` was `CHAR(60)` in SQL but `VARCHAR` on the entity — H2 could
   not notice, because it had built the column from the entity;
@@ -91,12 +91,12 @@ evidence to write *about*.
 
 Prompts, each with something concrete to point at:
 
-- **Why this shape of test suite?** Section above. Argue why 114 unit tests and
+- **Why this shape of test suite?** Section above. Argue why 123 unit tests and
   only 6 database tests is the right balance, not a shortcut.
 - **Was TDD worth it?** You have both sides: three decisions the red step got
   right (`tdd-evidence.md` §4) and three bugs it missed entirely. Take a
   position rather than praising the method.
-- **Is 80.9% coverage good enough?** Use `service.notification` at 48.6% to
+- **Is 78.8% coverage good enough?** Use `service.notification` at 32.6% to
   explain why chasing a higher number is not automatically better, and say what
   you would test if the clinic switched email on.
 - **What was the single biggest lesson?** The honest answer is in the three

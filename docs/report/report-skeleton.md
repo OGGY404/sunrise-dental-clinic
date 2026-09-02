@@ -24,7 +24,7 @@ So the strategy is:
 | Put in the main body | Move to an appendix |
 |---|---|
 | your analysis and justification | full code listings |
-| the diagrams you actually discuss | the full 102-row test plan |
+| the diagrams you actually discuss | the full 111-row test plan |
 | small extracted tables (5–8 rows) | the full traceability matrix |
 | one screenshot per point being made | the extra screenshots |
 | short code fragments (3–6 lines) that you then discuss | anything you are not going to discuss |
@@ -182,7 +182,7 @@ This is the biggest section. Work through the brief's own list.
 **Write about:** the packages `controller` / `service` / `repository`, and the
 one rule that makes it real: **dependencies only ever point downwards**.
 
-> The strongest single sentence you can write here: *248 tests run with no web
+> The strongest single sentence you can write here: *262 tests run with no web
 > server and no database, and that is only possible because the tiers are
 > genuinely separate.* The test suite is your evidence for the architecture.
 
@@ -303,7 +303,7 @@ Pick ones that show boundary analysis: name at 100 vs 101 characters, telephone
 at 10 vs 9 digits, today vs yesterday, 4th vs 5th visit for the loyalty
 discount.
 
-**Full 102-row plan → Appendix.**
+**Full 111-row plan → Appendix.**
 
 **Write about:** equivalence partitioning and boundary value analysis by name,
 and the difference between **derived** data (from the column widths and the
@@ -317,7 +317,7 @@ full stops, or an INSERT that bypasses Java entirely).
 `target/site/jacoco/index.html` · Figure 17 — GitHub Actions showing three green
 jobs.
 
-**Write about:** 254 tests, 30 classes, 0 failures, 80.9% instruction and 61.5%
+**Write about:** 268 tests, 32 classes, 0 failures, 78.8% instruction and 62.2%
 branch coverage; and that everything runs automatically on every push.
 
 ## 3.5 Traceability matrix (~50 words + extracted table)
@@ -333,7 +333,7 @@ with reasons.
 
 This is the highest-value paragraph in Task C. The honest material:
 
-**Three bugs reached the running application while 248 tests were passing.**
+**Three bugs reached the running application while the whole suite was passing.**
 - `CHAR(60)` vs `VARCHAR` — H2 could not notice, because it builds its tables
   *from the entities*
 - the CSRF cookie vanished at login — MockMvc could not notice, because it
@@ -483,7 +483,7 @@ automatically from the running application and from real console windows.
 | 12 | Appointment details, BOOKED | `screenshots/05-appointment-details-booked.png` | ready |
 | 13 | The printed bill | `screenshots/12-bill-print-preview.png` | ready |
 | 14 | The TDD red commit: 7 files, all tests | `screenshots/25-tdd-red-commit.png` | ready |
-| 15 | 248 tests passing, BUILD SUCCESS | `screenshots/24-tests-passing.png` | ready |
+| 15 | 262 tests passing, BUILD SUCCESS | `screenshots/24-tests-passing.png` | ready |
 | 16 | JaCoCo coverage | `screenshots/20-jacoco-coverage.png` | ready |
 | 17 | GitHub Actions, all green | `screenshots/21-github-actions.png` | ready |
 | 18 | Commit history | `screenshots/23-github-commit-history.png` | ready |

@@ -2,10 +2,10 @@
 
 CIS6003 Advanced Programming (WRIT1) · Sunrise Dental Clinic
 
-**26 screenshots, all captured automatically** on 2 September 2026. Nothing is
+**27 screenshots, all captured automatically** on 2 September 2026. Nothing is
 left to do by hand.
 
-- **1–23** are browser screens, taken by
+- **1–23 and 27** are browser screens, taken by
   [`../capture-screenshots.mjs`](../capture-screenshots.mjs) driving the copy of
   Chrome already installed on this machine, at 2880px so they stay sharp when
   scaled into Word.
@@ -42,13 +42,14 @@ real web service by [`../seed-demo-data.sh`](../seed-demo-data.sh).
 | `17-reports-menu.png` | the reports menu, as an administrator | reports |
 | `18-revenue-by-treatment.png` | revenue report, from a **stored procedure** | advanced DB features |
 | `19-dentist-workload.png` | workload report, from a **stored procedure** | advanced DB features |
-| `20-jacoco-coverage.png` | the coverage report, 80.9% | Task C |
+| `20-jacoco-coverage.png` | the coverage report, 78.8% | Task C |
 | `21-github-actions.png` | CI workflows, all green | Task D |
 | `22-github-release.png` | release v0.9.0 with the runnable jar | Task D, deployment |
 | `23-github-commit-history.png` | the commit history | Task D |
-| `24-tests-passing.png` | **`Tests run: 248, Failures: 0, Errors: 0`** and `BUILD SUCCESS` | Task C |
+| `24-tests-passing.png` | **`Tests run: 262, Failures: 0, Errors: 0`** and `BUILD SUCCESS` | Task C |
 | `25-tdd-red-commit.png` | the red commit: **7 files, all tests, nothing in `src/main`** | Task C, TDD |
 | `26-database-triggers-audit.png` | all 10 triggers, the audit rows they wrote, and the generated column | Task B, advanced DB |
+| `27-appointment-reminders.png` | tomorrow's patients from a **stored procedure**, split into who can be emailed and who must be telephoned | FR7 reminders |
 
 ### Two worth pointing at in the writing
 
@@ -91,8 +92,8 @@ Following the figure list in [`../report-skeleton.md`](../report-skeleton.md):
 | 19 | `21-github-actions.png` *(same image, or open one run for detail)* |
 | 20 | `22-github-release.png` |
 
-Everything else — `01`, `03`, `06`–`11`, `13`–`19` — is spare, for the
-appendix.
+Everything else — `01`, `03`, `06`–`11`, `13`–`19` and `27` — is spare, for the
+appendix. `27-appointment-reminders.png` is worth using if you write about FR7.
 
 ---
 
@@ -125,7 +126,7 @@ cd "D:\ICBT\Advance programming\02_SunriseDentalClinic_Resit\SunriseDentalClinic
 bash docs\report\seed-demo-data.sh                # optional, if the data is gone
 
 cd D:\DevTools\shots
-node capture.mjs                                  # rewrites 1-23, the browser screens
+node capture.mjs                                  # rewrites 1-23 and 27, the browser screens
 powershell -ExecutionPolicy Bypass -File capture-terminals.ps1    # rewrites 24-26
 ```
 

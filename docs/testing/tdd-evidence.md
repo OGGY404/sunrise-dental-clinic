@@ -26,6 +26,7 @@ The second adds the code and turns the suite green.
 | 4 | Web services | `ca70acc` *add failing tests for the REST web services and input validation* | `1e07179` *add the REST web services, input validation and one error shape* | 1 Sep 2026, 23:45 → 23:51 | **183** |
 | 5 | Security | `a41b34b` *add failing tests for login, sessions and role based access* | `2e068c6` *add login, session handling and role based access* | 1 Sep 2026, 23:54 → 23:59 | **203 → 205** |
 | 6 | The screens | `2d3904e` *add failing tests for the clinic screens and the management reports* | `ee29194` *add the clinic screens and the two management reports* | 2 Sep 2026, 00:54 → 01:05 | **248** |
+| 7 | Appointment reminders | `22e09fc` *add failing tests for appointment reminders* | *(green, this branch)* | 2 Sep 2026, evening | **262** |
 
 To see any red commit for yourself:
 
@@ -46,7 +47,8 @@ git checkout develop
 | 5 — web services and validation | 183 | +62 |
 | 6 — login, sessions, roles | 205 | +22 |
 | 7 — screens and reports | 248 | +43 |
-| 9 — real MySQL integration tests | 254 | +6 |
+| 8 — appointment reminders | 262 | +14 |
+| 9 — real MySQL integration tests | 268 | +6 |
 
 Not one of those figures is a test written after the fact to raise a number.
 Each block was written first, watched to fail, and then made to pass.
@@ -100,7 +102,7 @@ TDD prevented everything.
 Three bugs reached the running application. All three are recorded in the
 history with `fix:` commits, and all three are now covered.
 
-| Bug | Why 248 tests all passed | Now covered by |
+| Bug | Why the whole suite passed | Now covered by |
 |---|---|---|
 | `password_hash` was `CHAR(60)` in SQL but `VARCHAR` on the entity, so the app would not start against MySQL | H2 builds its tables **from the entities**, so the two could never disagree | `MySqlDatabaseIT.theScriptsBuiltEverything` |
 | The CSRF cookie was deleted at login and never reissued, so every save after signing in returned 403 | MockMvc supplies its own token instead of reading the cookie, so no test depended on the cookie existing | `CsrfCookieEndToEndTest` (real port, real HTTP) |
@@ -121,7 +123,7 @@ symptom the receptionist saw.
 
 ## 5. Test automation
 
-- Every one of the 254 tests runs from one command and needs no human.
+- Every one of the 268 tests runs from one command and needs no human.
 - `.github/workflows/ci.yml` runs the whole suite on **every push and pull
   request**, then repeats the database half against a real MySQL 8 service
   container, and only packages the jar if both passed.
@@ -145,5 +147,5 @@ answering:
 - **What would you test differently next time?** The honest answer is in the
   table in section 4: start the real database earlier. Say so, and say what it
   would have cost.
-- **Is 80.9% coverage good?** Take a position, and use `service.notification`
-  at 48.6% to explain why chasing a higher number is not automatically better.
+- **Is 78.8% coverage good?** Take a position, and use `service.notification`
+  at 32.6% to explain why chasing a higher number is not automatically better.

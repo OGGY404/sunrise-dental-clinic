@@ -2,7 +2,7 @@
 
 CIS6003 Advanced Programming (WRIT1) · Sunrise Dental Clinic
 
-The 254 automated tests prove the parts. This walkthrough proves the **whole
+The 268 automated tests prove the parts. This walkthrough proves the **whole
 thing**, against a real MySQL 8 and a real running server, in the order a
 receptionist would actually do it.
 
