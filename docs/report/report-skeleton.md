@@ -460,32 +460,44 @@ Harvard format, alphabetical by author, with access dates for anything online.
 
 ---
 
-# Figure list — take these before you start writing
+# Figure list — 20 of the 23 are already captured
 
-`docs/testing/manual-walkthrough.md` explains where to get each one.
+**Done.** `docs/report/screenshots/` holds 23 screenshots, taken automatically
+from the running application. `docs/uml/png/` holds the 8 diagrams. See
+[`screenshots/README.md`](screenshots/README.md) for what each one shows.
 
-| Fig | What | Where from |
-|---|---|---|
-| 1 | Use case diagram | `docs/uml/png/01-use-case.png` |
-| 2 | Class diagram — domain | `docs/uml/png/02-class-domain.png` |
-| 3 | Class diagram — three tiers | `docs/uml/png/03-class-layers.png` |
-| 4–6 | Sequence: login, register, bill | `docs/uml/png/05…07` |
-| 7 | Sequence: cancel *(appendix)* | `docs/uml/png/08…` |
-| 8 | Class diagram — design patterns | `docs/uml/png/04-class-design-patterns.png` |
-| 9 | MySQL Workbench: triggers / audit table | screenshot |
-| 10 | Booking form with two rejected fields | screenshot |
-| 11 | Main menu | screenshot |
-| 12 | Appointment details screen | screenshot |
-| 13 | Printed bill (print preview) | screenshot |
-| 14 | `git show 2d3904e --stat` — test files only | screenshot |
-| 15 | `mvnw test` — 248 passing | screenshot |
-| 16 | JaCoCo coverage report | screenshot |
-| 17 | GitHub Actions — three green jobs | screenshot |
-| 18 | Branch graph | screenshot |
-| 19 | Actions run detail | screenshot |
-| 20 | Release v0.9.0 with the jar | screenshot |
+| Fig | What | File | Status |
+|---|---|---|---|
+| 1 | Use case diagram | `docs/uml/png/01-use-case.png` | ready |
+| 2 | Class diagram — domain | `docs/uml/png/02-class-domain.png` | ready |
+| 3 | Class diagram — three tiers | `docs/uml/png/03-class-layers.png` | ready |
+| 4 | Sequence — sign in | `docs/uml/png/05-sequence-login.png` | ready |
+| 5 | Sequence — register | `docs/uml/png/06-sequence-register-appointment.png` | ready |
+| 6 | Sequence — bill | `docs/uml/png/07-sequence-generate-bill.png` | ready |
+| 7 | Sequence — cancel *(appendix)* | `docs/uml/png/08-sequence-cancel-appointment.png` | ready |
+| 8 | Class diagram — design patterns | `docs/uml/png/04-class-design-patterns.png` | ready |
+| 9 | The database: triggers / audit trail | — | **take by hand, 10 sec** |
+| 10 | Booking form with 5 fields rejected | `screenshots/04-booking-form-rejected.png` | ready |
+| 11 | Main menu and today's diary | `screenshots/02-dashboard-menu.png` | ready |
+| 12 | Appointment details, BOOKED | `screenshots/05-appointment-details-booked.png` | ready |
+| 13 | The printed bill | `screenshots/12-bill-print-preview.png` | ready |
+| 14 | The TDD red commit | — | **take by hand, 10 sec** |
+| 15 | 248 tests passing | — | **take by hand, 30 sec** |
+| 16 | JaCoCo coverage | `screenshots/20-jacoco-coverage.png` | ready |
+| 17 | GitHub Actions, all green | `screenshots/21-github-actions.png` | ready |
+| 18 | Commit history | `screenshots/23-github-commit-history.png` | ready |
+| 19 | Actions run detail | `screenshots/21-github-actions.png` | ready |
+| 20 | Release v0.9.0 with the jar | `screenshots/22-github-release.png` | ready |
 
----
+**Spares for the appendix:** the sign-in screen, the empty booking form, the
+completed visit, appointment search, the day schedule, patient search, the
+treatment history, the receipt on screen, the unpaid list, the help section,
+the error page, a receptionist refused the reports, the reports menu, and both
+management reports.
+
+The three "by hand" ones are terminal windows, so a browser cannot capture
+them. The exact commands are in
+[`screenshots/README.md`](screenshots/README.md) — run, then **Win + Shift + S**.
 
 # Before you submit — final checklist
 
