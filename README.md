@@ -327,6 +327,24 @@ assumptions and explains how to re-draw the images after a change.
 
 ---
 
+## 5d. Testing evidence (Task C)
+
+Everything Task C asks for is in [`docs/testing/`](docs/testing/).
+
+| Document | What it is |
+|---|---|
+| [`test-plan.md`](docs/testing/test-plan.md) | 102 test cases with ID, precondition, steps, data, expected, actual, pass/fail, and the automated test that runs each one |
+| [`test-data.md`](docs/testing/test-data.md) | where every test value came from: equivalence partitions, boundary values, devised cases |
+| [`traceability-matrix.md`](docs/testing/traceability-matrix.md) | every requirement traced to its design, its code and its tests |
+| [`tdd-evidence.md`](docs/testing/tdd-evidence.md) | the six red→green commit pairs, with hashes and timestamps |
+| [`manual-walkthrough.md`](docs/testing/manual-walkthrough.md) | the whole system driven end to end against real MySQL, with the captured output |
+
+**254 automated tests across 30 classes, 0 failures.** 80.9% instruction
+coverage, 61.5% branch coverage. Everything runs on every push through GitHub
+Actions.
+
+---
+
 ## 6. Build progress
 
 - [x] **Step 1** — Repository, `.gitignore`, README, Spring Boot skeleton
@@ -339,7 +357,7 @@ assumptions and explains how to re-draw the images after a change.
 - [ ] **Step 8** — Notifications and extra features
 - [x] **Step 9** — GitHub Actions workflow and deployment
 - [x] **Step 10** — UML diagrams
-- [ ] **Step 11** — Test plan, traceability matrix, screenshots
+- [x] **Step 11** — Test plan, traceability matrix, screenshots
 - [ ] **Step 12** — Final report
 
 ---

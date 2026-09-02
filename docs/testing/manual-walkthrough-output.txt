@@ -1,0 +1,110 @@
+
+----- 1. Not signed in: the web service refuses
+HTTP 401  {"timestamp":"2026-09-02T10:15:48.9562343","status":401,"error":"Not signed in","message":"Please sign in before using this service.","path":"/api/treatments"}
+
+----- 2. Not signed in: a browser page is sent to the login screen
+HTTP 302 -> http://localhost:8080/login
+
+----- 3. Sign in as the receptionist
+HTTP 302 -> http://localhost:8080/
+   csrf token now held: a8d7f961...
+
+----- 4. The dropdown lists the booking form needs
+   4 DEN-004 Dr. Anusha Wickrama | Paediatric Dentistry
+   1 DEN-001 Dr. Nimal Perera | General Dentistry
+   3 DEN-003 Dr. Ruwan Jayasinghe | Oral Surgery
+   2 DEN-002 Dr. Shanika Fernando | Orthodontics
+   8 TRT-008 Braces Consultation Rs. 3500.0
+   9 TRT-009 Braces Fitting Rs. 85000.0
+   12 TRT-012 Child Dental Care Rs. 2500.0
+   1 TRT-001 Dental Check-up Rs. 2000.0
+   6 TRT-006 Dental Crown Rs. 32000.0
+   10 TRT-010 Denture Fitting Rs. 45000.0
+   5 TRT-005 Root Canal Treatment Rs. 25000.0
+   2 TRT-002 Scaling and Polishing Rs. 4500.0
+   7 TRT-007 Teeth Whitening Rs. 18000.0
+   4 TRT-004 Tooth Extraction Rs. 5500.0
+   3 TRT-003 Tooth Filling Rs. 6000.0
+   11 TRT-011 Wisdom Tooth Surgery Rs. 35000.0
+
+----- 5. FR2 register an appointment
+HTTP 201   Location: /api/appointments/APT-20260915-0001
+   number  : APT-20260915-0001
+   patient : PAT-000001 Kamal Silva age 31
+   dentist : Dr. Ruwan Jayasinghe
+   work    : Root Canal Treatment Rs. 25000.0
+   when    : 2026-09-15 09:00:00 status BOOKED
+
+----- 6. Validation refuses a bad form (digits in the name, short phone)
+HTTP 400
+    contactNumber : Please enter a valid Sri Lankan telephone number, for example 0771234567.
+    fullName : A patient name can only contain letters, spaces, dots, hyphens and apostrophes.
+
+----- 7. Double booking the same dentist and slot is refused
+HTTP 409   That dentist is already booked on 2026-09-15 at 09:00. Please choose another time.
+
+----- 8. FR3 look the appointment up by its number
+HTTP 200
+    APT-20260915-0001 | Kamal Silva 0771234567 | Dr. Ruwan Jayasinghe | Root Canal Treatment
+
+----- 9. Billing is refused before the visit has happened
+HTTP 422   Appointment APT-20260915-0001 has not taken place yet. Mark it as completed before producing a bill.
+
+----- 10. Mark the visit as completed
+HTTP 200   status now COMPLETED
+
+----- 11. FR4 produce the bill (Surgical rule + Rs.500 agreed discount)
+HTTP 201
+   bill no      : BIL-20260902-0001
+   patient      : Kamal Silva
+   treatment    : Rs. 28750.0
+   consultation : Rs. 1500.0
+   discount     : Rs. 500.0
+   TOTAL        : Rs. 29750.0 ( UNPAID )
+
+----- 12. One visit, one bill: a second bill is refused
+HTTP 422   Appointment APT-20260915-0001 has already been billed. Open the existing bill instead of making a second one.
+
+----- 13. Record the payment
+HTTP 200   BIL-20260902-0001 PAID by CASH at 2026-09-02T10:15:51.6468298
+
+----- 14. FR7 the treatment history for this patient
+   2026-09-15 09:00:00 Root Canal Treatment COMPLETED
+
+----- 15. The day schedule report
+   09:00:00 APT-20260915-0001 Kamal Silva -> Dr. Ruwan Jayasinghe
+
+----- 16. A receptionist is refused the admin only area
+HTTP 403   Your account does not have permission to do that.
+
+----- 17. A write with no CSRF token is refused, even though signed in
+HTTP 403
+
+----- 18. Sign out
+HTTP 302 -> http://localhost:8080/login?logout
+   web service after sign out: HTTP 401
+
+==============================================================
+ What the DATABASE did by itself during the walkthrough above
+==============================================================
+
+--- audit rows, written by triggers that no Java code calls ---
+appointment_no	action	old_status	new_status	changed_by
+APT-20260915-0001	CREATED	NULL	BOOKED	root@localhost
+APT-20260915-0001	COMPLETED	BOOKED	COMPLETED	root@localhost
+
+--- reference numbers, produced by stored procedures + counter tables ---
+counter_name	counter_date	last_number
+APPOINTMENT	2026-09-15	1
+BILL	2026-09-02	1
+counter_name	last_number
+PATIENT	1
+
+--- the bill: total_amount is a GENERATED COLUMN, computed by MySQL ---
+bill_no	treatment_cost	consultation_fee	discount	total_amount	payment_status	payment_method
+BIL-20260902-0001	28750.00	1500.00	500.00	29750.00	PAID	CASH
+
+--- sign-in time, recorded by LoginAuditListener ---
+username	role	last_login_at
+admin	ADMIN	2026-09-02 01:04:52
+reception	RECEPTIONIST	2026-09-02 10:15:50
