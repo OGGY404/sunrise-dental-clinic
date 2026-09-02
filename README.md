@@ -1,5 +1,8 @@
 # Sunrise Dental Clinic — Appointment & Patient Management System
 
+[![Build and test](https://github.com/OGGY404/sunrise-dental-clinic/actions/workflows/ci.yml/badge.svg)](https://github.com/OGGY404/sunrise-dental-clinic/actions/workflows/ci.yml)
+
+
 Coursework project for **CIS6003 Advanced Programming (WRIT1)**
 ICBT Campus / Cardiff Metropolitan University — BSc (Hons) Software Engineering
 
@@ -245,6 +248,63 @@ to be running** to test. The coverage report is written to
 
 ---
 
+## 5b. Continuous integration and releases (Task D)
+
+Every push and every pull request runs
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) on GitHub Actions, in
+three jobs that run in this order:
+
+| Job | What it proves | Needs a database? |
+|---|---|---|
+| **Unit and web tests** | the 248 tests: clinic rules, validation, screens, security | no, in-memory H2 |
+| **Schema, procedures and triggers** | the half of the system written in SQL | yes, a real MySQL 8 container |
+| **Package the runnable jar** | only runs if both test jobs passed | no |
+
+**Why the second job exists.** H2 builds its tables from the Java entities, so
+it can only ever agree with them, and it has none of the stored procedures,
+triggers or generated columns. Two real bugs reached the running application
+through exactly that gap — a `CHAR(60)` column the entity called `VARCHAR`, and
+a database collation that stopped every booking. `MySqlDatabaseIT` now checks
+all of it on a clean MySQL 8 every time: that the scripts create 10 tables, 6
+functions, 13 procedures and 10 triggers; that the collations match; that
+booking really does go through the counter procedure and fire the audit
+trigger; that MySQL calculates the bill total itself; and that the database
+refuses a double booking even when the Java is bypassed entirely.
+
+Writing that test found a third bug straight away, which is recorded in the
+commit history.
+
+### Releasing a version
+
+Pushing a version tag runs
+[`.github/workflows/release.yml`](.github/workflows/release.yml), which builds
+from a clean checkout, runs the tests again, and publishes the runnable jar as
+a GitHub Release:
+
+```powershell
+git tag -a v0.9.0 -m "Step 9: CI/CD pipeline"
+git push origin v0.9.0
+```
+
+Releases are at
+<https://github.com/OGGY404/sunrise-dental-clinic/releases>.
+
+### Deploying that jar
+
+Spring Boot packages the web server inside the jar, so a server needs Java 17,
+MySQL 8 and one command:
+
+```bash
+export DB_HOST=localhost DB_NAME=sunrise_dental DB_USERNAME=clinic DB_PASSWORD=...
+export COOKIE_SECURE=true          # once it is served over HTTPS
+java -jar dental-clinic-0.0.1-SNAPSHOT.jar
+```
+
+The database, its tables, stored procedures, functions and triggers are all
+created on first start, so nothing has to be set up by hand.
+
+---
+
 ## 6. Build progress
 
 - [x] **Step 1** — Repository, `.gitignore`, README, Spring Boot skeleton
@@ -255,7 +315,7 @@ to be running** to test. The coverage report is written to
 - [x] **Step 6** — Login and sessions with Spring Security
 - [x] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
 - [ ] **Step 8** — Notifications and extra features
-- [ ] **Step 9** — GitHub Actions workflow and deployment
+- [x] **Step 9** — GitHub Actions workflow and deployment
 - [ ] **Step 10** — UML diagrams
 - [ ] **Step 11** — Test plan, traceability matrix, screenshots
 - [ ] **Step 12** — Final report

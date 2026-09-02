@@ -26,6 +26,23 @@ import java.util.Map;
  *
  * This class is where the assessed stored procedures sp_next_appointment_no and
  * sp_next_bill_no are actually used by the running system.
+ *
+ * WHY THE PARAMETERS ARE DECLARED AND THE METADATA LOOKUP IS SWITCHED OFF
+ * Left to itself, SimpleJdbcCall asks the driver to describe the procedure
+ * before calling it. On MySQL that search is not limited to the database this
+ * application is connected to, so if the same server holds a second copy of
+ * the schema - a test database beside the live one, which is completely normal
+ * - it finds the procedure twice and refuses to guess:
+ *
+ *     Unable to determine the correct call signature - multiple signatures
+ *     for 'sp_next_appointment_no'
+ *
+ * Every parameter is already written out below, so that lookup was never
+ * needed. Switching it off removes the ambiguity, and saves a round trip to
+ * the database on every booking as well.
+ *
+ * This was found by MySqlDatabaseIT, which runs against its own database on
+ * the same server, which is exactly the situation that triggers it.
  */
 @Component
 public class StoredProcedureReferenceNumberGenerator implements ReferenceNumberGenerator {
@@ -39,12 +56,14 @@ public class StoredProcedureReferenceNumberGenerator implements ReferenceNumberG
 
         this.nextAppointmentNoCall = new SimpleJdbcCall(dataSource)
                 .withProcedureName("sp_next_appointment_no")
+                .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
                         new org.springframework.jdbc.core.SqlParameter("p_date", Types.DATE),
                         new org.springframework.jdbc.core.SqlOutParameter("p_appointment_no", Types.VARCHAR));
 
         this.nextBillNoCall = new SimpleJdbcCall(dataSource)
                 .withProcedureName("sp_next_bill_no")
+                .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
                         new org.springframework.jdbc.core.SqlOutParameter("p_bill_no", Types.VARCHAR));
     }
