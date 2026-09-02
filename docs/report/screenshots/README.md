@@ -123,10 +123,18 @@ cd "D:\ICBT\Advance programming\02_SunriseDentalClinic_Resit\SunriseDentalClinic
 .\mvnw.cmd spring-boot:run                        # leave running in one terminal
 
 bash docs\report\seed-demo-data.sh                # optional, if the data is gone
-cd D:\DevTools\shots ; node capture.mjs           # rewrites all 23
+
+cd D:\DevTools\shots
+node capture.mjs                                  # rewrites 1-23, the browser screens
+powershell -ExecutionPolicy Bypass -File capture-terminals.ps1    # rewrites 24-26
 ```
 
-The script lives in `D:\DevTools\shots` because that is where its
-`puppeteer-core` dependency is installed, which keeps `node_modules` out of
-this repository. A copy of the script itself is kept here as
-[`../capture-screenshots.mjs`](../capture-screenshots.mjs).
+The browser script lives in `D:\DevTools\shots` because that is where its
+`puppeteer-core` dependency is installed, which keeps `node_modules` out of this
+repository. Copies of both scripts are kept here, as
+[`../capture-screenshots.mjs`](../capture-screenshots.mjs) and
+[`../capture-terminals.ps1`](../capture-terminals.ps1).
+
+While `capture-terminals.ps1` is running it opens maximised console windows and
+captures the whole screen, so leave the machine alone for the minute or so it
+takes.
