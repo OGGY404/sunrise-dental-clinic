@@ -39,6 +39,7 @@ live, and how do I know it works.
 | 7.10 | Dentist workload report | class 3 | `ReportService.dentistWorkload()` → `sp_report_dentist_workload` | `ReportServiceTest`, `ReportWebControllerTest` | TC-FR7-16, TC-FR7-18…20 |
 | 7.11 | Unpaid bills chase list | class 3 | `BillingService.findUnpaidBills()`, `bills/unpaid.html` | `BillingWebControllerTest`, `BillRepositoryTest` | TC-FR4-19 |
 | 7.12 | Email notification on booking (Observer) | class 4, sequence 6 | `AppointmentObserver`, `EmailAppointmentObserver` | `AppointmentServiceTest` | TC-FR2-25, TC-FR2-26 |
+| 7.13 | **Appointment reminders**, on screen and on a nightly job | class 3 | `ReminderService` → `sp_report_upcoming_reminders`, `ReminderNotifier` + 2 implementations, `ReminderScheduler`, `reminders.html` | `ReminderServiceTest`, `ReminderWebControllerTest` | TC-FR7-21…29 |
 
 ## 3. Non-functional and technical requirements
 
@@ -48,7 +49,7 @@ live, and how do I know it works.
 | **Design patterns** implemented and named | class 4, class 2 (Builder) | Singleton, Strategy, Template Method, Factory, Builder, Observer, Repository, MVC | `BillingStrategyTest`, `BillingStrategyFactoryTest`, `AppointmentBuilderTest`, `ClinicConfigurationTest`, `AppointmentServiceTest` | 46 tests |
 | **Proper database**, not text files | class 3 | MySQL 8, 10 tables | `MySqlDatabaseIT` | TC-DB-01 |
 | Advanced DB features: **stored procedures, functions, triggers** | class 3, sequences 6–8 | `procedures.sql` (6 functions, 13 procedures), `triggers.sql` (10 triggers) | `MySqlDatabaseIT` | TC-DB-01…06 |
-| **Three-tier architecture** | class diagram 3 | `controller` / `service` / `repository` packages | the layering is what allows 248 tests to run with no web server or database | whole suite |
+| **Three-tier architecture** | class diagram 3 | `controller` / `service` / `repository` packages | the layering is what allows 262 tests to run with no web server or database | whole suite |
 | **Validation** on all inputs | class 2 | Bean Validation on `BookingRequest`, `CancelRequest`, `RescheduleRequest`, `BillRequest`, `PaymentRequest` | `BookingRequestValidationTest` | TC-FR2-01…16 |
 | **Sessions and cookies** used effectively | sequence 5 | `SUNRISEID` cookie, HttpOnly, SameSite=Lax, 30-min timeout, session fixation protection | `LoginAndSessionSecurityTest`, `CsrfCookieEndToEndTest` | TC-FR1-05…07, TC-SEC-05…08 |
 | **Separate views** for data entry and viewing results | sequences 6 and 7 | `register.html` → `view.html`; `generate.html` → `bills/view.html` | `AppointmentWebControllerTest`, `BillingWebControllerTest` | TC-FR2-27, TC-FR4-17 |
@@ -61,7 +62,7 @@ live, and how do I know it works.
 | Item | Why it is not automated |
 |---|---|
 | Printing the bill on paper | `window.print()` hands over to the browser's own print dialogue. The print **stylesheet** is testable by eye only; this was checked by hand and recorded in `manual-walkthrough.md`. |
-| Sending a real email | Notifications are switched off until real SMTP credentials exist. That the observer is *called*, and that a failing observer cannot lose a booking, are both tested (TC-FR2-25, TC-FR2-26). |
+| Sending a real email | Notifications are switched off until real SMTP credentials exist. That the observer and the reminder notifiers are *called*, and that a failure cannot lose a booking or stop a reminder round, are all tested (TC-FR2-25, TC-FR2-26, TC-FR7-25). |
 | Look and feel of the screens | Checked by hand; screenshots go in the report. Automated visual testing was judged out of scope for a project this size. |
 
 Stating these three openly is deliberate. A traceability matrix that claimed
@@ -75,7 +76,7 @@ understood.
 | | Count |
 |---|---|
 | Functional requirements in the brief (FR1–FR6) | 6 — **all traced, all tested** |
-| FR7 additional features delivered | 12 — all traced, all tested |
+| FR7 additional features delivered | 13 — all traced, all tested |
 | Non-functional / technical requirements | 11 — 11 traced, 10 automated |
-| Total automated test methods | **254** |
-| Test classes | **30** |
+| Total automated test methods | **268** |
+| Test classes | **32** |

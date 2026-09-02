@@ -110,6 +110,9 @@ try {
   await p.goto(`${BASE}/bills/unpaid`, { waitUntil: 'networkidle2' });
   await shot(p, '13-unpaid-bills');
 
+  await p.goto(`${BASE}/appointments/reminders`, { waitUntil: 'networkidle2' });
+  await shot(p, '27-appointment-reminders');
+
   await p.goto(`${BASE}/help`, { waitUntil: 'networkidle2' });
   await shot(p, '14-help-section');
 

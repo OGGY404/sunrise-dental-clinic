@@ -186,6 +186,7 @@ Sign in and everything is one click away from the green bar at the top.
 | `/bills/{billNo}` | the printable receipt | FR4 |
 | `/bills/unpaid` | what is still owed, oldest first | reports |
 | `/reports` | revenue by treatment, dentist workload | reports, **admin only** |
+| `/appointments/reminders` | who is due in, and who has no email and must be telephoned | FR7 |
 | `/help` | step-by-step instructions for new staff | FR5 |
 | Sign out button | ends the session safely | FR6 |
 
@@ -242,7 +243,7 @@ Every failure comes back in the same shape, so a screen only ever has to read
 .\mvnw.cmd test
 ```
 
-248 tests. They all run on an in-memory H2 database, so **MySQL does not need
+262 tests. They all run on an in-memory H2 database, so **MySQL does not need
 to be running** to test. The coverage report is written to
 `target/site/jacoco/index.html`.
 
@@ -256,7 +257,7 @@ three jobs that run in this order:
 
 | Job | What it proves | Needs a database? |
 |---|---|---|
-| **Unit and web tests** | the 248 tests: clinic rules, validation, screens, security | no, in-memory H2 |
+| **Unit and web tests** | the 262 tests: clinic rules, validation, screens, security | no, in-memory H2 |
 | **Schema, procedures and triggers** | the half of the system written in SQL | yes, a real MySQL 8 container |
 | **Package the runnable jar** | only runs if both test jobs passed | no |
 
@@ -333,14 +334,14 @@ Everything Task C asks for is in [`docs/testing/`](docs/testing/).
 
 | Document | What it is |
 |---|---|
-| [`test-plan.md`](docs/testing/test-plan.md) | 102 test cases with ID, precondition, steps, data, expected, actual, pass/fail, and the automated test that runs each one |
+| [`test-plan.md`](docs/testing/test-plan.md) | 111 test cases with ID, precondition, steps, data, expected, actual, pass/fail, and the automated test that runs each one |
 | [`test-data.md`](docs/testing/test-data.md) | where every test value came from: equivalence partitions, boundary values, devised cases |
 | [`traceability-matrix.md`](docs/testing/traceability-matrix.md) | every requirement traced to its design, its code and its tests |
 | [`tdd-evidence.md`](docs/testing/tdd-evidence.md) | the six red→green commit pairs, with hashes and timestamps |
 | [`manual-walkthrough.md`](docs/testing/manual-walkthrough.md) | the whole system driven end to end against real MySQL, with the captured output |
 
-**254 automated tests across 30 classes, 0 failures.** 80.9% instruction
-coverage, 61.5% branch coverage. Everything runs on every push through GitHub
+**268 automated tests across 32 classes, 0 failures.** 78.8% instruction
+coverage, 62.2% branch coverage. Everything runs on every push through GitHub
 Actions.
 
 ---
@@ -354,7 +355,7 @@ Actions.
 - [x] **Step 5** — REST controllers and validation (tests first)
 - [x] **Step 6** — Login and sessions with Spring Security
 - [x] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
-- [ ] **Step 8** — Notifications and extra features
+- [x] **Step 8** — Notifications and extra features
 - [x] **Step 9** — GitHub Actions workflow and deployment
 - [x] **Step 10** — UML diagrams
 - [x] **Step 11** — Test plan, traceability matrix, screenshots
