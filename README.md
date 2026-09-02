@@ -305,6 +305,28 @@ created on first start, so nothing has to be set up by hand.
 
 ---
 
+## 5c. Design diagrams (Task A)
+
+The UML is in [`docs/uml/`](docs/uml/), written in PlantUML so that it lives in
+Git beside the code and changes with it. Rendered images are in
+[`docs/uml/png/`](docs/uml/png/).
+
+| # | Diagram | Covers |
+|---|---|---|
+| 1 | Use case | actors, use cases, `<<include>>` and `<<extend>>` |
+| 2 | Class — domain model | types, signatures, visibility, multiplicity, navigability, aggregation, composition |
+| 3 | Class — three tiers | which way the dependencies point |
+| 4 | Class — design patterns | Factory, Strategy, Template Method, Observer, Singleton |
+| 5 | Sequence — sign in | FR1 |
+| 6 | Sequence — register appointment | FR2 |
+| 7 | Sequence — calculate and print the bill | FR4 |
+| 8 | Sequence — cancel appointment | FR7 |
+
+[`docs/uml/README.md`](docs/uml/README.md) lists the seventeen documented
+assumptions and explains how to re-draw the images after a change.
+
+---
+
 ## 6. Build progress
 
 - [x] **Step 1** — Repository, `.gitignore`, README, Spring Boot skeleton
@@ -316,7 +338,7 @@ created on first start, so nothing has to be set up by hand.
 - [x] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
 - [ ] **Step 8** — Notifications and extra features
 - [x] **Step 9** — GitHub Actions workflow and deployment
-- [ ] **Step 10** — UML diagrams
+- [x] **Step 10** — UML diagrams
 - [ ] **Step 11** — Test plan, traceability matrix, screenshots
 - [ ] **Step 12** — Final report
 
