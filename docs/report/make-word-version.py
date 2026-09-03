@@ -8,8 +8,9 @@ CIS6003 brief: A4, 1.5" left margin, Times New Roman 12pt, 1.5 line spacing,
 """
 import io, re, os, html
 
-SRC = "CIS6003-WRIT1-report-draft.md"
-OUT = "CIS6003-WRIT1-report-draft.html"
+import sys
+SRC = sys.argv[1] if len(sys.argv) > 1 else "CIS6003-WRIT1-report-draft.md"
+OUT = sys.argv[2] if len(sys.argv) > 2 else "CIS6003-WRIT1-report-draft.html"
 
 lines = io.open(SRC, encoding="utf-8").read().split("\n")
 

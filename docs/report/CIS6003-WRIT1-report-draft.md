@@ -119,9 +119,8 @@ most thought, and the two kinds are used differently on purpose:
   who leaves the clinic is marked inactive rather than deleted, and their past
   appointments stay in the record permanently.
 
-**Multiplicity** is shown on every association. `Appointment 1 ↔ 0..1 Bill` is
-worth noticing: the `0..1` is what allows a visit that has taken place but has
-not yet been billed, which is a normal state at a reception desk.
+**Multiplicity** is shown on every association. In `Appointment 1 ↔ 0..1 Bill`
+the `0..1` is what allows a visit that has happened but is not yet billed.
 
 **Navigability** reflects the code rather than decorating the diagram.
 `Appointment` knows its `User`, but `User` holds no list of appointments,
@@ -435,10 +434,9 @@ steps, test data, expected and actual result, pass/fail, and the name of the
 automated test that runs it. Every case is automated; none was run by hand and
 then written down.
 
-Test data was **derived** from the specification — the column widths in
-`schema.sql`, the opening hours, the rules in the brief — and **devised** where
-a specific risk needed probing. Equivalence partitioning and boundary value
-analysis were applied throughout. A representative sample:
+Test data was **derived** from the specification — column widths, opening hours,
+the rules in the brief — and **devised** where a specific risk needed probing,
+using equivalence partitioning and boundary value analysis throughout.
 
 Examples are tabulated in Appendix B: a name of 101 characters against the
 100-character column, a telephone number one digit short, yesterday against
@@ -522,7 +520,7 @@ The public repository is <https://github.com/OGGY404/sunrise-dental-clinic>.
 
 `[FIGURE 18: Commit history — docs/report/screenshots/23-github-commit-history.png]`
 
-A three-level branching strategy was used throughout:
+A three-level branching strategy was used:
 
 - **`main`** holds released versions only, and carries the tags.
 - **`develop`** is the integration branch.

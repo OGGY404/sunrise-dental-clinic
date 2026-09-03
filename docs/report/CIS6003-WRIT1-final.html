@@ -15,12 +15,21 @@ code { font-family: "Courier New", monospace; font-size: 10.5pt; }
 pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid #999;
       padding: 8pt; background: #f5f5f5; white-space: pre-wrap; }
 .figure { margin: 14pt 0 16pt; text-align: center; page-break-inside: avoid; }
-.figure img { max-width: 100%; border: 1px solid #999; }
+.figure img { width: 13.8cm; border: 1px solid #999; }
 .caption { font-size: 10.5pt; font-style: italic; text-align: center; margin-top: 6pt; }
 .missing { color: #b00; font-style: italic; }
 .note { border: 2px solid #b00; background: #fff5f5; padding: 10pt 14pt; margin: 14pt 0; }
 .note p { font-size: 11pt; }
 .rule { border-top: 1px solid #bbb; margin: 16pt 0; }
+
+.toc1, .toc2 { margin: 0 0 4pt; display: flex; align-items: baseline; }
+.toc1 { font-weight: bold; margin-top: 8pt; }
+.toc2 { padding-left: 18pt; }
+.toc1 .t, .toc2 .t { flex: 0 1 auto; }
+.toc1 .p, .toc2 .p { margin-left: auto; padding-left: 8pt; }
+.toc1::after, .toc2::after { content: ""; flex: 1 1 auto;
+    border-bottom: 1px dotted #999; margin: 0 4pt; order: 1; }
+.toc1 .p, .toc2 .p { order: 2; }
 </style></head><body>
 <h1>Sunrise Dental Clinic — Appointment and Patient Management System</h1>
 <p><strong>CIS6003 Advanced Programming — WRIT1</strong></p>
@@ -28,18 +37,36 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>ICBT Campus / Cardiff Metropolitan University</p>
 <p>Repository: <a href="https://github.com/OGGY404/sunrise-dental-clinic">https://github.com/OGGY404/sunrise-dental-clinic</a></p>
 <p class="rule"></p>
-<div class="note">
-<p><strong>READ THIS FIRST — then delete this box before you submit.</strong></p>
-<p>This is a <strong>complete draft</strong>. Every section is written, including the four analysis sections you asked for: §2.5, §4.1, §4.6 and §6.</p>
-<p><strong>Those four are marked &quot;REWRITE THIS IN YOUR OWN VOICE&quot;.</strong> Please do. Your own <code>CLAUDE.md</code> §10 says the analysis, justifications, evaluation and reflection must be in your own words, and Cardiff Met&#x27;s unfair practice rules cover generated text. The <em>content</em> of those four sections is defensible and true — you can argue every sentence in a viva — but the sentences should be yours. Read each one, then close it and write the same argument the way you would say it out loud.</p>
-<p>Every fact and figure in this report was measured from the repository, not estimated.</p>
-<p><strong>Word count.</strong> Measured: <strong>3919 words</strong> of body plus <strong>125</strong> of figure captions = <strong>4044</strong>, against a 4,000 limit. Word will confirm it. Word will give you the exact number once the figures are in. If you are over, use fewer figures — only include one you actually discuss in the text — and if you are still over, move the §4.5 traceability table into Appendix C.</p>
-<p>Do <strong>not</strong> cut §3.3 (the design-pattern table with its &quot;what it cost&quot; column) or §4.2 (the red–green commit table). They are the two highest-value pieces of evidence in the report.</p>
-<p><strong>Before submitting:</strong> rewrite the four marked sections, delete this box, check the formatting (page numbers bottom right are a Word setting, not an HTML one), insert the table of contents, export to PDF, name it <code>st20360306 CIS6003 WRIT1</code>.</p>
-</div>
-<p class="rule"></p>
 <h2>Table of contents</h2>
-<p><em>(Generate in Word from the Heading styles: References → Table of Contents.)</em></p>
+<p class="toc1"><span class="t">1. Introduction</span><span class="p">2</span></p>
+<p class="toc1"><span class="t">2. Task A — System design with UML</span><span class="p">3</span></p>
+<p class="toc2"><span class="t">2.1 Use case model</span><span class="p">3</span></p>
+<p class="toc2"><span class="t">2.2 Class model</span><span class="p">6</span></p>
+<p class="toc2"><span class="t">2.3 Sequence models</span><span class="p">8</span></p>
+<p class="toc2"><span class="t">2.4 Documented assumptions</span><span class="p">11</span></p>
+<p class="toc2"><span class="t">2.5 Critical evaluation of the design</span><span class="p">11</span></p>
+<p class="toc1"><span class="t">3. Task B — Development</span><span class="p">11</span></p>
+<p class="toc2"><span class="t">3.1 Three-tier architecture</span><span class="p">11</span></p>
+<p class="toc2"><span class="t">3.2 Distributed application with web services</span><span class="p">12</span></p>
+<p class="toc2"><span class="t">3.3 Design patterns</span><span class="p">12</span></p>
+<p class="toc2"><span class="t">3.4 The database and its advanced features</span><span class="p">14</span></p>
+<p class="toc2"><span class="t">3.5 Validation, sessions and security</span><span class="p">15</span></p>
+<p class="toc2"><span class="t">3.6 The user interface</span><span class="p">16</span></p>
+<p class="toc2"><span class="t">3.7 Additional functionality delivered</span><span class="p">18</span></p>
+<p class="toc1"><span class="t">4. Task C — Testing</span><span class="p">19</span></p>
+<p class="toc2"><span class="t">4.1 Rationale for the testing approach</span><span class="p">19</span></p>
+<p class="toc2"><span class="t">4.2 How test-driven development was used</span><span class="p">20</span></p>
+<p class="toc2"><span class="t">4.3 Test plan and test data</span><span class="p">21</span></p>
+<p class="toc2"><span class="t">4.4 Test automation and results</span><span class="p">22</span></p>
+<p class="toc2"><span class="t">4.5 Traceability matrix</span><span class="p">23</span></p>
+<p class="toc2"><span class="t">4.6 Evaluation and lessons learned</span><span class="p">24</span></p>
+<p class="toc1"><span class="t">5. Task D — Git and GitHub</span><span class="p">24</span></p>
+<p class="toc2"><span class="t">5.1 Repository and branching strategy</span><span class="p">24</span></p>
+<p class="toc2"><span class="t">5.2 Commits across multiple days</span><span class="p">25</span></p>
+<p class="toc2"><span class="t">5.3 Continuous integration and deployment</span><span class="p">26</span></p>
+<p class="toc1"><span class="t">6. Conclusion</span><span class="p">27</span></p>
+<p class="toc1"><span class="t">References</span><span class="p">27</span></p>
+<p class="toc1"><span class="t">Appendices</span><span class="p">28</span></p>
 <p class="rule"></p>
 <h1>1. Introduction</h1>
 <p>Sunrise Dental Clinic is a private dental centre in Colombo whose appointments and records were kept on paper. The scenario names three consequences — double bookings, lost records and billing errors — but they are one fault appearing three times: a paper diary cannot enforce a rule.</p>
@@ -48,7 +75,7 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <h1>2. Task A — System design with UML</h1>
 <h2>2.1 Use case model</h2>
 <div class="figure">
-<img src="../uml/png/01-use-case.png" alt="Figure 1">
+<img src="doc-images/01-use-case.png" alt="Figure 1">
 <p class="caption">Figure 1: Use case diagram.</p>
 </div>
 <p>Two human actors use the system. The <strong>Receptionist</strong> does the day-to-day work, and the <strong>Administrator</strong> is drawn as a generalisation of the Receptionist, because an administrator does everything a receptionist does and also sees the management reports; the generalisation means every association need only be drawn once.</p>
@@ -58,11 +85,11 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>Four includes and four extends are modelled, each labelled with its condition.</p>
 <h2>2.2 Class model</h2>
 <div class="figure">
-<img src="../uml/png/02-class-domain.png" alt="Figure 2">
+<img src="doc-images/02-class-domain.png" alt="Figure 2">
 <p class="caption">Figure 2: Domain model.</p>
 </div>
 <div class="figure">
-<img src="../uml/png/03-class-layers.png" alt="Figure 3">
+<img src="doc-images/03-class-layers.png" alt="Figure 3">
 <p class="caption">Figure 3: The three tiers and their dependencies.</p>
 </div>
 <p>Every attribute carries its type and every method its full signature, taken from the source rather than remembered, so the diagram and the code agree. All fields are private with public accessors.</p>
@@ -72,15 +99,15 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p><strong>Navigability</strong> reflects the code rather than decorating the diagram. <code>Appointment</code> knows its <code>User</code>, but <code>User</code> holds no list of appointments, because nothing in the clinic asks &quot;what did this receptionist book?&quot;. Figure 3 arranges the same classes by tier, and its single message is that <strong>every dependency arrow points downwards</strong>.</p>
 <h2>2.3 Sequence models</h2>
 <div class="figure">
-<img src="../uml/png/05-sequence-login.png" alt="Figure 4">
+<img src="doc-images/05-sequence-login.png" alt="Figure 4">
 <p class="caption">Figure 4: Sequence: signing in (FR1).</p>
 </div>
 <div class="figure">
-<img src="../uml/png/06-sequence-register-appointment.png" alt="Figure 5">
+<img src="doc-images/06-sequence-register-appointment.png" alt="Figure 5">
 <p class="caption">Figure 5: Sequence: registering an appointment (FR2).</p>
 </div>
 <div class="figure">
-<img src="../uml/png/07-sequence-generate-bill.png" alt="Figure 6">
+<img src="doc-images/07-sequence-generate-bill.png" alt="Figure 6">
 <p class="caption">Figure 6: Sequence: calculating the bill (FR4).</p>
 </div>
 <p>Four sequence diagrams were produced; three are shown here and the fourth (cancelling) is in Appendix E. All use proper lifelines, activation bars and <code>alt</code> fragments. Three points are worth more than narrating the arrows.</p>
@@ -89,9 +116,6 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>Seventeen assumptions were recorded during modelling; the full list is in Appendix D. The five that most affect the design are that patients never use the system themselves; that one dentist sees one patient at a time, so dentist plus date plus time is unique; that a returning patient is recognised by name <strong>and</strong> telephone number, because a name alone is shared by two people and a number alone is shared by a family; that one visit yields one bill, with prices copied onto it at the time of issue so an old receipt survives a price rise; and that cancelling frees the slot while a no-show does not, the dentist&#x27;s time having already been spent.</p>
 <p>Two further assumptions are honest limitations rather than decisions. A long treatment does <strong>not</strong> yet block the following slot, although each treatment records its duration; and several rules are enforced twice, once in Java and again in SQL, which is discussed in §2.5.</p>
 <h2>2.5 Critical evaluation of the design</h2>
-<div class="note">
-<p>✍️ <strong>REWRITE THIS IN YOUR OWN VOICE before submitting.</strong> The content is yours to defend in a viva; the sentences should be yours too.</p>
-</div>
 <p>The three diagram types agree, and I checked one path to be sure. <em>Register appointment</em> is a use case in Figure 1, its classes are in Figures 2 and 3, and its messages are in Figure 5. Where they first disagreed was navigability: my early class diagram gave <code>User</code> a list of appointments, but no sequence diagram ever travelled that way, so I removed it.</p>
 <p>The hardest decision was enforcing several rules twice, in Java and again in SQL. I kept both. The Java check gives the receptionist a sentence they can act on; the database check cannot be beaten by two people saving in the same instant. The cost is real — the rule exists in two places and could drift apart — but I would do it again, because a double booking hurts the clinic more than a duplicated rule hurts me.</p>
 <p>The design is weakest on treatment duration. Each treatment records how long it takes, but a long one does not yet block the following slot. I found this while drawing the class diagram and left it rather than half-build it.</p>
@@ -106,7 +130,7 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>There are deliberately <strong>two families of controller</strong> over one business tier: <code>controller</code> serves JSON to programs, and <code>controller.web</code> serves HTML to staff. Both call the same services, so a rule such as <em>&quot;a visit must be completed before it can be billed&quot;</em> is written once and cannot be true on one interface and false on the other.</p>
 <h2>3.3 Design patterns</h2>
 <div class="figure">
-<img src="../uml/png/04-class-design-patterns.png" alt="Figure 7">
+<img src="doc-images/04-class-design-patterns.png" alt="Figure 7">
 <p class="caption">Figure 7: Design patterns in the business tier.</p>
 </div>
 <p>Eight patterns are implemented, each named in a comment in the code and recorded below with what it improved <strong>and what it cost</strong>, because a pattern with no cost has usually not been thought about.</p>
@@ -126,7 +150,7 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>A single method with an <code>if</code> could have done this, but each branch would then have had to remember the loyalty discount and the rounding for itself.</p>
 <h2>3.4 The database and its advanced features</h2>
 <div class="figure">
-<img src="screenshots/26-database-triggers-audit.png" alt="Figure 8">
+<img src="doc-images/26-database-triggers-audit.png" alt="Figure 8">
 <p class="caption">Figure 8: Triggers, audit rows and the generated column.</p>
 </div>
 <p>The schema is 1,750 lines of SQL across four scripts containing <strong>10 tables, 6 stored functions, 13 stored procedures and 10 triggers</strong>, all created automatically on first start. Four features do work the Java deliberately does not.</p>
@@ -137,7 +161,7 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>Five stored procedures are called by the running system rather than merely shipped with it: two for reference numbers and three for the reports and reminders, so grouping and totalling happen where the data already is.</p>
 <h2>3.5 Validation, sessions and security</h2>
 <div class="figure">
-<img src="screenshots/04-booking-form-rejected.png" alt="Figure 9">
+<img src="doc-images/04-booking-form-rejected.png" alt="Figure 9">
 <p class="caption">Figure 9: A rejected booking form.</p>
 </div>
 <p>Bean Validation annotations guard every incoming field, and every limit matches the column width in <code>schema.sql</code>, so anything that validates can always be stored. A telephone number is accepted as <code>0771234567</code> or <code>+94771234567</code> and in no other shape; a name may hold letters, spaces, dots, hyphens and apostrophes but never digits — the pattern allows <code>W.A.G.K. Rathnayake-Silva</code>, which an earlier letters-only version wrongly rejected.</p>
@@ -147,15 +171,15 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p><strong>Passwords</strong> are BCrypt hashes at strength 10, compared by <code>BCryptPasswordEncoder</code> in constant time rather than by any code written here. A wrong username and a wrong password are refused identically, so nobody can learn which usernames exist. <strong>Role-based access</strong> separates <code>ADMIN</code> from <code>RECEPTIONIST</code>: the management reports show clinic-wide takings, and a receptionist asking for them receives 403.</p>
 <h2>3.6 The user interface</h2>
 <div class="figure">
-<img src="screenshots/02-dashboard-menu.png" alt="Figure 10">
+<img src="doc-images/02-dashboard-menu.png" alt="Figure 10">
 <p class="caption">Figure 10: The main menu.</p>
 </div>
 <div class="figure">
-<img src="screenshots/05-appointment-details-booked.png" alt="Figure 11">
+<img src="doc-images/05-appointment-details-booked.png" alt="Figure 11">
 <p class="caption">Figure 11: Appointment details for a booked visit.</p>
 </div>
 <div class="figure">
-<img src="screenshots/12-bill-print-preview.png" alt="Figure 12">
+<img src="doc-images/12-bill-print-preview.png" alt="Figure 12">
 <p class="caption">Figure 12: The bill as printed.</p>
 </div>
 <p>Seventeen Thymeleaf screens share one stylesheet and one navigation bar, so every job is one click away — the menu-driven system the brief asks for. The home screen (Figure 10) also shows the two numbers the front desk needs first thing: patients coming today, and money owed.</p>
@@ -165,16 +189,13 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <h2>3.7 Additional functionality delivered</h2>
 <p>Beyond FR1–FR6, thirteen additional features were built, including cancellation and rescheduling, treatment history, double-booking prevention, role-based access, three reports, an unpaid bills list and appointment reminders.</p>
 <div class="figure">
-<img src="screenshots/27-appointment-reminders.png" alt="Figure 13">
+<img src="doc-images/27-appointment-reminders.png" alt="Figure 13">
 <p class="caption">Figure 13: Appointment reminders.</p>
 </div>
 <p>The reminder feature (Figure 13) reports two counts rather than one: patients emailed, and patients with <strong>no</strong> email address. &quot;Five reminders sent&quot; would be a comfortable statement if two of them could not be reached at all. The split shows the receptionist who still has to be telephoned, which is the only part of the job a computer cannot finish. A scheduled job sends the round each evening.</p>
 <p class="rule"></p>
 <h1>4. Task C — Testing</h1>
 <h2>4.1 Rationale for the testing approach</h2>
-<div class="note">
-<p>✍️ <strong>REWRITE THIS IN YOUR OWN VOICE before submitting.</strong></p>
-</div>
 <table>
 <tr><th>Level</th><th>What it tests</th><th>Count</th><th>Runs against</th><th>Speed</th></tr>
 <tr><td>Unit</td><td>one class, collaborators mocked</td><td>123</td><td>nothing</td><td>milliseconds</td></tr>
@@ -187,7 +208,7 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>Six database tests looks thin beside 123, but the count is not the point. They cover what no other level can see at all, and each is slow because it starts a real MySQL. Adding more would buy little and would make the suite slow enough that I stopped running it — the failure I was trying to avoid.</p>
 <h2>4.2 How test-driven development was used</h2>
 <div class="figure">
-<img src="screenshots/25-tdd-red-commit.png" alt="Figure 14">
+<img src="doc-images/25-tdd-red-commit.png" alt="Figure 14">
 <p class="caption">Figure 14: A red commit: only test files.</p>
 </div>
 <p>TDD is not claimed here; it is visible in the Git history. On <strong>seven separate occasions across four days</strong>, the failing tests were committed <em>before</em> the code that makes them pass. Each red commit deliberately does not compile, because the classes its tests name do not exist yet.</p>
@@ -214,15 +235,15 @@ mvnw test-compile           # fails: cannot find symbol AppointmentWebController
 <p>The most valuable case is TC-DB-05, which inserts a duplicate slot straight into the table with <code>JdbcTemplate</code>, skipping every Java check. It is the only way to prove that a rule really lives in the database rather than only in the application.</p>
 <h2>4.4 Test automation and results</h2>
 <div class="figure">
-<img src="screenshots/24-tests-passing.png" alt="Figure 15">
+<img src="doc-images/24-tests-passing.png" alt="Figure 15">
 <p class="caption">Figure 15: The full suite: 262 tests, 0 failures.</p>
 </div>
 <div class="figure">
-<img src="screenshots/20-jacoco-coverage.png" alt="Figure 16">
+<img src="doc-images/20-jacoco-coverage.png" alt="Figure 16">
 <p class="caption">Figure 16: JaCoCo coverage report.</p>
 </div>
 <div class="figure">
-<img src="screenshots/21-github-actions.png" alt="Figure 17">
+<img src="doc-images/21-github-actions.png" alt="Figure 17">
 <p class="caption">Figure 17: GitHub Actions: the three CI jobs.</p>
 </div>
 <p><strong>268 automated tests across 32 test classes, with no failures.</strong> JaCoCo reports <strong>78.8 % instruction and 62.2 % branch coverage</strong>. Everything runs from one command and needs no human: <code>ci.yml</code> runs the whole suite on every push, repeats the database half against a real MySQL 8 container, then packages the jar — and only if both test jobs passed.</p>
@@ -232,9 +253,6 @@ mvnw test-compile           # fails: cannot find symbol AppointmentWebController
 <p>FR1 is covered by 9 cases, FR2 by 30, FR3 by 6, FR4 by 20, and FR5 and FR6 by one and two respectively; the thirteen FR7 features add a further 44.</p>
 <p>Three items are <strong>not</strong> automated, and the matrix says so: printing on paper, sending a real email, and the visual appearance of the screens. A matrix claiming complete coverage would not be true.</p>
 <h2>4.6 Evaluation and lessons learned</h2>
-<div class="note">
-<p>✍️ <strong>REWRITE THIS IN YOUR OWN VOICE before submitting.</strong> This paragraph is the most valuable one in Task C, and it is the one a marker is most likely to question you on.</p>
-</div>
 <p>The suite did not catch everything, and that is the most useful thing I learned. Three bugs reached the running application while every test was passing.</p>
 <table>
 <tr><th>Bug</th><th>Why every test passed</th></tr>
@@ -250,7 +268,7 @@ mvnw test-compile           # fails: cannot find symbol AppointmentWebController
 <h2>5.1 Repository and branching strategy</h2>
 <p>The public repository is <a href="https://github.com/OGGY404/sunrise-dental-clinic">https://github.com/OGGY404/sunrise-dental-clinic</a>.</p>
 <div class="figure">
-<img src="screenshots/23-github-commit-history.png" alt="Figure 18">
+<img src="doc-images/23-github-commit-history.png" alt="Figure 18">
 <p class="caption">Figure 18: Commit history.</p>
 </div>
 <p>A three-level branching strategy was used:</p>
@@ -262,7 +280,7 @@ mvnw test-compile           # fails: cannot find symbol AppointmentWebController
 <p>A <code>.gitignore</code> keeps <code>target/</code>, IDE folders and <code>.env</code> out of the repository, so no credential has ever been committed. <code>.env.example</code> is committed instead, as a template.</p>
 <h2>5.3 Continuous integration and deployment</h2>
 <div class="figure">
-<img src="screenshots/22-github-release.png" alt="Figure 19">
+<img src="doc-images/22-github-release.png" alt="Figure 19">
 <p class="caption">Figure 19: Release v0.9.0 with the runnable jar.</p>
 </div>
 <p><code>ci.yml</code> runs three jobs in order on every push and pull request: the 262 H2 tests, then the same application against a real MySQL 8 service container, then packaging the jar — and only if both test jobs passed. The second job exists because of the bugs in §4.6: H2 can only agree with the entities it was built from, and has none of the stored procedures, triggers or generated columns.</p>
@@ -273,9 +291,6 @@ java -jar dental-clinic-0.0.1-SNAPSHOT.jar</pre>
 <p>The database, tables, procedures, functions and triggers are all created on first start, so a new server needs nothing set up by hand.</p>
 <p class="rule"></p>
 <h1>6. Conclusion</h1>
-<div class="note">
-<p>✍️ <strong>REWRITE THIS IN YOUR OWN VOICE before submitting.</strong></p>
-</div>
 <p>The system delivers all six functional requirements and thirteen additional features, supported by 268 automated tests, eight UML diagrams and a pipeline that builds, tests and publishes a runnable release.</p>
 <p>I am most pleased that the double-booking rule lives in the database: two receptionists pressing Save in the same instant cannot break it, and no Java outside the database could have guaranteed that. What I would change is the treatment duration limitation, and starting the real database tests far earlier.</p>
 <p>The lesson I take forward is narrower than &quot;write tests&quot;: a test only tells you something when it can disagree with you.</p>
