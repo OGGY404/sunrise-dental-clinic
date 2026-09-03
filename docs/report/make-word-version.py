@@ -178,7 +178,30 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 .note { border: 2px solid #b00; background: #fff5f5; padding: 10pt 14pt; margin: 14pt 0; }
 .note p { font-size: 11pt; }
 .rule { border-top: 1px solid #bbb; margin: 16pt 0; }
+.cover { text-align: center; page-break-after: always; padding-top: 5cm; }
+.cover h1 { font-size: 20pt; margin-bottom: 6pt; page-break-after: avoid; }
+.cover p { text-align: center; margin: 0 0 8pt; }
+.cover .sub { font-size: 14pt; margin-bottom: 40pt; }
+.cover .meta { margin-top: 60pt; line-height: 2; }
 """
+
+# The leading title block becomes a cover page of its own: the first heading
+# and everything before the first horizontal rule, centred, with a page break
+# after it. The brief does not demand a cover page, but a report without one
+# reads as unfinished.
+for i, line in enumerate(out):
+    if line.startswith("<p class=\"rule\">"):
+        block = out[:i]
+        if block and block[0].startswith("<h1>"):
+            title = block[0]
+            rest = block[1:]
+            if rest:
+                rest[0] = rest[0].replace("<p>", '<p class="sub">', 1)
+            if len(rest) > 1:
+                rest[1] = '<div class="meta">' + rest[1]
+                rest[-1] = rest[-1] + "</div>"
+            out[:i] = ['<div class="cover">', title] + rest + ["</div>"]
+        break
 
 io.open(OUT, "w", encoding="utf-8").write(
     '<html><head><meta charset="utf-8"><title>CIS6003 WRIT1 - Sunrise Dental Clinic</title>'

@@ -2,11 +2,17 @@
 
 **CIS6003 Advanced Programming — WRIT1**
 
+Submitted by: **W.A. Gangul Kalhara Rathnayake**
+
 Student ID: **st20360306**
+
+BSc (Hons) Software Engineering
 
 ICBT Campus / Cardiff Metropolitan University
 
 Repository: <https://github.com/OGGY404/sunrise-dental-clinic>
+
+September 2026
 
 ---
 
