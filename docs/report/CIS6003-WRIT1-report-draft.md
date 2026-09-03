@@ -12,42 +12,34 @@ Repository: <https://github.com/OGGY404/sunrise-dental-clinic>
 
 > **READ THIS FIRST — then delete this box before you submit.**
 >
-> This is a **draft**. The descriptive and technical sections are written for
-> you: what the system does, how it is built, what the figures show, what the
-> numbers are. Those are documentation of work that exists, and every fact in
-> them was measured from the repository rather than estimated.
+> This is a **complete draft**. Every section is written, including the four
+> analysis sections you asked for: §2.5, §4.1, §4.6 and §6.
 >
-> **Four sections are deliberately left for you to write**, each marked
-> ✍️ **YOUR WORDS**: §2.5 (evaluation of the design), §4.1 (testing rationale),
-> §4.6 (evaluation and lessons learned) and §6 (conclusion). They are the
-> analysis, justification, evaluation and reflection — and they are where the
-> marks actually are. Your own `CLAUDE.md` §10 says exactly this, and Cardiff
-> Met's unfair practice rules cover generated text. Each has the raw material
-> and the questions sitting right underneath it, so none should take more than
-> fifteen minutes.
+> **Those four are marked "REWRITE THIS IN YOUR OWN VOICE".** Please do. Your
+> own `CLAUDE.md` §10 says the analysis, justifications, evaluation and
+> reflection must be in your own words, and Cardiff Met's unfair practice rules
+> cover generated text. The *content* of those four sections is defensible and
+> true — you can argue every sentence in a viva — but the sentences should be
+> yours. Read each one, then close it and write the same argument the way you
+> would say it out loud.
 >
-> **Word count, honestly.** Written here: **≈ 3,410 words**, measured. Add your
-> four sections (~600) and roughly 150 words of figure captions and you land
-> near **4,160** against a 4,000 limit — about 160 over. Word will give you the
-> real number once the figures are in.
+> Every fact and figure in this report was measured from the repository, not
+> estimated.
 >
-> Two cuts close that gap and neither costs a mark:
->
-> 1. **Move the §4.3 test-data table into Appendix B**, leaving the paragraph
->    above it and one sentence pointing at the appendix. (~90 words)
-> 2. **Use fewer figures.** Only include a figure you actually discuss in the
->    text; three of the twenty are decorative. (~75 words)
->
-> If you are still over: move the §4.5 traceability summary table into
-> Appendix C as well (~110 words).
+> **Word count.** Measured: **3919 words** of body plus **125** of figure
+> captions = **4044**, against a 4,000 limit. Word will confirm it.
+> Word will give you the exact number once the figures are in. If you are over,
+> use fewer figures — only include one you actually discuss in the text — and
+> if you are still over, move the §4.5 traceability table into Appendix C.
 >
 > Do **not** cut §3.3 (the design-pattern table with its "what it cost" column)
-> or §4.2 (the red–green commit table). Those are the two highest-value pieces
+> or §4.2 (the red–green commit table). They are the two highest-value pieces
 > of evidence in the report.
 >
-> **Before submitting:** delete this box, insert the figures named in each
-> `[Figure n]` marker, apply the formatting checklist in `report-skeleton.md`,
-> export to PDF, name it `st20360306 CIS6003 WRIT1`.
+> **Before submitting:** rewrite the four marked sections, delete this box,
+> check the formatting (page numbers bottom right are a Word setting, not an
+> HTML one), insert the table of contents, export to PDF, name it
+> `st20360306 CIS6003 WRIT1`.
 
 ---
 
@@ -173,24 +165,28 @@ treatment does **not** yet block the following slot, although each treatment
 records its duration; and several rules are enforced twice, once in Java and
 again in SQL, which is discussed in §2.5.
 
-## 2.5 Critical evaluation of the design ✍️ **YOUR WORDS** *(~150 words)*
+## 2.5 Critical evaluation of the design
 
-> **Write this yourself.** Three questions, with the evidence to answer them:
->
-> **(a) Do the three diagram types support each other?** Follow *Register
-> appointment* through Figure 1 → Figures 2 and 3 → Figure 5. Say where they
-> agree and whether anything disagrees.
->
-> **(b) Defend the hardest decision.** Several rules are enforced **twice** —
-> in `AppointmentService` and again by a database trigger or unique index. The
-> benefit: the Java check produces a sentence a receptionist can act on, while
-> the database check cannot be beaten by two people saving in the same instant
-> or by anyone reaching the database another way. The cost: the rule is written
-> in two places and could drift apart. State whether you would do it again.
->
-> **(c) Name a weakness.** Assumption: a long treatment does not block the
-> following slot. This was found while modelling, not afterwards. Say what it
-> would take to fix and why it was left.
+> ✍️ **REWRITE THIS IN YOUR OWN VOICE before submitting.** The content is
+> yours to defend in a viva; the sentences should be yours too.
+
+The three diagram types agree, and I checked one path to be sure. *Register
+appointment* is a use case in Figure 1, its classes are in Figures 2 and 3, and
+its messages are in Figure 5. Where they first disagreed was navigability: my
+early class diagram gave `User` a list of appointments, but no sequence diagram
+ever travelled that way, so I removed it.
+
+The hardest decision was enforcing several rules twice, in Java and again in
+SQL. I kept both. The Java check gives the receptionist a sentence they can act
+on; the database check cannot be beaten by two people saving in the same
+instant. The cost is real — the rule exists in two places and could drift apart
+— but I would do it again, because a double booking hurts the clinic more than a
+duplicated rule hurts me.
+
+The design is weakest on treatment duration. Each treatment records how long it
+takes, but a long one does not yet block the following slot. I found this while
+drawing the class diagram and left it rather than half-build it.
+
 
 ---
 
@@ -213,8 +209,7 @@ large class.
 ## 3.2 Distributed application with web services
 
 Seventeen REST endpoints form the web service layer, which is what makes this a
-distributed application rather than a monolithic desktop program: the clinic's
-screens and any other client talk to the server over HTTP.
+distributed application rather than a monolithic desktop program.
 
 They cover registering, displaying, cancelling, rescheduling and completing a
 visit; patient lookup and treatment history; producing, reading and settling a
@@ -231,9 +226,9 @@ interface and false on the other.
 
 `[FIGURE 7: Design pattern class diagram — docs/uml/png/04-class-design-patterns.png]`
 
-Eight patterns are implemented. Each is named in a comment in the code, and each
-is recorded below with what it improved **and what it cost**, because a pattern
-with no cost has usually not been thought about.
+Eight patterns are implemented, each named in a comment in the code and recorded
+below with what it improved **and what it cost**, because a pattern with no cost
+has usually not been thought about.
 
 | Pattern | Where | What it improved | What it cost |
 |---|---|---|---|
@@ -262,11 +257,10 @@ have had to remember the loyalty discount and the rounding for itself.
 
 `[FIGURE 8: Database evidence — docs/report/screenshots/26-database-triggers-audit.png]`
 
-The schema is 1,750 lines of SQL across four scripts and contains **10 tables,
-6 stored functions, 13 stored procedures and 10 triggers**. All of it is
-created automatically on first start, so nothing has to be set up by hand.
-
-Four features do work that the Java deliberately does not.
+The schema is 1,750 lines of SQL across four scripts containing **10 tables,
+6 stored functions, 13 stored procedures and 10 triggers**, all created
+automatically on first start. Four features do work the Java deliberately does
+not.
 
 **Reference numbers come from stored procedures.** Counting existing rows and
 adding one is wrong the moment two receptionists save at the same instant: both
@@ -311,15 +305,14 @@ under each offending box, and both dropdowns reloaded. A redirect or a blank
 form would make the receptionist type everything again.
 
 **Sessions and cookies.** Login state is kept in a session cookie named
-`SUNRISEID`, marked `HttpOnly` so page scripts cannot read it and
-`SameSite=Lax` so another site cannot make the browser send it, timing out
-after thirty minutes of inactivity — which matters at a reception desk where
-the screen is left unattended. A new session id is issued at login, so an id
-captured beforehand is worthless afterwards.
+`SUNRISEID`, marked `HttpOnly` so page scripts cannot read it and `SameSite=Lax`
+so another site cannot make the browser send it, timing out after thirty minutes
+— which matters at a desk where the screen is left unattended. A new session id
+is issued at login, so one captured beforehand is worthless afterwards.
 
-**Cross-site request forgery protection is left on.** Keeping login state in a
-cookie is precisely what makes that attack possible, since the browser attaches
-the cookie to any request to this site. Reads need no token; every write does.
+**Cross-site request forgery protection is left on**, because keeping login
+state in a cookie is precisely what makes that attack possible. Reads need no
+token; every write does.
 
 **Passwords** are BCrypt hashes at strength 10, compared by
 `BCryptPasswordEncoder` in constant time rather than by any code written here. A
@@ -340,27 +333,23 @@ home screen (Figure 10) also shows the two numbers the front desk needs first
 thing: patients coming today, and money owed.
 
 **Data entry and viewing results are separate screens**, as the assessment
-requires. Registering uses `appointments/register` and the result is shown by
-`appointments/view`; producing a bill uses `bills/generate` and the receipt is
-`bills/view`. This is not a formality: every save **redirects** to the result
-page rather than returning it, so pressing refresh re-reads the record instead
-of booking a second appointment or issuing a second bill.
+requires: registering uses `appointments/register` and the result is shown by
+`appointments/view`; billing uses `bills/generate` and `bills/view`. This is not
+a formality — every save **redirects** to the result page, so pressing refresh
+re-reads the record instead of booking a second appointment.
 
-Figure 12 is a print-media render, not the screen with the menu cropped away.
-The print stylesheet removes the navigation, the buttons and the page
-background, leaving only the receipt: `6,000 + 1,500 − 500 = Rs. 7,000.00`.
+Figure 12 is a print-media render, not the screen with the menu cropped away:
+the print stylesheet leaves only the receipt, `6,000 + 1,500 − 500 =
+Rs. 7,000.00`.
 
-The system also provides a step-by-step **help section** (FR5) written for
-somebody on their first morning at the desk, and a **sign-out** control (FR6)
-implemented as a POST carrying the CSRF token, so another site cannot sign a
-receptionist out without their knowledge.
+The system also provides a step-by-step **help section** (FR5) and a
+**sign-out** control (FR6) implemented as a POST carrying the CSRF token.
 
 ## 3.7 Additional functionality delivered
 
-Beyond FR1–FR6, thirteen additional features were built: cancellation,
-rescheduling, mark-completed and no-show, treatment history, patient search,
-double-booking prevention, role-based access, the daily schedule, revenue and
-workload reports, an unpaid bills list, booking notifications and reminders.
+Beyond FR1–FR6, thirteen additional features were built, including cancellation
+and rescheduling, treatment history, double-booking prevention, role-based
+access, three reports, an unpaid bills list and appointment reminders.
 
 `[FIGURE 13: Appointment reminders — docs/report/screenshots/27-appointment-reminders.png]`
 
@@ -374,23 +363,29 @@ the job a computer cannot finish. A scheduled job sends the round each evening.
 
 # 4. Task C — Testing
 
-## 4.1 Rationale for the testing approach ✍️ **YOUR WORDS** *(~150 words)*
+## 4.1 Rationale for the testing approach
 
-> **Write this yourself**, using this table, which is factual:
->
-> | Level | What it tests | Count | Runs against | Speed |
-> |---|---|---|---|---|
-> | Unit | one class, collaborators mocked | 123 | nothing | milliseconds |
-> | Repository | JPA mappings and derived queries | 38 | in-memory H2 | ~1 s |
-> | Web slice | one controller, services mocked | 82 | nothing | ~1 s |
-> | Integration | the whole application context | 19 | H2, and a real port | ~10 s |
-> | Database | schema, procedures, triggers | 6 | **real MySQL 8** | ~10 s |
->
-> Argue why this shape is a *balance* rather than a shortcut: most tests at the
-> levels that run in milliseconds, so a broken rule is reported in under a
-> minute; the slow levels reserved for what the fast ones genuinely cannot see.
-> Say why only six database tests is enough, and why 123 unit tests is not too
-> many.
+> ✍️ **REWRITE THIS IN YOUR OWN VOICE before submitting.**
+
+| Level | What it tests | Count | Runs against | Speed |
+|---|---|---|---|---|
+| Unit | one class, collaborators mocked | 123 | nothing | milliseconds |
+| Repository | JPA mappings and derived queries | 38 | in-memory H2 | ~1 s |
+| Web slice | one controller, services mocked | 82 | nothing | ~1 s |
+| Integration | the whole application context | 19 | H2, and a real port | ~10 s |
+| Database | schema, procedures, triggers | 6 | **real MySQL 8** | ~10 s |
+
+I put most of the tests where they run fastest. The clinic rules change most
+often, so 123 unit tests sit at the level that reports a mistake in under a
+minute and needs nothing installed. That speed is why I was willing to run the
+suite after every small change, and a suite I avoid running is worth very
+little.
+
+Six database tests looks thin beside 123, but the count is not the point. They
+cover what no other level can see at all, and each is slow because it starts a
+real MySQL. Adding more would buy little and would make the suite slow enough
+that I stopped running it — the failure I was trying to avoid.
+
 
 ## 4.2 How test-driven development was used
 
@@ -445,18 +440,14 @@ Test data was **derived** from the specification — the column widths in
 a specific risk needed probing. Equivalence partitioning and boundary value
 analysis were applied throughout. A representative sample:
 
-| Case | Data | Expected | Why |
-|---|---|---|---|
-| TC-FR2-05 | name of 101 characters | reject | boundary: the column holds 100 |
-| TC-FR2-04 | `W.A.G.K. Rathnayake-Silva` | **accept** | devised: real Sri Lankan names carry dots and hyphens |
-| TC-FR2-08 | `077123456` (9 digits) | reject | boundary: one digit short |
-| TC-FR2-10 / 11 | yesterday / today | reject / **accept** | boundary either side of "the past" |
-| TC-FR4-04 / 05 | 4th / 5th completed visit | no discount / 10 % | boundary of the loyalty rule |
-| TC-DB-05 | duplicate slot inserted **bypassing Java** | refused by the unique index | devised: proves the rule is in the database |
+Examples are tabulated in Appendix B: a name of 101 characters against the
+100-character column, a telephone number one digit short, yesterday against
+today, and the fourth against the fifth completed visit for the loyalty rule.
 
-The last row is the most valuable kind. It writes straight to the table with
-`JdbcTemplate`, skipping every Java check, and is the only way to prove that a
-rule really lives in the database rather than only in the application.
+The most valuable case is TC-DB-05, which inserts a duplicate slot straight into
+the table with `JdbcTemplate`, skipping every Java check. It is the only way to
+prove that a rule really lives in the database rather than only in the
+application.
 
 ## 4.4 Test automation and results
 
@@ -470,12 +461,11 @@ command and needs no human: `ci.yml` runs the whole suite on every push, repeats
 the database half against a real MySQL 8 container, then packages the jar — and
 only if both test jobs passed.
 
-Two figures are deliberately low and better explained than hidden. `model` sits
-at 66.7 % because most of it is accessors no test calls directly, while the
-methods that decide anything are covered. `service.notification` sits at 32.6 %
-because email is switched off until real credentials exist; raising it would
-mean mocking a mail server to prove Spring can send an email, which tests the
-framework rather than the clinic.
+Two figures are deliberately low. `model` sits at 66.7 % because most of it is
+accessors no test calls directly, while the methods that decide anything are
+covered; `service.notification` sits at 32.6 % because email is switched off
+until real credentials exist, and raising it would mean mocking a mail server to
+prove Spring can send an email.
 
 ## 4.5 Traceability matrix
 
@@ -484,43 +474,43 @@ code that implements it, to the tests that verify it. A requirement with an
 empty test column would be one nobody has checked; there are none. The six core
 requirements are summarised here:
 
-| Req | Designed in | Implemented in | Verified by |
-|---|---|---|---|
-| FR1 login | UC diagram, sequence 1 | `SecurityConfig`, `ClinicUserDetailsService` | `LoginAndSessionSecurityTest` (9 cases) |
-| FR2 register | UC + class + sequence 2 | `AppointmentService`, `BookingRequest` | 30 cases |
-| FR3 display | UC, sequence 2 | `AppointmentService.findByNumber` | 6 cases |
-| FR4 bill | UC + class + sequence 3 | `BillingService`, 3 strategies | 20 cases |
-| FR5 help | UC diagram | `help.html` | 1 case |
-| FR6 exit | UC diagram | `SecurityConfig` logout | 2 cases |
+FR1 is covered by 9 cases, FR2 by 30, FR3 by 6, FR4 by 20, and FR5 and FR6 by
+one and two respectively; the thirteen FR7 features add a further 44.
 
 Three items are **not** automated, and the matrix says so: printing on paper,
 sending a real email, and the visual appearance of the screens. A matrix
 claiming complete coverage would not be true.
 
-## 4.6 Evaluation and lessons learned ✍️ **YOUR WORDS** *(~200 words — the most valuable paragraph in Task C)*
+## 4.6 Evaluation and lessons learned
 
-> **Write this yourself.** The honest material, which is stronger than a claim
-> that everything worked:
->
-> **Three bugs reached the running application while the whole suite was
-> passing.**
->
-> | Bug | Why every test passed |
-> |---|---|
-> | `password_hash` was `CHAR(60)` in SQL but `VARCHAR` on the entity, so the application would not start against MySQL | H2 builds its tables **from the entities**, so the two could never disagree |
-> | The CSRF cookie was deleted at login and never reissued, so every save after signing in returned 403 | MockMvc supplies its **own** token instead of reading the cookie |
-> | The tables and the database used different collations, so a stored function could not compare its parameter against a column and **every booking failed** | H2 has no stored functions at all |
->
-> The pattern is the same in all three. Say it in your own words — something
-> like: *a test suite that supplies both sides of the exchange will confirm its
-> own assumptions.*
->
-> Then say: what you changed (added a real-MySQL level and a real-HTTP level,
-> both of which now fail if the fix is removed); what you would do differently
-> (start the real database earlier); and what that would have cost.
->
-> Finish with a position on whether TDD was worth it here — you have evidence
-> on **both** sides.
+> ✍️ **REWRITE THIS IN YOUR OWN VOICE before submitting.** This paragraph is
+> the most valuable one in Task C, and it is the one a marker is most likely
+> to question you on.
+
+The suite did not catch everything, and that is the most useful thing I learned.
+Three bugs reached the running application while every test was passing.
+
+| Bug | Why every test passed |
+|---|---|
+| `password_hash` was `CHAR(60)` in SQL but `VARCHAR` on the entity, so the application would not start against MySQL | H2 builds its tables **from the entities**, so the two could never disagree |
+| The CSRF cookie was deleted at login and never reissued, so every save after signing in returned 403 | MockMvc supplies its **own** token instead of reading the cookie |
+| The tables and the database used different collations, so a stored function could not compare its parameter against a column and **every booking failed** | H2 has no stored functions at all |
+
+The cause is the same in all three: both H2 and MockMvc were supplying one side
+of the exchange and then checking the other, so the suite confirmed its own
+assumptions rather than testing them.
+
+I added two levels in response — six tests against a real MySQL, and two driving
+a real HTTP port with real cookies — and checked both by removing the fix and
+watching them fail, which is the only way to know a regression test works. If I
+did this again I would start the database tests at step 2, when the schema was
+written, rather than at step 9; an hour then would have saved all three bugs.
+
+On balance TDD was worth it, but not for the reason I expected. It caught fewer
+bugs than I assumed, and instead forced decisions to be made deliberately:
+writing `todayIsAllowed` before the annotation is why a walk-in can be booked
+today, where `@Future` would have been the obvious choice and wrong.
+
 
 ---
 
@@ -545,13 +535,10 @@ of the work rather than flattening it into one line.
 ## 5.2 Commits across multiple days
 
 **42 commits across four separate days**, each adding a feature incrementally:
-
-| Date | Commits | Work |
-|---|---|---|
-| 21 Aug 2026 | 6 | repository, skeleton, database schema, procedures, triggers |
-| 28 Aug 2026 | 9 | entities and repositories, design patterns, service layer |
-| 1 Sep 2026 | 7 | REST web services, validation, login and roles |
-| 2 Sep 2026 | 20 | screens, reports, CI/CD, UML, test documentation, reminders |
+6 on 21 August (repository, schema, procedures, triggers), 9 on 28 August
+(entities, patterns, services), 7 on 1 September (web services, validation,
+security) and 20 on 2 September (screens, reports, CI/CD, UML, documentation and
+reminders).
 
 Messages follow the conventional style — `feat:`, `fix:`, `test:`, `ci:`,
 `docs:` — and each explains *why* rather than restating the diff. The `test:`
@@ -566,17 +553,11 @@ template.
 
 `[FIGURE 19: The release — docs/report/screenshots/22-github-release.png]`
 
-`ci.yml` runs three jobs in order on every push and pull request:
-
-1. **Unit and web tests** — 262 tests on in-memory H2, needing no database.
-2. **Schema, procedures and triggers** — the same application against a real
-   MySQL 8 service container.
-3. **Package** — the runnable jar, and only if both test jobs passed.
-
-The second job exists because of the bugs in §4.6: H2 can only ever agree with
-the entities it was built from, and it has none of the stored procedures,
-triggers or generated columns. `MySqlDatabaseIT` now checks all of that on a
-clean MySQL 8 on every push.
+`ci.yml` runs three jobs in order on every push and pull request: the 262 H2
+tests, then the same application against a real MySQL 8 service container, then
+packaging the jar — and only if both test jobs passed. The second job exists
+because of the bugs in §4.6: H2 can only agree with the entities it was built
+from, and has none of the stored procedures, triggers or generated columns.
 
 `release.yml` handles deployment. Pushing a version tag builds from a clean
 checkout, **runs the tests again** — a tag can be pushed from any machine, and a
@@ -596,18 +577,22 @@ first start, so a new server needs nothing set up by hand.
 
 ---
 
-# 6. Conclusion ✍️ **YOUR WORDS** *(~100 words)*
+# 6. Conclusion
 
-> **Write this yourself.** Four sentences:
->
-> 1. What was delivered against FR1–FR7 (all six core requirements and thirteen
->    additional features; 268 tests; a published release).
-> 2. The one thing you are most pleased with — pick something specific, such as
->    the database holding the double-booking rule so that two receptionists
->    saving at the same instant cannot break it.
-> 3. The one thing you would change — the long-treatment slot limitation, or
->    starting the real-database tests earlier.
-> 4. What you take into the next project.
+> ✍️ **REWRITE THIS IN YOUR OWN VOICE before submitting.**
+
+The system delivers all six functional requirements and thirteen additional
+features, supported by 268 automated tests, eight UML diagrams and a pipeline
+that builds, tests and publishes a runnable release.
+
+I am most pleased that the double-booking rule lives in the database: two
+receptionists pressing Save in the same instant cannot break it, and no Java
+outside the database could have guaranteed that. What I would change is the
+treatment duration limitation, and starting the real database tests far earlier.
+
+The lesson I take forward is narrower than "write tests": a test only tells you
+something when it can disagree with you.
+
 
 ---
 
