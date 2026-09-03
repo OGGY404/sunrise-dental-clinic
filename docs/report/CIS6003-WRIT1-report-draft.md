@@ -1,8 +1,11 @@
 # Sunrise Dental Clinic — Appointment and Patient Management System
 
 **CIS6003 Advanced Programming — WRIT1**
+
 Student ID: **st20360306**
+
 ICBT Campus / Cardiff Metropolitan University
+
 Repository: <https://github.com/OGGY404/sunrise-dental-clinic>
 
 ---
