@@ -14,7 +14,8 @@ CIS6003 Advanced Programming (WRIT1) · Sunrise Dental Clinic
 ## Rebuilding
 
 ```powershell
-cd "D:\ICBT\Advance programming_SunriseDentalClinic_Resit\SunriseDentalClinic\docseport"
+cd "D:\ICBT\Advance programming\02_SunriseDentalClinic_Resit\SunriseDentalClinic\docs\report"
+eport"
 
 python make-word-version.py    # draft .md  -> draft .html
 python make-final.py           # draft      -> clean final .html (no guidance box)
