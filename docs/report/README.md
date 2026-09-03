@@ -4,46 +4,43 @@ CIS6003 Advanced Programming (WRIT1) · Sunrise Dental Clinic
 
 | File | What it is |
 |---|---|
-| [`CIS6003-WRIT1-report-draft.html`](CIS6003-WRIT1-report-draft.html) | **Start here.** The draft, already formatted to the brief, with all 19 figures placed and captioned. Open it in Word. |
-| [`CIS6003-WRIT1-report-draft.md`](CIS6003-WRIT1-report-draft.md) | the same draft as text, if you would rather edit Markdown |
-| [`report-skeleton.md`](report-skeleton.md) | the structure, word budget and full submission checklist |
+| **`st20360306 CIS6003 WRIT1.pdf`** | **the submission.** 28 pages, formatted to the brief, all 19 figures, table of contents with page numbers, page numbers bottom right. |
+| `st20360306 CIS6003 WRIT1.docx` | the same content, editable in Word |
+| `CIS6003-WRIT1-final.html` | the clean source both are built from |
+| `CIS6003-WRIT1-report-draft.md` / `.html` | the working draft, which still carries the guidance box and the four "rewrite this" markers |
+| [`report-skeleton.md`](report-skeleton.md) | the structure, word budget and submission checklist |
 | [`screenshots/`](screenshots/) | 27 screenshots, all captured automatically |
-| [`make-word-version.py`](make-word-version.py) | regenerates the HTML from the Markdown |
-| [`capture-screenshots.mjs`](capture-screenshots.mjs), [`capture-terminals.ps1`](capture-terminals.ps1), [`seed-demo-data.sh`](seed-demo-data.sh) | the tools that produced the screenshots |
+
+## Rebuilding
+
+```powershell
+cd "D:\ICBT\Advance programming_SunriseDentalClinic_Resit\SunriseDentalClinic\docseport"
+
+python make-word-version.py    # draft .md  -> draft .html
+python make-final.py           # draft      -> clean final .html (no guidance box)
+python make-doc-images.py      # figures    -> doc-images/ at document size
+python build-pdf.py            # final .html -> the PDF, with a real contents list
+python build-docx.py           # final .md  -> the .docx
+```
+
+`build-pdf.py` renders the PDF, reads back which page each heading landed on,
+writes the contents list, and renders again until the page numbers stop moving.
+
+**Word's own automation does not work here.** It applies the formatting and then
+hangs on save — twenty minutes, twice, producing nothing. Chrome renders the PDF
+in seconds and pandoc produces the .docx, which is why the scripts are built
+that way.
 
 ---
 
-## Getting to a submittable PDF
+## Before submitting
 
-**1. Open the HTML in Word.**
-
-```powershell
-start winword "D:\ICBT\Advance programming\02_SunriseDentalClinic_Resit\SunriseDentalClinic\docs\report\CIS6003-WRIT1-report-draft.html"
-```
-
-Word opens HTML directly and keeps the formatting. The figures come in with it.
-
-**2. Save As → Word Document (.docx)** straight away, so you are editing a real
-document rather than an HTML file.
-
-**3. Write the four sections marked ✍️ YOUR WORDS.** They are §2.5, §4.1, §4.6
-and §6. Each has the material and the questions sitting underneath it. Delete
-the prompt box once you have written the section.
-
-**4. Delete the red box at the top.**
-
-**5. Check the formatting.** The HTML already sets A4, a 1.5-inch left margin,
-Times New Roman 12 pt, 1.5 line spacing and 14 pt bold headings. Word usually
-carries all of that across, but confirm it, and add **page numbers bottom
-right** yourself — that is a Word setting, not an HTML one.
-
-**6. Insert the table of contents.** References → Table of Contents. It builds
-itself from the headings.
-
-**7. Check the word count.** Select the body only, excluding references and
-appendices. See the red box for what to cut if you are over.
-
-**8. Export to PDF** and name it `st20360306 CIS6003 WRIT1`.
+- [ ] Read it through once.
+- [ ] Check the word count in Word: select the body only, excluding references
+      and appendices. It measured 4,012 including figure captions against a
+      4,000 limit; drop a figure you do not discuss if Word puts you over.
+- [ ] Confirm the file is named `st20360306 CIS6003 WRIT1.pdf`.
+- [ ] Submit through Turnitin on Moodle before **2:00 pm on 5 September**.
 
 ---
 
