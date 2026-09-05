@@ -21,6 +21,16 @@ MAX_W, MAX_H = 1600, 2000
 os.makedirs(OUT, exist_ok=True)
 
 sources = sorted(glob.glob("screenshots/*.png")) + sorted(glob.glob("../uml/png/*.png"))
+
+# Only the pictures the report actually uses. Copying all 35 left 16 files in
+# doc-images/ that nothing embeds — the same originals again at a smaller size.
+# If _final.md is missing, fall back to copying everything.
+if os.path.exists("_final.md"):
+    text = io.open("_final.md", encoding="utf-8").read()
+    used = {os.path.basename(p)
+            for _, _, p in re.findall(r'`\[FIGURE (\d+): (.+?) — (.+?)\]`', text)}
+    sources = [s for s in sources if os.path.basename(s) in used]
+
 before = after = 0
 
 for src in sources:

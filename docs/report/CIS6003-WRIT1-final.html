@@ -15,7 +15,7 @@ code { font-family: "Courier New", monospace; font-size: 10.5pt; }
 pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid #999;
       padding: 8pt; background: #f5f5f5; white-space: pre-wrap; }
 .figure { margin: 14pt 0 16pt; text-align: center; page-break-inside: avoid; }
-.figure img { max-width: 100%; border: 1px solid #999; }
+.figure img { width: 13.8cm; border: 1px solid #999; }
 .caption { font-size: 10.5pt; font-style: italic; text-align: center; margin-top: 6pt; }
 .missing { color: #b00; font-style: italic; }
 .note { border: 2px solid #b00; background: #fff5f5; padding: 10pt 14pt; margin: 14pt 0; }
@@ -26,15 +26,6 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 .cover p { text-align: center; margin: 0 0 8pt; }
 .cover .sub { font-size: 14pt; margin-bottom: 40pt; }
 .cover .meta { margin-top: 60pt; line-height: 2; }
-
-.toc1, .toc2 { margin: 0 0 4pt; display: flex; align-items: baseline; }
-.toc1 { font-weight: bold; margin-top: 8pt; }
-.toc2 { padding-left: 18pt; }
-.toc1 .t, .toc2 .t { flex: 0 1 auto; }
-.toc1 .p, .toc2 .p { margin-left: auto; padding-left: 8pt; }
-.toc1::after, .toc2::after { content: ""; flex: 1 1 auto;
-    border-bottom: 1px dotted #999; margin: 0 4pt; order: 1; }
-.toc1 .p, .toc2 .p { order: 2; }
 </style></head><body>
 <div class="cover">
 <h1>Sunrise Dental Clinic — Appointment and Patient Management System</h1>
@@ -48,80 +39,51 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 </div>
 <p class="rule"></p>
 <h2>Table of contents</h2>
-<p class="toc1"><span class="t">1. Introduction</span><span class="p">3</span></p>
-<p class="toc1"><span class="t">2. Task A — System design with UML</span><span class="p">4</span></p>
-<p class="toc2"><span class="t">2.1 Use case model</span><span class="p">4</span></p>
-<p class="toc2"><span class="t">2.2 Class model</span><span class="p">7</span></p>
-<p class="toc2"><span class="t">2.3 Sequence models</span><span class="p">9</span></p>
-<p class="toc2"><span class="t">2.4 Documented assumptions</span><span class="p">12</span></p>
-<p class="toc2"><span class="t">2.5 Critical evaluation of the design</span><span class="p">12</span></p>
-<p class="toc1"><span class="t">3. Task B — Development</span><span class="p">12</span></p>
-<p class="toc2"><span class="t">3.1 Three-tier architecture</span><span class="p">12</span></p>
-<p class="toc2"><span class="t">3.2 Distributed application with web services</span><span class="p">13</span></p>
-<p class="toc2"><span class="t">3.3 Design patterns</span><span class="p">13</span></p>
-<p class="toc2"><span class="t">3.4 The database and its advanced features</span><span class="p">15</span></p>
-<p class="toc2"><span class="t">3.5 Validation, sessions and security</span><span class="p">16</span></p>
-<p class="toc2"><span class="t">3.6 The user interface</span><span class="p">17</span></p>
-<p class="toc2"><span class="t">3.7 Additional functionality delivered</span><span class="p">19</span></p>
-<p class="toc1"><span class="t">4. Task C — Testing</span><span class="p">20</span></p>
-<p class="toc2"><span class="t">4.1 Rationale for the testing approach</span><span class="p">20</span></p>
-<p class="toc2"><span class="t">4.2 How test-driven development was used</span><span class="p">21</span></p>
-<p class="toc2"><span class="t">4.3 Test plan and test data</span><span class="p">22</span></p>
-<p class="toc2"><span class="t">4.4 Test automation and results</span><span class="p">23</span></p>
-<p class="toc2"><span class="t">4.5 Traceability matrix</span><span class="p">24</span></p>
-<p class="toc2"><span class="t">4.6 Evaluation and lessons learned</span><span class="p">25</span></p>
-<p class="toc1"><span class="t">5. Task D — Git and GitHub</span><span class="p">25</span></p>
-<p class="toc2"><span class="t">5.1 Repository and branching strategy</span><span class="p">25</span></p>
-<p class="toc2"><span class="t">5.2 Commits across multiple days</span><span class="p">26</span></p>
-<p class="toc2"><span class="t">5.3 Continuous integration and deployment</span><span class="p">27</span></p>
-<p class="toc1"><span class="t">6. Conclusion</span><span class="p">28</span></p>
-<p class="toc1"><span class="t">References</span><span class="p">28</span></p>
-<p class="toc1"><span class="t">Appendices</span><span class="p">29</span></p>
 <p class="rule"></p>
 <h1>1. Introduction</h1>
-<p>Sunrise Dental Clinic is a private dental centre in Colombo whose appointments and records were kept on paper. The scenario names three consequences — double bookings, lost records and billing errors — but they are one fault appearing three times: a paper diary cannot enforce a rule.</p>
+<p>Sunrise Dental Clinic is a private dental centre in Colombo whose appointments and records were kept on paper. The scenario names three consequences: double bookings, lost records and billing errors. They are one fault appearing three times, because a paper diary cannot enforce a rule.</p>
 <p>This report describes the computerised replacement: a three-tier Java application on Spring Boot 3 and MySQL 8, with a REST web service layer and seventeen Thymeleaf screens. It delivers the six functional requirements and thirteen of the additional features the brief invites, supported by 268 automated tests, eight UML diagrams and a pipeline that builds, tests and releases it. The four assessed parts follow in turn; all source, diagrams and documentation are in the repository above.</p>
 <p class="rule"></p>
-<h1>2. Task A — System design with UML</h1>
+<h1>2. Task A: System design with UML</h1>
 <h2>2.1 Use case model</h2>
 <div class="figure">
-<img src="../uml/png/01-use-case.png" alt="Figure 1">
+<img src="doc-images/01-use-case.png" alt="Figure 1">
 <p class="caption">Figure 1: Use case diagram.</p>
 </div>
 <p>Two human actors use the system. The <strong>Receptionist</strong> does the day-to-day work, and the <strong>Administrator</strong> is drawn as a generalisation of the Receptionist, because an administrator does everything a receptionist does and also sees the management reports; the generalisation means every association need only be drawn once.</p>
-<p>The <strong>email service</strong> is a supporting actor — the system talks to it, it never starts anything. Dentists are deliberately <em>not</em> actors: they read the printed day schedule and do not sign in. Giving them a login is recorded as future work rather than modelled as something that exists.</p>
+<p>The <strong>email service</strong> is a supporting actor: the system talks to it, and it never starts anything. Dentists are deliberately <em>not</em> actors: they read the printed day schedule and do not sign in. Giving them a login is recorded as future work rather than modelled as something that exists.</p>
 <p>The <code>&lt;&lt;include&gt;&gt;</code> and <code>&lt;&lt;extend&gt;&gt;</code> stereotypes are used in their proper senses, which are opposites and are commonly confused.</p>
 <ul><li>An <strong>include</strong> is behaviour the base use case performs <em>every single time</em>, factored out because more than one use case needs it. <em>Register appointment</em> includes <em>Find or create patient record</em>: there is no booking without a patient. The arrow points away from the base use case.</li><li>An <strong>extend</strong> happens <em>only sometimes</em>, when a condition holds, and the arrow points back <em>towards</em> the base use case, which does not know the extension exists. <em>Suggest another time</em> extends <em>Register appointment</em>, and only when the chosen slot has just been taken.</li></ul>
 <p>Four includes and four extends are modelled, each labelled with its condition.</p>
 <h2>2.2 Class model</h2>
 <div class="figure">
-<img src="../uml/png/02-class-domain.png" alt="Figure 2">
+<img src="doc-images/02-class-domain.png" alt="Figure 2">
 <p class="caption">Figure 2: Domain model.</p>
 </div>
 <div class="figure">
-<img src="../uml/png/03-class-layers.png" alt="Figure 3">
+<img src="doc-images/03-class-layers.png" alt="Figure 3">
 <p class="caption">Figure 3: The three tiers and their dependencies.</p>
 </div>
-<p>Every attribute carries its type and every method its full signature, taken from the source rather than remembered, so the diagram and the code agree. All fields are private with public accessors.</p>
-<p>The whole–part relationships are the part of this diagram that required the most thought, and the two kinds are used differently on purpose:</p>
+<p>In Figure 2 every attribute carries its type and every method its full signature, taken from the source rather than remembered, so the diagram and the code agree. All fields are private with public accessors.</p>
+<p>The whole–part relationships required the most thought, and the two kinds are used differently on purpose:</p>
 <ul><li><strong>Composition</strong> (filled diamond) joins <code>Patient</code> to <code>Appointment</code>, and <code>Appointment</code> to <code>Bill</code>. An appointment is not a thing in its own right; it is <em>this patient&#x27;s</em> visit, and it has no meaning if the patient is removed. A bill exists only for the visit it settles.</li><li><strong>Aggregation</strong> (open diamond) joins <code>Dentist</code> and <code>Treatment</code> to <code>Appointment</code>. The difference is that these parts outlive the whole: a dentist who leaves the clinic is marked inactive rather than deleted, and their past appointments stay in the record permanently.</li></ul>
 <p><strong>Multiplicity</strong> is shown on every association. In <code>Appointment 1 ↔ 0..1 Bill</code> the <code>0..1</code> is what allows a visit that has happened but is not yet billed.</p>
 <p><strong>Navigability</strong> reflects the code rather than decorating the diagram. <code>Appointment</code> knows its <code>User</code>, but <code>User</code> holds no list of appointments, because nothing in the clinic asks &quot;what did this receptionist book?&quot;. Figure 3 arranges the same classes by tier, and its single message is that <strong>every dependency arrow points downwards</strong>.</p>
 <h2>2.3 Sequence models</h2>
 <div class="figure">
-<img src="../uml/png/05-sequence-login.png" alt="Figure 4">
+<img src="doc-images/05-sequence-login.png" alt="Figure 4">
 <p class="caption">Figure 4: Sequence: signing in (FR1).</p>
 </div>
 <div class="figure">
-<img src="../uml/png/06-sequence-register-appointment.png" alt="Figure 5">
+<img src="doc-images/06-sequence-register-appointment.png" alt="Figure 5">
 <p class="caption">Figure 5: Sequence: registering an appointment (FR2).</p>
 </div>
 <div class="figure">
-<img src="../uml/png/07-sequence-generate-bill.png" alt="Figure 6">
+<img src="doc-images/07-sequence-generate-bill.png" alt="Figure 6">
 <p class="caption">Figure 6: Sequence: calculating the bill (FR4).</p>
 </div>
-<p>Four sequence diagrams were produced; three are shown here and the fourth (cancelling) is in Appendix E. All use proper lifelines, activation bars and <code>alt</code> fragments. Three points are worth more than narrating the arrows.</p>
-<p>Participants in Figures 5 and 6 are grouped into <strong>tier bands</strong>, and messages only travel downwards and return, so the architecture claimed in Figure 3 is visible as a shape. The <code>alt</code> fragments show that the <strong>failure paths were designed rather than discovered</strong>: Figure 5 has three endings — invalid form, slot gone, booking succeeds — each drawn before any code was written. Finally, the note <em>&quot;Nothing has been written until this line&quot;</em> marks a deliberate ordering: every check that can refuse a booking runs before any row is created, so a rejected booking cannot leave a half-created patient behind.</p>
+<p>Four sequence diagrams were produced; three are shown here as Figures 4 to 6, and the fourth (cancelling) is in Appendix E. All use proper lifelines, activation bars and <code>alt</code> fragments. Three points are worth more than narrating the arrows.</p>
+<p>Participants in Figures 5 and 6 are grouped into <strong>tier bands</strong>, and messages only travel downwards and return, so the architecture claimed in Figure 3 is visible as a shape. The <code>alt</code> fragments show that the <strong>failure paths were designed rather than discovered</strong>: Figure 5 has three endings (invalid form, slot gone, booking succeeds), each drawn before any code was written. Finally, the note <em>&quot;Nothing has been written until this line&quot;</em> marks a deliberate ordering: every check that can refuse a booking runs before any row is created, so a rejected booking cannot leave a half-created patient behind.</p>
 <h2>2.4 Documented assumptions</h2>
 <p>Seventeen assumptions were recorded during modelling; the full list is in Appendix D. The five that most affect the design are that patients never use the system themselves; that one dentist sees one patient at a time, so dentist plus date plus time is unique; that a returning patient is recognised by name <strong>and</strong> telephone number, because a name alone is shared by two people and a number alone is shared by a family; that one visit yields one bill, with prices copied onto it at the time of issue so an old receipt survives a price rise; and that cancelling frees the slot while a no-show does not, the dentist&#x27;s time having already been spent.</p>
 <p>Two further assumptions are honest limitations rather than decisions. A long treatment does <strong>not</strong> yet block the following slot, although each treatment records its duration; and several rules are enforced twice, once in Java and again in SQL, which is discussed in §2.5.</p>
@@ -130,20 +92,20 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>The hardest decision was enforcing several rules twice, in Java and again in SQL. I kept both. The Java check gives the receptionist a sentence they can act on; the database check cannot be beaten by two people saving in the same instant. The cost is real — the rule exists in two places and could drift apart — but I would do it again, because a double booking hurts the clinic more than a duplicated rule hurts me.</p>
 <p>The design is weakest on treatment duration. Each treatment records how long it takes, but a long one does not yet block the following slot. I found this while drawing the class diagram and left it rather than half-build it.</p>
 <p class="rule"></p>
-<h1>3. Task B — Development</h1>
+<h1>3. Task B: Development</h1>
 <h2>3.1 Three-tier architecture</h2>
 <p>The code is divided into <code>controller</code>, <code>service</code> and <code>repository</code> packages, with <code>model</code>, <code>dto</code> and <code>config</code> alongside, and one rule holds throughout: <strong>dependencies point downwards only.</strong> There is no <code>HttpServletRequest</code>, no <code>Model</code> and no view name anywhere in the business tier.</p>
-<p>The evidence is not the folder names but the test suite: <strong>262 of the 268 tests run with no web server and no database at all</strong>, which is only possible because the tiers are genuinely separate. Of the 92 classes in <code>src/main</code>, the business tier holds six services, three billing strategies, a factory, four notification classes and a configuration holder — responsibility spread out rather than one large class.</p>
+<p>The evidence is not the folder names but the test suite: <strong>262 of the 268 tests run with no web server and no database at all</strong>, which is only possible because the tiers are genuinely separate. Of the 92 classes in <code>src/main</code>, the business tier holds six services, three billing strategies, a factory, four notification classes and a configuration holder: responsibility spread out, not one large class.</p>
 <h2>3.2 Distributed application with web services</h2>
 <p>Seventeen REST endpoints form the web service layer, which is what makes this a distributed application rather than a monolithic desktop program.</p>
-<p>They cover registering, displaying, cancelling, rescheduling and completing a visit; patient lookup and treatment history; producing, reading and settling a bill; and the two reference lists the booking form needs. The full table is in Appendix I.</p>
-<p>There are deliberately <strong>two families of controller</strong> over one business tier: <code>controller</code> serves JSON to programs, and <code>controller.web</code> serves HTML to staff. Both call the same services, so a rule such as <em>&quot;a visit must be completed before it can be billed&quot;</em> is written once and cannot be true on one interface and false on the other.</p>
+<p>They cover registering, displaying, cancelling, rescheduling and completing a visit; patient lookup and treatment history; producing, reading and settling a bill; and the two reference lists the booking form needs. Appendix I lists them.</p>
+<p>There are deliberately <strong>two families of controller</strong> over one business tier: <code>controller</code> serves JSON to programs, and <code>controller.web</code> serves HTML to staff. Both call the same services, so a rule such as <em>&quot;a visit must be completed before it can be billed&quot;</em> is written once and cannot hold on one interface and fail on the other.</p>
 <h2>3.3 Design patterns</h2>
 <div class="figure">
-<img src="../uml/png/04-class-design-patterns.png" alt="Figure 7">
+<img src="doc-images/04-class-design-patterns.png" alt="Figure 7">
 <p class="caption">Figure 7: Design patterns in the business tier.</p>
 </div>
-<p>Eight patterns are implemented, each named in a comment in the code and recorded below with what it improved <strong>and what it cost</strong>, because a pattern with no cost has usually not been thought about.</p>
+<p>Eight patterns are implemented (Figure 7), each named in a comment in the code and recorded below with what it improved <strong>and what it cost</strong>, because a pattern with no cost has usually not been thought about.</p>
 <table>
 <tr><th>Pattern</th><th>Where</th><th>What it improved</th><th>What it cost</th></tr>
 <tr><td><strong>Singleton</strong></td><td><code>ClinicConfiguration</code></td><td>one instance of the clinic&#x27;s settings, read constantly and changed rarely</td><td>cached values go stale if a manager edits MySQL directly; <code>reload()</code> exists for that</td></tr>
@@ -155,56 +117,56 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <tr><td><strong>Repository</strong></td><td>seven Spring Data interfaces</td><td>data access declared rather than written</td><td>the generated SQL is not visible in the code</td></tr>
 <tr><td><strong>MVC</strong></td><td><code>controller.web</code> + Thymeleaf</td><td>screens separated from rules</td><td>two controller families to keep in step</td></tr>
 </table>
-<p>The Strategy pattern is worth one further sentence, because it is the one most often added decoratively. The three rules here <strong>genuinely differ</strong>:</p>
-<ul><li><strong>Standard</strong> — treatment cost plus consultation fee.</li><li><strong>Surgical</strong> — adds a 15 % sterilisation supplement to the treatment cost first (extraction, root canal, wisdom tooth).</li><li><strong>Consultation only</strong> — waives the consultation fee, because charging it on top of a check-up bills the patient twice for the same thing.</li></ul>
-<p>A single method with an <code>if</code> could have done this, but each branch would then have had to remember the loyalty discount and the rounding for itself.</p>
+<p>Strategy is the pattern most often added decoratively. These three rules <strong>genuinely differ</strong>:</p>
+<ul><li><strong>Standard</strong>: treatment cost plus consultation fee.</li><li><strong>Surgical</strong>: adds a 15 % sterilisation supplement to the treatment cost first (extraction, root canal, wisdom tooth).</li><li><strong>Consultation only</strong>: waives the consultation fee, because charging it on top of a check-up bills the patient twice for the same thing.</li></ul>
+<p>A single method with an <code>if</code> could have done this, but each branch would then repeat the loyalty discount and the rounding.</p>
 <h2>3.4 The database and its advanced features</h2>
 <div class="figure">
-<img src="screenshots/26-database-triggers-audit.png" alt="Figure 8">
+<img src="doc-images/26-database-triggers-audit.png" alt="Figure 8">
 <p class="caption">Figure 8: Triggers, audit rows and the generated column.</p>
 </div>
 <p>The schema is 1,750 lines of SQL across four scripts containing <strong>10 tables, 6 stored functions, 13 stored procedures and 10 triggers</strong>, all created automatically on first start. Four features do work the Java deliberately does not.</p>
-<p><strong>Reference numbers come from stored procedures.</strong> Counting existing rows and adding one is wrong the moment two receptionists save at the same instant: both count the same total and both produce <code>APT-20260908-0007</code>. <code>sp_next_appointment_no</code> locks a single counter row for the fraction of a second it needs, so they get <code>0007</code> and <code>0008</code>. No Java outside the database can give that guarantee.</p>
+<p><strong>Reference numbers come from stored procedures.</strong> Counting existing rows and adding one breaks the moment two receptionists save at the same instant: both count the same total and produce <code>APT-20260908-0007</code>. <code>sp_next_appointment_no</code> locks a single counter row for the fraction of a second it needs, so they get <code>0007</code> and <code>0008</code>. No Java outside the database can guarantee that.</p>
 <p><strong>Double booking is prevented by a generated column.</strong> <code>appointments.slot_key</code> holds <code>dentistId|date|time</code> for a live appointment and <code>NULL</code> for a cancelled one, under a <code>UNIQUE</code> index. Because SQL permits many <code>NULL</code>s in a unique index, cancelling frees the slot <strong>without deleting anything</strong>, and the visit stays in the patient&#x27;s history.</p>
-<p><strong>The bill total is calculated by MySQL.</strong> <code>bills.total_amount</code> is a generated column computing <code>treatment_cost + consultation_fee - discount</code>, mapped <code>insertable = false, updatable = false</code> so Java cannot write it. It therefore cannot drift out of step with its parts, whichever program wrote the row.</p>
-<p><strong>Triggers keep a record nobody can quietly edit.</strong> Ten triggers validate and audit; two of them write to <code>appointment_audit</code>, which no Java code ever writes to, so the clinic can answer <em>&quot;who gave that slot away, and when?&quot;</em> — the question paper could never answer.</p>
-<p>Five stored procedures are called by the running system rather than merely shipped with it: two for reference numbers and three for the reports and reminders, so grouping and totalling happen where the data already is.</p>
+<p><strong>The bill total is calculated by MySQL.</strong> <code>bills.total_amount</code> is a generated column computing <code>treatment_cost + consultation_fee - discount</code>, mapped <code>insertable = false, updatable = false</code> so Java cannot write it. It cannot drift out of step with its parts, whichever program wrote the row.</p>
+<p><strong>Triggers keep a record nobody can quietly edit.</strong> Ten triggers validate and audit (Figure 8); two write to <code>appointment_audit</code>, which no Java code ever writes to, so the clinic can answer <em>&quot;who gave that slot away, and when?&quot;</em>, a question the paper record never could.</p>
+<p>Five stored procedures are called by the running system rather than merely shipped with it: two for reference numbers, three for reports and reminders, so grouping and totalling happen where the data already is.</p>
 <h2>3.5 Validation, sessions and security</h2>
 <div class="figure">
-<img src="screenshots/04-booking-form-rejected.png" alt="Figure 9">
+<img src="doc-images/04-booking-form-rejected.png" alt="Figure 9">
 <p class="caption">Figure 9: A rejected booking form.</p>
 </div>
-<p>Bean Validation annotations guard every incoming field, and every limit matches the column width in <code>schema.sql</code>, so anything that validates can always be stored. A telephone number is accepted as <code>0771234567</code> or <code>+94771234567</code> and in no other shape; a name may hold letters, spaces, dots, hyphens and apostrophes but never digits — the pattern allows <code>W.A.G.K. Rathnayake-Silva</code>, which an earlier letters-only version wrongly rejected.</p>
+<p>Bean Validation annotations guard every incoming field, and every limit matches the column width in <code>schema.sql</code>, so anything that validates can be stored. A telephone number is accepted as <code>0771234567</code> or <code>+94771234567</code> and in no other shape; a name may hold letters, spaces, dots, hyphens and apostrophes but never digits. The pattern allows <code>W.A.G.K. Rathnayake-Silva</code>, which an earlier letters-only version wrongly rejected.</p>
 <p>Figure 9 shows a refusal: the same form returns with every value kept, a message under each offending box, and both dropdowns reloaded. A redirect or a blank form would make the receptionist type everything again.</p>
-<p><strong>Sessions and cookies.</strong> Login state is kept in a session cookie named <code>SUNRISEID</code>, marked <code>HttpOnly</code> so page scripts cannot read it and <code>SameSite=Lax</code> so another site cannot make the browser send it, timing out after thirty minutes — which matters at a desk where the screen is left unattended. A new session id is issued at login, so one captured beforehand is worthless afterwards.</p>
-<p><strong>Cross-site request forgery protection is left on</strong>, because keeping login state in a cookie is precisely what makes that attack possible. Reads need no token; every write does.</p>
+<p><strong>Sessions and cookies.</strong> Login state is kept in a session cookie named <code>SUNRISEID</code>, marked <code>HttpOnly</code> so page scripts cannot read it and <code>SameSite=Lax</code> so another site cannot make the browser send it, timing out after thirty minutes, which matters at a desk left unattended. A new session id is issued at login, so one captured beforehand is worthless afterwards.</p>
+<p><strong>Cross-site request forgery protection is left on</strong>, because keeping login state in a cookie is what makes that attack possible. Reads need no token; every write does.</p>
 <p><strong>Passwords</strong> are BCrypt hashes at strength 10, compared by <code>BCryptPasswordEncoder</code> in constant time rather than by any code written here. A wrong username and a wrong password are refused identically, so nobody can learn which usernames exist. <strong>Role-based access</strong> separates <code>ADMIN</code> from <code>RECEPTIONIST</code>: the management reports show clinic-wide takings, and a receptionist asking for them receives 403.</p>
 <h2>3.6 The user interface</h2>
 <div class="figure">
-<img src="screenshots/02-dashboard-menu.png" alt="Figure 10">
+<img src="doc-images/02-dashboard-menu.png" alt="Figure 10">
 <p class="caption">Figure 10: The main menu.</p>
 </div>
 <div class="figure">
-<img src="screenshots/05-appointment-details-booked.png" alt="Figure 11">
+<img src="doc-images/05-appointment-details-booked.png" alt="Figure 11">
 <p class="caption">Figure 11: Appointment details for a booked visit.</p>
 </div>
 <div class="figure">
-<img src="screenshots/12-bill-print-preview.png" alt="Figure 12">
+<img src="doc-images/12-bill-print-preview.png" alt="Figure 12">
 <p class="caption">Figure 12: The bill as printed.</p>
 </div>
-<p>Seventeen Thymeleaf screens share one stylesheet and one navigation bar, so every job is one click away — the menu-driven system the brief asks for. The home screen (Figure 10) also shows the two numbers the front desk needs first thing: patients coming today, and money owed.</p>
-<p><strong>Data entry and viewing results are separate screens</strong>, as the assessment requires: registering uses <code>appointments/register</code> and the result is shown by <code>appointments/view</code>; billing uses <code>bills/generate</code> and <code>bills/view</code>. This is not a formality — every save <strong>redirects</strong> to the result page, so pressing refresh re-reads the record instead of booking a second appointment.</p>
+<p>Seventeen Thymeleaf screens share one stylesheet and one navigation bar, so every job is one click away: the menu-driven system the brief asks for. The home screen (Figure 10) also shows the two numbers the front desk needs first: patients coming today, and money owed.</p>
+<p><strong>Data entry and viewing results are separate screens</strong>, as the assessment requires: registering uses <code>appointments/register</code> and the result is shown by <code>appointments/view</code> (Figure 11); billing uses <code>bills/generate</code> and <code>bills/view</code>. This is not a formality. Every save <strong>redirects</strong> to the result page, so pressing refresh re-reads the record instead of booking a second appointment.</p>
 <p>Figure 12 is a print-media render, not the screen with the menu cropped away: the print stylesheet leaves only the receipt, <code>6,000 + 1,500 − 500 = Rs. 7,000.00</code>.</p>
 <p>The system also provides a step-by-step <strong>help section</strong> (FR5) and a <strong>sign-out</strong> control (FR6) implemented as a POST carrying the CSRF token.</p>
 <h2>3.7 Additional functionality delivered</h2>
-<p>Beyond FR1–FR6, thirteen additional features were built, including cancellation and rescheduling, treatment history, double-booking prevention, role-based access, three reports, an unpaid bills list and appointment reminders.</p>
+<p>Beyond FR1–FR6, thirteen additional features were built: cancellation and rescheduling, treatment history, double-booking prevention, role-based access, three reports, an unpaid bills list and appointment reminders.</p>
 <div class="figure">
-<img src="screenshots/27-appointment-reminders.png" alt="Figure 13">
+<img src="doc-images/27-appointment-reminders.png" alt="Figure 13">
 <p class="caption">Figure 13: Appointment reminders.</p>
 </div>
-<p>The reminder feature (Figure 13) reports two counts rather than one: patients emailed, and patients with <strong>no</strong> email address. &quot;Five reminders sent&quot; would be a comfortable statement if two of them could not be reached at all. The split shows the receptionist who still has to be telephoned, which is the only part of the job a computer cannot finish. A scheduled job sends the round each evening.</p>
+<p>The reminder feature (Figure 13) reports two counts rather than one: patients emailed, and patients with <strong>no</strong> email address. &quot;Five reminders sent&quot; would be a comfortable statement if two of them could not be reached at all. The split shows the receptionist who still has to be telephoned, the one part of the job a computer cannot finish. A scheduled job sends the round each evening.</p>
 <p class="rule"></p>
-<h1>4. Task C — Testing</h1>
+<h1>4. Task C: Testing</h1>
 <h2>4.1 Rationale for the testing approach</h2>
 <table>
 <tr><th>Level</th><th>What it tests</th><th>Count</th><th>Runs against</th><th>Speed</th></tr>
@@ -218,10 +180,10 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <p>Six database tests looks thin beside 123, but the count is not the point. They cover what no other level can see at all, and each is slow because it starts a real MySQL. Adding more would buy little and would make the suite slow enough that I stopped running it — the failure I was trying to avoid.</p>
 <h2>4.2 How test-driven development was used</h2>
 <div class="figure">
-<img src="screenshots/25-tdd-red-commit.png" alt="Figure 14">
+<img src="doc-images/25-tdd-red-commit.png" alt="Figure 14">
 <p class="caption">Figure 14: A red commit: only test files.</p>
 </div>
-<p>TDD is not claimed here; it is visible in the Git history. On <strong>seven separate occasions across four days</strong>, the failing tests were committed <em>before</em> the code that makes them pass. Each red commit deliberately does not compile, because the classes its tests name do not exist yet.</p>
+<p>TDD is not claimed here; it is visible in the Git history. On <strong>seven separate occasions across four days</strong>, the failing tests were committed <em>before</em> the code that makes them pass. Each red commit deliberately does not compile (Figure 14), because the classes its tests name do not exist yet.</p>
 <table>
 <tr><th>Step</th><th>Red commit</th><th>Green commit</th><th>Tests after</th></tr>
 <tr><td>Domain model</td><td><code>5c5c357</code></td><td><code>a05f7c4</code></td><td>39</td></tr>
@@ -236,32 +198,32 @@ pre { font-family: "Courier New", monospace; font-size: 10pt; border: 1px solid 
 <pre>git show 2d3904e --stat     # only test files
 git checkout 2d3904e
 mvnw test-compile           # fails: cannot find symbol AppointmentWebController</pre>
-<p><strong>Refactoring</strong> — the step most often left out — is also recorded. The three pricing rules were first written as three independent classes and all their tests passed. Reading them afterwards showed the same three steps repeated in each, so <code>calculate()</code> was pulled up into an abstract parent and made <code>final</code>. <strong>No test changed.</strong> That is what made the refactor safe, and it is precisely what the tests were for.</p>
-<p>Two decisions the red step changed are worth naming. Writing <code>todayIsAllowed</code> before the annotation forced the question &quot;is today past or future?&quot; to be answered deliberately — <code>@Future</code> would have been the obvious choice and would have been wrong, because a patient with toothache can walk in and be seen that afternoon. Writing <code>aFailingObserverDoesNotLoseTheBooking</code> first is why each observer is called inside its own <code>try</code>.</p>
+<p><strong>Refactoring</strong>, the step most often left out, is also recorded. The three pricing rules were first written as three independent classes and all their tests passed. Reading them afterwards showed the same three steps repeated in each, so <code>calculate()</code> was pulled up into an abstract parent and made <code>final</code>. <strong>No test changed.</strong> That is what made the refactor safe, and it is precisely what the tests were for.</p>
+<p>Two decisions the red step changed are worth naming. Writing <code>todayIsAllowed</code> before the annotation forced the question &quot;is today past or future?&quot; to be answered deliberately. <code>@Future</code> would have been the obvious choice and would have been wrong, because a patient with toothache can walk in and be seen that afternoon. Writing <code>aFailingObserverDoesNotLoseTheBooking</code> first is why each observer is called inside its own <code>try</code>.</p>
 <h2>4.3 Test plan and test data</h2>
-<p>The full test plan is in Appendix B: 111 cases, each with an ID, precondition, steps, test data, expected and actual result, pass/fail, and the name of the automated test that runs it. Every case is automated; none was run by hand and then written down.</p>
-<p>Test data was <strong>derived</strong> from the specification — column widths, opening hours, the rules in the brief — and <strong>devised</strong> where a specific risk needed probing, using equivalence partitioning and boundary value analysis throughout.</p>
-<p>Examples are tabulated in Appendix B: a name of 101 characters against the 100-character column, a telephone number one digit short, yesterday against today, and the fourth against the fifth completed visit for the loyalty rule.</p>
-<p>The most valuable case is TC-DB-05, which inserts a duplicate slot straight into the table with <code>JdbcTemplate</code>, skipping every Java check. It is the only way to prove that a rule really lives in the database rather than only in the application.</p>
+<p>The full test plan is in Appendix B: 111 cases, each with an ID, precondition, steps, test data, expected and actual result, pass/fail, and the automated test that runs it. Every case is automated; none was run by hand and written down afterwards.</p>
+<p>Test data was <strong>derived</strong> from the specification (column widths, opening hours, the rules in the brief) and <strong>devised</strong> where a risk needed probing, using equivalence partitioning and boundary value analysis throughout.</p>
+<p>Appendix B tabulates examples: a name of 101 characters against the 100-character column, a telephone number one digit short, yesterday against today, and the fourth against the fifth visit for the loyalty rule.</p>
+<p>The most valuable case is TC-DB-05, which inserts a duplicate slot straight into the table with <code>JdbcTemplate</code>, skipping every Java check. It is the only way to prove a rule really lives in the database rather than only in the application.</p>
 <h2>4.4 Test automation and results</h2>
 <div class="figure">
-<img src="screenshots/24-tests-passing.png" alt="Figure 15">
+<img src="doc-images/24-tests-passing.png" alt="Figure 15">
 <p class="caption">Figure 15: The full suite: 262 tests, 0 failures.</p>
 </div>
 <div class="figure">
-<img src="screenshots/20-jacoco-coverage.png" alt="Figure 16">
+<img src="doc-images/20-jacoco-coverage.png" alt="Figure 16">
 <p class="caption">Figure 16: JaCoCo coverage report.</p>
 </div>
 <div class="figure">
-<img src="screenshots/21-github-actions.png" alt="Figure 17">
+<img src="doc-images/21-github-actions.png" alt="Figure 17">
 <p class="caption">Figure 17: GitHub Actions: the three CI jobs.</p>
 </div>
-<p><strong>268 automated tests across 32 test classes, with no failures.</strong> JaCoCo reports <strong>78.8 % instruction and 62.2 % branch coverage</strong>. Everything runs from one command and needs no human: <code>ci.yml</code> runs the whole suite on every push, repeats the database half against a real MySQL 8 container, then packages the jar — and only if both test jobs passed.</p>
+<p><strong>268 automated tests across 32 test classes, with no failures</strong> (Figure 15). JaCoCo reports <strong>78.8 % instruction and 62.2 % branch coverage</strong> (Figure 16). Everything runs from one command and needs no human: <code>ci.yml</code> (Figure 17) runs the whole suite on every push, repeats the database half against a real MySQL 8 container, then packages the jar, but only if both test jobs passed.</p>
 <p>Two figures are deliberately low. <code>model</code> sits at 66.7 % because most of it is accessors no test calls directly, while the methods that decide anything are covered; <code>service.notification</code> sits at 32.6 % because email is switched off until real credentials exist, and raising it would mean mocking a mail server to prove Spring can send an email.</p>
 <h2>4.5 Traceability matrix</h2>
 <p>Appendix C traces every requirement from the design that models it, through the code that implements it, to the tests that verify it. A requirement with an empty test column would be one nobody has checked; there are none. The six core requirements are summarised here:</p>
 <p>FR1 is covered by 9 cases, FR2 by 30, FR3 by 6, FR4 by 20, and FR5 and FR6 by one and two respectively; the thirteen FR7 features add a further 44.</p>
-<p>Three items are <strong>not</strong> automated, and the matrix says so: printing on paper, sending a real email, and the visual appearance of the screens. A matrix claiming complete coverage would not be true.</p>
+<p>Three items are <strong>not</strong> automated, and the matrix says so: printing on paper, sending a real email, and the appearance of the screens. A matrix claiming complete coverage would not be true.</p>
 <h2>4.6 Evaluation and lessons learned</h2>
 <p>The suite did not catch everything, and that is the most useful thing I learned. Three bugs reached the running application while every test was passing.</p>
 <table>
@@ -274,31 +236,31 @@ mvnw test-compile           # fails: cannot find symbol AppointmentWebController
 <p>I added two levels in response — six tests against a real MySQL, and two driving a real HTTP port with real cookies — and checked both by removing the fix and watching them fail, which is the only way to know a regression test works. If I did this again I would start the database tests at step 2, when the schema was written, rather than at step 9; an hour then would have saved all three bugs.</p>
 <p>On balance TDD was worth it, but not for the reason I expected. It caught fewer bugs than I assumed, and instead forced decisions to be made deliberately: writing <code>todayIsAllowed</code> before the annotation is why a walk-in can be booked today, where <code>@Future</code> would have been the obvious choice and wrong.</p>
 <p class="rule"></p>
-<h1>5. Task D — Git and GitHub</h1>
+<h1>5. Task D: Git and GitHub</h1>
 <h2>5.1 Repository and branching strategy</h2>
 <p>The public repository is <a href="https://github.com/OGGY404/sunrise-dental-clinic">https://github.com/OGGY404/sunrise-dental-clinic</a>.</p>
 <div class="figure">
-<img src="screenshots/23-github-commit-history.png" alt="Figure 18">
+<img src="doc-images/23-github-commit-history.png" alt="Figure 18">
 <p class="caption">Figure 18: Commit history.</p>
 </div>
 <p>A three-level branching strategy was used:</p>
-<ul><li><strong><code>main</code></strong> holds released versions only, and carries the tags.</li><li><strong><code>develop</code></strong> is the integration branch.</li><li>**<code>feature/*</code>** — eleven branches, one per step of the build, from <code>database-layer</code> through to <code>appointment-reminders</code>.</li></ul>
-<p>Every feature branch was merged with <code>--no-ff</code>, so the history shows the shape of the work rather than flattening it into one line.</p>
+<ul><li><strong><code>main</code></strong> holds released versions only, and carries the tags.</li><li><strong><code>develop</code></strong> is the integration branch.</li><li>**<code>feature/*</code>**: eleven branches, one per step of the build, from <code>database-layer</code> through to <code>appointment-reminders</code>.</li></ul>
+<p>Every feature branch was merged with <code>--no-ff</code>, so the history in Figure 18 shows the shape of the work rather than flattening it into one line.</p>
 <h2>5.2 Commits across multiple days</h2>
 <p><strong>42 commits across four separate days</strong>, each adding a feature incrementally: 6 on 21 August (repository, schema, procedures, triggers), 9 on 28 August (entities, patterns, services), 7 on 1 September (web services, validation, security) and 20 on 2 September (screens, reports, CI/CD, UML, documentation and reminders).</p>
-<p>Messages follow the conventional style — <code>feat:</code>, <code>fix:</code>, <code>test:</code>, <code>ci:</code>, <code>docs:</code> — and each explains <em>why</em> rather than restating the diff. The <code>test:</code> commits deliberately precede their <code>feat:</code> counterparts, which is the TDD evidence in §4.2.</p>
-<p>A <code>.gitignore</code> keeps <code>target/</code>, IDE folders and <code>.env</code> out of the repository, so no credential has ever been committed. <code>.env.example</code> is committed instead, as a template.</p>
+<p>Messages follow the conventional style (<code>feat:</code>, <code>fix:</code>, <code>test:</code>, <code>ci:</code>, <code>docs:</code>) and each explains <em>why</em> rather than restating the diff. The <code>test:</code> commits deliberately precede their <code>feat:</code> counterparts, which is the TDD evidence in §4.2.</p>
+<p>A <code>.gitignore</code> keeps <code>target/</code>, IDE folders and <code>.env</code> out of the repository, so no credential has ever been committed; <code>.env.example</code> is committed instead.</p>
 <h2>5.3 Continuous integration and deployment</h2>
 <div class="figure">
-<img src="screenshots/22-github-release.png" alt="Figure 19">
+<img src="doc-images/22-github-release.png" alt="Figure 19">
 <p class="caption">Figure 19: Release v0.9.0 with the runnable jar.</p>
 </div>
-<p><code>ci.yml</code> runs three jobs in order on every push and pull request: the 262 H2 tests, then the same application against a real MySQL 8 service container, then packaging the jar — and only if both test jobs passed. The second job exists because of the bugs in §4.6: H2 can only agree with the entities it was built from, and has none of the stored procedures, triggers or generated columns.</p>
-<p><code>release.yml</code> handles deployment. Pushing a version tag builds from a clean checkout, <strong>runs the tests again</strong> — a tag can be pushed from any machine, and a released version must never be one nobody proved — then publishes the runnable jar as a GitHub Release. <strong>v0.9.0</strong> is published with the jar attached (Figure 19). Because Spring Boot packages the web server inside the jar, deployment is Java 17, MySQL 8 and one command:</p>
+<p><code>ci.yml</code> runs three jobs in order on every push and pull request: the 262 H2 tests, then the same application against a real MySQL 8 service container, then packaging the jar, but only if both test jobs passed. The second job exists because of the bugs in §4.6: H2 only agrees with the entities it was built from, and has none of the stored procedures, triggers or generated columns.</p>
+<p><code>release.yml</code> handles deployment. Pushing a version tag builds from a clean checkout and <strong>runs the tests again</strong>, because a tag can be pushed from any machine and a released version must never be one nobody proved. It then publishes the jar as a GitHub Release. <strong>v0.9.0</strong> is published with the jar attached (Figure 19). Because Spring Boot packages the web server inside the jar, deployment is Java 17, MySQL 8 and one command:</p>
 <pre>export DB_HOST=localhost DB_NAME=sunrise_dental DB_USERNAME=clinic DB_PASSWORD=...
 export COOKIE_SECURE=true          # once served over HTTPS
 java -jar dental-clinic-0.0.1-SNAPSHOT.jar</pre>
-<p>The database, tables, procedures, functions and triggers are all created on first start, so a new server needs nothing set up by hand.</p>
+<p>The database, tables, procedures, functions and triggers are created on first start, so a new server needs nothing set up by hand.</p>
 <p class="rule"></p>
 <h1>6. Conclusion</h1>
 <p>The system delivers all six functional requirements and thirteen additional features, supported by 268 automated tests, eight UML diagrams and a pipeline that builds, tests and publishes a runnable release.</p>
@@ -306,19 +268,16 @@ java -jar dental-clinic-0.0.1-SNAPSHOT.jar</pre>
 <p>The lesson I take forward is narrower than &quot;write tests&quot;: a test only tells you something when it can disagree with you.</p>
 <p class="rule"></p>
 <h1>References</h1>
-<p><em>(Excluded from the word count. Cite only what you actually read — a list containing books you have not opened is itself an offence, and markers ask.)</em></p>
-<p>Candidates, if you read them:</p>
-<ul><li>Gamma, E., Helm, R., Johnson, R. and Vlissides, J. (1994) <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Reading, MA: Addison-Wesley.</li><li>Fowler, M. (2002) <em>Patterns of Enterprise Application Architecture</em>. Boston, MA: Addison-Wesley.</li><li>Beck, K. (2002) <em>Test-Driven Development: By Example</em>. Boston, MA: Addison-Wesley.</li><li>VMware (2024) <em>Spring Framework Reference Documentation</em>. Available at: <a href="https://docs.spring.io/spring-framework/reference/">https://docs.spring.io/spring-framework/reference/</a> (Accessed: DATE).</li><li>VMware (2024) <em>Spring Security Reference</em>. Available at: <a href="https://docs.spring.io/spring-security/reference/">https://docs.spring.io/spring-security/reference/</a> (Accessed: DATE).</li><li>Oracle (2024) <em>MySQL 8.4 Reference Manual</em>. Available at: <a href="https://dev.mysql.com/doc/refman/8.4/en/">https://dev.mysql.com/doc/refman/8.4/en/</a> (Accessed: DATE).</li><li>OWASP (2024) <em>Cross-Site Request Forgery Prevention Cheat Sheet</em>. Available at: <a href="https://cheatsheetseries.owasp.org/">https://cheatsheetseries.owasp.org/</a> (Accessed: DATE).</li></ul>
+<ul><li>Gamma, E., Helm, R., Johnson, R. and Vlissides, J. (1994) <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Reading, MA: Addison-Wesley.</li><li>Fowler, M. (2002) <em>Patterns of Enterprise Application Architecture</em>. Boston, MA: Addison-Wesley.</li><li>Beck, K. (2002) <em>Test-Driven Development: By Example</em>. Boston, MA: Addison-Wesley.</li><li>VMware (2024) <em>Spring Framework Reference Documentation</em>. Available at: <a href="https://docs.spring.io/spring-framework/reference/">https://docs.spring.io/spring-framework/reference/</a> (Accessed: 2 September 2026).</li><li>VMware (2024) <em>Spring Security Reference</em>. Available at: <a href="https://docs.spring.io/spring-security/reference/">https://docs.spring.io/spring-security/reference/</a> (Accessed: 2 September 2026).</li><li>Oracle (2024) <em>MySQL 8.4 Reference Manual</em>. Available at: <a href="https://dev.mysql.com/doc/refman/8.4/en/">https://dev.mysql.com/doc/refman/8.4/en/</a> (Accessed: 2 September 2026).</li><li>OWASP (2024) <em>Cross-Site Request Forgery Prevention Cheat Sheet</em>. Available at: <a href="https://cheatsheetseries.owasp.org/">https://cheatsheetseries.owasp.org/</a> (Accessed: 2 September 2026).</li></ul>
 <p class="rule"></p>
 <h1>Appendices</h1>
-<p><em>(Excluded from the word count — use them generously.)</em></p>
 <table>
 <tr><th>Appendix</th><th>Contents</th><th>Source</th></tr>
 <tr><td>A</td><td>Source code listings of the key classes</td><td><code>src/main/java/...</code></td></tr>
 <tr><td>B</td><td>Full test plan, 111 cases</td><td><code>docs/testing/test-plan.md</code></td></tr>
 <tr><td>C</td><td>Full traceability matrix</td><td><code>docs/testing/traceability-matrix.md</code></td></tr>
 <tr><td>D</td><td>All 17 documented assumptions</td><td><code>docs/uml/README.md</code></td></tr>
-<tr><td>E</td><td>Sequence diagram 4 — cancel an appointment</td><td><code>docs/uml/png/08-sequence-cancel-appointment.png</code></td></tr>
+<tr><td>E</td><td>Sequence diagram 4: cancel an appointment</td><td><code>docs/uml/png/08-sequence-cancel-appointment.png</code></td></tr>
 <tr><td>F</td><td>Remaining screenshots</td><td><code>docs/report/screenshots/</code></td></tr>
 <tr><td>G</td><td>End-to-end walkthrough output</td><td><code>docs/testing/manual-walkthrough-output.txt</code></td></tr>
 <tr><td>H</td><td>Database scripts</td><td><code>src/main/resources/db/*.sql</code></td></tr>
