@@ -186,6 +186,7 @@ Sign in and everything is one click away from the green bar at the top.
 | `/bills/{billNo}` | the printable receipt | FR4 |
 | `/bills/unpaid` | what is still owed, oldest first | reports |
 | `/reports` | revenue by treatment, dentist workload | reports, **admin only** |
+| `/appointments/reminders` | who is due in, and who has no email and must be telephoned | FR7 |
 | `/help` | step-by-step instructions for new staff | FR5 |
 | Sign out button | ends the session safely | FR6 |
 
@@ -242,7 +243,7 @@ Every failure comes back in the same shape, so a screen only ever has to read
 .\mvnw.cmd test
 ```
 
-248 tests. They all run on an in-memory H2 database, so **MySQL does not need
+262 tests. They all run on an in-memory H2 database, so **MySQL does not need
 to be running** to test. The coverage report is written to
 `target/site/jacoco/index.html`.
 
@@ -256,7 +257,7 @@ three jobs that run in this order:
 
 | Job | What it proves | Needs a database? |
 |---|---|---|
-| **Unit and web tests** | the 248 tests: clinic rules, validation, screens, security | no, in-memory H2 |
+| **Unit and web tests** | the 262 tests: clinic rules, validation, screens, security | no, in-memory H2 |
 | **Schema, procedures and triggers** | the half of the system written in SQL | yes, a real MySQL 8 container |
 | **Package the runnable jar** | only runs if both test jobs passed | no |
 
@@ -305,6 +306,46 @@ created on first start, so nothing has to be set up by hand.
 
 ---
 
+## 5c. Design diagrams (Task A)
+
+The UML is in [`docs/uml/`](docs/uml/), written in PlantUML so that it lives in
+Git beside the code and changes with it. Rendered images are in
+[`docs/uml/png/`](docs/uml/png/).
+
+| # | Diagram | Covers |
+|---|---|---|
+| 1 | Use case | actors, use cases, `<<include>>` and `<<extend>>` |
+| 2 | Class — domain model | types, signatures, visibility, multiplicity, navigability, aggregation, composition |
+| 3 | Class — three tiers | which way the dependencies point |
+| 4 | Class — design patterns | Factory, Strategy, Template Method, Observer, Singleton |
+| 5 | Sequence — sign in | FR1 |
+| 6 | Sequence — register appointment | FR2 |
+| 7 | Sequence — calculate and print the bill | FR4 |
+| 8 | Sequence — cancel appointment | FR7 |
+
+[`docs/uml/README.md`](docs/uml/README.md) lists the seventeen documented
+assumptions and explains how to re-draw the images after a change.
+
+---
+
+## 5d. Testing evidence (Task C)
+
+Everything Task C asks for is in [`docs/testing/`](docs/testing/).
+
+| Document | What it is |
+|---|---|
+| [`test-plan.md`](docs/testing/test-plan.md) | 111 test cases with ID, precondition, steps, data, expected, actual, pass/fail, and the automated test that runs each one |
+| [`test-data.md`](docs/testing/test-data.md) | where every test value came from: equivalence partitions, boundary values, devised cases |
+| [`traceability-matrix.md`](docs/testing/traceability-matrix.md) | every requirement traced to its design, its code and its tests |
+| [`tdd-evidence.md`](docs/testing/tdd-evidence.md) | the six red→green commit pairs, with hashes and timestamps |
+| [`manual-walkthrough.md`](docs/testing/manual-walkthrough.md) | the whole system driven end to end against real MySQL, with the captured output |
+
+**268 automated tests across 32 classes, 0 failures.** 78.8% instruction
+coverage, 62.2% branch coverage. Everything runs on every push through GitHub
+Actions.
+
+---
+
 ## 6. Build progress
 
 - [x] **Step 1** — Repository, `.gitignore`, README, Spring Boot skeleton
@@ -314,11 +355,11 @@ created on first start, so nothing has to be set up by hand.
 - [x] **Step 5** — REST controllers and validation (tests first)
 - [x] **Step 6** — Login and sessions with Spring Security
 - [x] **Step 7** — Thymeleaf pages: login, register, search, billing, reports, help
-- [ ] **Step 8** — Notifications and extra features
+- [x] **Step 8** — Notifications and extra features
 - [x] **Step 9** — GitHub Actions workflow and deployment
-- [ ] **Step 10** — UML diagrams
-- [ ] **Step 11** — Test plan, traceability matrix, screenshots
-- [ ] **Step 12** — Final report
+- [x] **Step 10** — UML diagrams
+- [x] **Step 11** — Test plan, traceability matrix, screenshots
+- [~] **Step 12** — Final report (skeleton in `docs/report/`, the writing is the student's own)
 
 ---
 

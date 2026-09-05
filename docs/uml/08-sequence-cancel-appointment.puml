@@ -1,0 +1,136 @@
+@startuml 08-sequence-cancel-appointment
+'============================================================================
+'  Sunrise Dental Clinic - SEQUENCE DIAGRAM 4: cancelling a visit (FR7)
+'  CIS6003 Advanced Programming (WRIT1), Task A
+'
+'  A short use case, included because it shows two things the other three do
+'  not:
+'
+'    1. how the slot is given back. Nothing is deleted. The status becomes
+'       CANCELLED, and because slot_key is a generated column that is NULL for
+'       a cancelled row, the UNIQUE index stops blocking that time. SQL allows
+'       many NULLs in a unique index, and that single fact is what lets the
+'       time be sold again.
+'
+'    2. how an UPDATE is audited. The trigger records the old status and the
+'       new one, so the clinic can answer "who gave that slot away, and when?"
+'       - which is exactly what the paper system could never do.
+'============================================================================
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam participant {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+}
+skinparam actor {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam database {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sequence 4 - Cancel an appointment (FR7)
+
+actor "Receptionist" as User
+box "Presentation tier" #F8FAFC
+    participant "appointments/view.html" as Page
+    participant "Appointment\nWebController" as Ctrl
+end box
+box "Business logic tier" #F5F3FF
+    participant "Appointment\nService" as Service
+    participant "Appointment\nObserver" as Observer
+end box
+box "Data access tier" #F0F9FF
+    participant "Appointment\nRepository" as Repo
+end box
+database "MySQL 8" as DB
+
+User -> Page : types a reason and presses\n"Cancel the appointment"
+activate Page
+Page -> Ctrl : POST /appointments/{no}/cancel\n(reason)
+activate Ctrl
+
+Ctrl -> Service : cancel(appointmentNo, reason)
+activate Service
+
+Service -> Repo : findByAppointmentNo(appointmentNo)
+activate Repo
+Repo -> DB : SELECT
+activate DB
+DB --> Repo : the visit
+deactivate DB
+Repo --> Service : Appointment
+deactivate Repo
+
+alt#Gold #FFF1F2 it has already been cancelled
+    Service --> Ctrl : throw BusinessRuleException
+    Ctrl --> Page : redirect back, with errorMessage
+    Page -> User : "Appointment ... has already\nbeen cancelled."
+
+else #FFF1F2 the visit has already taken place
+    Service --> Ctrl : throw BusinessRuleException
+    Ctrl --> Page : redirect back, with errorMessage
+    Page -> User : "... cannot be cancelled, because\nthe visit has already taken place."
+    note right of Service
+      A visit that happened is a fact.
+      It can be billed or left unbilled,
+      but it cannot be made not to have
+      happened.
+    end note
+
+else #F0FDF4 the visit is still BOOKED
+    Service -> Service : status = CANCELLED
+    Service -> Service : append the reason\nto the notes
+
+    Service -> Repo : save(appointment)
+    activate Repo
+    Repo -> DB : UPDATE appointments\nSET status = 'CANCELLED'
+    activate DB
+    DB -> DB : slot_key is regenerated as NULL,\nso the UNIQUE index stops\nblocking that time
+    DB -> DB : trg_appointments_after_update\nwrites the audit row:\nBOOKED -> CANCELLED, who, when
+    DB --> Repo : saved
+    deactivate DB
+    Repo --> Service : Appointment
+    deactivate Repo
+
+    note right of DB
+      Nothing is deleted. The visit stays in
+      the patient's history as a cancelled
+      one, and the audit row records who
+      changed it. A deleted row would answer
+      neither question.
+    end note
+
+    Service -> Observer : announce(onAppointmentCancelled)
+    activate Observer
+    Observer -> Observer : log it, and tell the patient\nif notifications are on
+    deactivate Observer
+
+    Service --> Ctrl : the cancelled Appointment
+    deactivate Service
+
+    Ctrl --> Page : 302 redirect back to the visit
+    Page -> User : "The appointment has been cancelled\nand the slot is free again."
+end
+
+deactivate Ctrl
+deactivate Page
+
+legend bottom
+  |= |= What this diagram is showing |
+  | 1 | **The slot is freed without deleting anything.** slot_key is NULL for a cancelled row, and |
+  |   | SQL allows many NULLs in a UNIQUE index, so the time becomes bookable again by itself. |
+  | 2 | **The reason is compulsory.** It goes into the notes and into the audit row, so the clinic |
+  |   | can later answer why a slot was given away. |
+  | 3 | **A refusal is a message, not an error page.** The receptionist stays on the visit they were |
+  |   | already looking at, and can see its current state before deciding what to do instead. |
+end legend
+
+@enduml

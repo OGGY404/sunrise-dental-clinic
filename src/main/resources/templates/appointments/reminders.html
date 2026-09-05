@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+  FR7 - appointment reminders.
+
+  The list comes from the stored procedure sp_report_upcoming_reminders, which
+  joins appointments to patients, dentists and treatments and returns only the
+  patients who are still BOOKED for that day.
+
+  The screen deliberately shows the two halves of the answer separately: the
+  patients the system can email by itself, and the patients with no email
+  address who need somebody with a telephone. The second list is the useful
+  one, because it is the part a computer cannot finish.
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments :: head('Reminders')}"></head>
+
+<body>
+<header th:replace="~{fragments :: nav}"></header>
+
+<main>
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1>Appointment reminders</h1>
+    <p class="page-note">
+        Patients still booked for
+        <strong th:text="${#temporals.format(date, 'EEEE, d MMMM yyyy')}">date</strong>.
+        The clinic also sends this round automatically each evening at six.
+    </p>
+
+    <div class="counts">
+        <div class="count">
+            <div class="count-number" th:text="${reminders.size()}">0</div>
+            <div class="count-label">patients due in</div>
+        </div>
+        <div class="count">
+            <div class="count-number" th:text="${emailable}">0</div>
+            <div class="count-label">can be emailed</div>
+        </div>
+        <div class="count">
+            <div class="count-number" th:text="${needTelephoning}">0</div>
+            <div class="count-label">need telephoning</div>
+        </div>
+    </div>
+
+    <div class="card no-print">
+        <form th:action="@{/appointments/reminders}" method="get">
+            <div class="three-columns">
+                <div class="field">
+                    <label for="daysAhead">Which day</label>
+                    <select id="daysAhead" name="daysAhead">
+                        <option value="0" th:selected="${daysAhead == 0}">Today</option>
+                        <option value="1" th:selected="${daysAhead == 1}">Tomorrow</option>
+                        <option value="2" th:selected="${daysAhead == 2}">In 2 days</option>
+                        <option value="3" th:selected="${daysAhead == 3}">In 3 days</option>
+                        <option value="7" th:selected="${daysAhead == 7}">In a week</option>
+                    </select>
+                </div>
+                <div class="field" style="display:flex; align-items:flex-end">
+                    <button type="submit" class="secondary">Show that day</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2 th:text="|Due in on ${#temporals.format(date, 'd MMM yyyy')}|">Due in</h2>
+
+        <p class="empty" th:if="${reminders.isEmpty()}">
+            Nobody is booked for that day, so there is nothing to remind anyone about.
+        </p>
+
+        <table th:unless="${reminders.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Appointment</th>
+                <th>Patient</th>
+                <th>Telephone</th>
+                <th>Dentist</th>
+                <th>Treatment</th>
+                <th>How we reach them</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${reminders}">
+                <td th:text="${#temporals.format(r.appointmentTime, 'HH:mm')}">09:00</td>
+                <td><a th:href="@{/appointments/{no}(no=${r.appointmentNo})}"
+                       th:text="${r.appointmentNo}">APT-</a></td>
+                <td th:text="${r.patientName}">Patient</td>
+                <td th:text="${r.patientContact}">077</td>
+                <td th:text="${r.dentistName}">Dentist</td>
+                <td th:text="${r.treatmentName}">Treatment</td>
+                <td>
+                    <span th:if="${r.canBeEmailed()}" class="tag PAID"
+                          th:text="${r.patientEmail}">email</span>
+                    <span th:unless="${r.canBeEmailed()}" class="tag UNPAID">telephone them</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card no-print" th:unless="${reminders.isEmpty()}">
+        <h2>Send the reminders now</h2>
+        <p class="page-note">
+            This does not wait for the evening job. Patients with an email address
+            are emailed; the rest are listed above for you to telephone.
+        </p>
+        <form th:action="@{/appointments/reminders/send}" method="post">
+            <input type="hidden" name="daysAhead" th:value="${daysAhead}">
+            <div class="actions">
+                <button type="submit">Send the reminders</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="actions no-print">
+        <button type="button" onclick="window.print()">Print this list</button>
+        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

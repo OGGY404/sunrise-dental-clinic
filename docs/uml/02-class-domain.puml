@@ -1,0 +1,314 @@
+@startuml 02-class-domain
+'============================================================================
+'  Sunrise Dental Clinic - CLASS DIAGRAM: the domain model
+'  CIS6003 Advanced Programming (WRIT1), Task A
+'
+'  These are the things the clinic actually deals with: patients, dentists,
+'  treatments, appointments and bills. Every attribute type and every method
+'  signature below is taken from the code in
+'  src/main/java/lk/icbt/cis6003/dentalclinic/model.
+'
+'  Read the relationships as:
+'      *--   composition   the part cannot exist without the whole
+'      o--   aggregation   the whole is made of parts that outlive it
+'      -->   association   navigable only in the direction of the arrow
+'      ..>   dependency    uses, but does not hold
+'
+'  Getters and setters are left out on purpose. Every field below has an
+'  ordinary get and set pair, and drawing eighty of them would hide the five
+'  methods that actually decide anything.
+'============================================================================
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+    HeaderBackgroundColor #CCFBF1
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sunrise Dental Clinic - Domain model
+
+'--- the people -------------------------------------------------------------
+
+class Patient {
+    - patientId : Long
+    - patientCode : String
+    - fullName : String
+    - address : String
+    - contactNumber : String
+    - email : String
+    - dateOfBirth : LocalDate
+    - gender : Gender
+    - createdAt : LocalDateTime
+    - updatedAt : LocalDateTime
+    - appointments : List<Appointment>
+    --
+    + Patient()
+    + Patient(patientCode : String, fullName : String, address : String, contactNumber : String)
+    + getAge() : Integer
+    + addAppointment(appointment : Appointment) : void
+    + equals(other : Object) : boolean
+    + hashCode() : int
+}
+
+class Dentist {
+    - dentistId : Long
+    - dentistCode : String
+    - fullName : String
+    - specialisation : String
+    - contactNumber : String
+    - email : String
+    - active : boolean
+    - createdAt : LocalDateTime
+    --
+    + Dentist()
+    + Dentist(dentistCode : String, fullName : String, specialisation : String)
+    + isActive() : boolean
+    + equals(other : Object) : boolean
+    + hashCode() : int
+}
+
+class User {
+    - userId : Long
+    - username : String
+    - passwordHash : String
+    - fullName : String
+    - email : String
+    - role : Role
+    - enabled : boolean
+    - lastLoginAt : LocalDateTime
+    - createdAt : LocalDateTime
+    --
+    + User()
+    + isEnabled() : boolean
+    + equals(other : Object) : boolean
+    + hashCode() : int
+}
+
+'--- what the clinic sells --------------------------------------------------
+
+class Treatment {
+    - treatmentId : Long
+    - treatmentCode : String
+    - name : String
+    - description : String
+    - cost : BigDecimal
+    - durationMinutes : int
+    - active : boolean
+    --
+    + Treatment()
+    + Treatment(treatmentCode : String, name : String, cost : BigDecimal, durationMinutes : int)
+    + isActive() : boolean
+}
+
+'--- the visit and the money ------------------------------------------------
+
+class Appointment {
+    - appointmentId : Long
+    - appointmentNo : String
+    - patient : Patient
+    - dentist : Dentist
+    - treatment : Treatment
+    - appointmentDate : LocalDate
+    - appointmentTime : LocalTime
+    - status : AppointmentStatus
+    - notes : String
+    - createdBy : User
+    - createdAt : LocalDateTime
+    - updatedAt : LocalDateTime
+    - bill : Bill
+    --
+    + {static} builder() : Appointment.Builder
+    + getStartsAt() : LocalDateTime
+    + isLive() : boolean
+    + isBillable() : boolean
+    + isBilled() : boolean
+    + equals(other : Object) : boolean
+    + hashCode() : int
+}
+
+class "Appointment.Builder" as Builder <<(P,#B45309) Builder pattern>> {
+    - appointmentNo : String
+    - patient : Patient
+    - dentist : Dentist
+    - treatment : Treatment
+    - appointmentDate : LocalDate
+    - appointmentTime : LocalTime
+    --
+    + appointmentNo(value : String) : Builder
+    + patient(value : Patient) : Builder
+    + dentist(value : Dentist) : Builder
+    + treatment(value : Treatment) : Builder
+    + on(date : LocalDate) : Builder
+    + at(time : LocalTime) : Builder
+    + notes(value : String) : Builder
+    + createdBy(value : User) : Builder
+    + build() : Appointment
+}
+
+class Bill {
+    - billId : Long
+    - billNo : String
+    - appointment : Appointment
+    - treatmentCost : BigDecimal
+    - consultationFee : BigDecimal
+    - discount : BigDecimal
+    - totalAmount : BigDecimal
+    - paymentStatus : PaymentStatus
+    - paymentMethod : PaymentMethod
+    - issuedBy : User
+    - issuedAt : LocalDateTime
+    - paidAt : LocalDateTime
+    --
+    + Bill()
+    + getTotalAmount() : BigDecimal
+    + isPaid() : boolean
+    + markPaid(method : PaymentMethod) : void
+    + equals(other : Object) : boolean
+    + hashCode() : int
+}
+
+'--- written by the database, never by Java ---------------------------------
+
+class AppointmentAudit {
+    - auditId : Long
+    - appointmentId : Long
+    - appointmentNo : String
+    - action : String
+    - oldStatus : String
+    - newStatus : String
+    - oldSlot : String
+    - newSlot : String
+    - changedBy : String
+    - changedAt : LocalDateTime
+    --
+    + AppointmentAudit()
+}
+
+class ClinicSetting {
+    - settingKey : String
+    - settingValue : String
+    - description : String
+    - updatedAt : LocalDateTime
+    --
+    + ClinicSetting()
+}
+
+'--- the fixed sets of values -----------------------------------------------
+
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+enum AppointmentStatus {
+    BOOKED
+    COMPLETED
+    CANCELLED
+    NO_SHOW
+}
+
+enum PaymentStatus {
+    UNPAID
+    PAID
+}
+
+enum PaymentMethod {
+    CASH
+    CARD
+    INSURANCE
+}
+
+enum Role {
+    ADMIN
+    RECEPTIONIST
+}
+
+'============================================================================
+'  RELATIONSHIPS
+'============================================================================
+
+' COMPOSITION. An appointment is one patient's visit and has no meaning
+' without them, so the patient owns it. Both sides hold a reference, so this
+' association is navigable in both directions and carries no arrowhead.
+Patient "1" *-- "0..*" Appointment : has visits
+
+' COMPOSITION. A bill exists only for the visit it settles, and is deleted
+' with it. Also navigable both ways.
+Appointment "1" *-- "0..1" Bill : is settled by
+
+' AGGREGATION. A dentist's diary is made of appointments, but the appointments
+' outlive the dentist's employment: a dentist who leaves is marked inactive,
+' never deleted, and their past visits stay in the record.
+Dentist "1" o-- "0..*" Appointment : is booked for
+
+' AGGREGATION. One price list entry is shared by every visit that used it. The
+' treatment is not owned by any one appointment.
+Treatment "1" o-- "0..*" Appointment : is delivered in
+
+' PLAIN ASSOCIATIONS, navigable one way only. An appointment knows which
+' member of staff created it; a User has no list of the things they created,
+' because nothing in the clinic ever asks that question.
+Appointment "0..*" --> "0..1" User : created by >
+Bill "0..*" --> "0..1" User : issued by >
+
+' DEPENDENCY. The audit rows are written by database triggers, so no Java
+' object holds them and there is no foreign key. The link is the appointment
+' number, kept for the life of the record.
+Appointment ..> AppointmentAudit : <<written by trigger>>
+
+'--- enum usage --------------------------------------------------------------
+
+Patient --> Gender
+Appointment --> AppointmentStatus
+Bill --> PaymentStatus
+Bill --> PaymentMethod
+User --> Role
+
+'--- the builder is part of the class it builds ------------------------------
+
+Appointment +-- Builder
+
+'============================================================================
+
+note right of Bill::totalAmount
+  Not written by Java.
+  MySQL calculates this as a
+  generated column:
+  treatment + consultation
+  - discount. The mapping is
+  insertable = false and
+  updatable = false, so the
+  total can never drift out of
+  step with its parts.
+end note
+
+note right of Patient::patientCode
+  The reference staff quote to a
+  patient (PAT-000042). The
+  database id is never shown
+  outside the system.
+end note
+
+legend bottom
+  |= |= Modelling decision, and why |
+  | 1 | **Patient owns its appointments (composition).** A visit is not a thing in its own right; it |
+  |   | is this patient's visit. Deleting a patient must take their visits with it. |
+  | 2 | **Dentist and Treatment only aggregate (open diamond).** A dentist who leaves is marked |
+  |   | inactive and their past appointments remain, so the parts outlive the whole. |
+  | 3 | **Navigability is not decoration.** Appointment knows its User; User has no list of |
+  |   | appointments, because nothing in the clinic asks "what did this receptionist book?". |
+  |   | Adding it would only be one more list to keep in step. |
+  | 4 | **Accessors are omitted.** Every field has an ordinary get and set pair. Drawing them |
+  |   | would add eighty rows and hide the handful of methods that decide anything. |
+  | 5 | **AppointmentAudit has no foreign key on purpose.** It is written by a trigger and must |
+  |   | survive as evidence even if a row it refers to is later removed. |
+end legend
+
+@enduml

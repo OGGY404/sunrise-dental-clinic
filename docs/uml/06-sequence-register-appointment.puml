@@ -1,0 +1,221 @@
+@startuml 06-sequence-register-appointment
+'============================================================================
+'  Sunrise Dental Clinic - SEQUENCE DIAGRAM 2: registering an appointment
+'  CIS6003 Advanced Programming (WRIT1), Task A.  Covers FR2.
+'
+'  This is the busiest use case in the system, and the one where the three
+'  tiers and four of the design patterns are all visible at once.
+'
+'  Read the three alt fragments as the three ways this can end:
+'      - the form itself is wrong          -> back to the form, boxes marked
+'      - the slot has just been taken      -> back to the form, message on top
+'      - everything is fine                -> saved, and the browser redirected
+'
+'  The redirect at the end is not decoration. Returning the page straight from
+'  the POST would mean that pressing refresh books the patient a second time.
+'============================================================================
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam participant {
+    BackgroundColor #F0FDFA
+    BorderColor #0F766E
+}
+skinparam actor {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam database {
+    BackgroundColor #CCFBF1
+    BorderColor #0F766E
+}
+skinparam note {
+    BackgroundColor #FFFBEB
+    BorderColor #B45309
+}
+
+title Sequence 2 - Register an appointment (FR2)
+
+actor "Receptionist" as User
+box "Presentation tier" #F8FAFC
+    participant "register.html" as Page
+    participant "Appointment\nWebController" as Ctrl
+    participant "BookingRequest\n(validation)" as Valid
+end box
+box "Business logic tier" #F5F3FF
+    participant "Appointment\nService" as Service
+    participant "Clinic\nConfiguration" as Config
+    participant "Patient\nService" as PatientSvc
+    participant "Reference\nNumberGenerator" as RefNo
+    participant "Appointment\n.Builder" as Builder
+    participant "Appointment\nObserver" as Observer
+end box
+box "Data access tier" #F0F9FF
+    participant "Dentist /\nTreatment\nRepository" as RefRepo
+    participant "Appointment\nRepository" as Repo
+end box
+database "MySQL 8" as DB
+
+User -> Page : fills in the booking form
+activate Page
+Page -> Ctrl : POST /appointments/new
+activate Ctrl
+
+Ctrl -> Valid : @Valid BookingRequest
+activate Valid
+Valid -> Valid : check every annotation\n(name, telephone, dates, sizes)
+Valid --> Ctrl : BindingResult
+deactivate Valid
+
+alt#Gold #FFF1F2 the form has errors
+    Ctrl -> RefRepo : reload the two dropdown lists
+    activate RefRepo
+    RefRepo --> Ctrl : dentists, treatments
+    deactivate RefRepo
+    Ctrl --> Page : return "appointments/register"
+    Page -> User : same form, values kept,\neach message under its own box
+    note right of Ctrl
+      The dropdowns have to be loaded
+      again. They were never part of what
+      the browser sent, so without this
+      the form comes back with two empty
+      lists and cannot be corrected.
+    end note
+
+else #F0FDF4 the form is valid
+    Ctrl -> Service : register(bookingRequest, staff)
+    activate Service
+
+    == Checks that can refuse the booking, before anything is written ==
+
+    Service -> Config : isWithinOpeningHours(time)\nisOnSlotBoundary(time)
+    activate Config
+    Config --> Service : true / false
+    deactivate Config
+    note right of Config
+      <<Singleton>> - one instance holds
+      the clinic's settings, read from
+      clinic_settings at start-up.
+    end note
+
+    Service -> RefRepo : findById(dentistId)\nfindById(treatmentId)
+    activate RefRepo
+    RefRepo -> DB : SELECT
+    RefRepo --> Service : Dentist, Treatment
+    deactivate RefRepo
+
+    Service -> Repo : existsByDentistAndDateAndTime\nAndStatusNot(CANCELLED)
+    activate Repo
+    Repo -> DB : SELECT ... LIMIT 1
+    activate DB
+    DB --> Repo : true / false
+    deactivate DB
+    Repo --> Service : is the slot taken?
+    deactivate Repo
+
+    alt#Gold #FFF1F2 that dentist is already booked
+        Service --> Ctrl : throw SlotUnavailableException
+        Ctrl -> RefRepo : reload the dropdown lists
+        Ctrl --> Page : return "appointments/register"\nwith errorMessage
+        Page -> User : "That dentist is already booked\nat 09:00. Please choose another time."
+
+    else #F0FDF4 the slot is free
+        == Nothing has been written until this line ==
+
+        Service -> PatientSvc : findOrCreate(request)
+        activate PatientSvc
+        PatientSvc -> DB : SELECT ... WHERE full_name = ?\nAND contact_number = ?
+        activate DB
+        DB --> PatientSvc : the patient, or nothing
+        deactivate DB
+        alt this is a returning patient
+            PatientSvc --> Service : the existing Patient
+        else a new patient
+            PatientSvc -> RefNo : nextPatientCode()
+            PatientSvc -> DB : INSERT INTO patients
+            PatientSvc --> Service : the new Patient (PAT-000042)
+        end
+        deactivate PatientSvc
+
+        Service -> RefNo : nextAppointmentNo(date)
+        activate RefNo
+        RefNo -> DB : CALL sp_next_appointment_no(?)
+        activate DB
+        DB -> DB : lock the counter row,\nadd one, release
+        DB --> RefNo : "APT-20260908-0001"
+        deactivate DB
+        RefNo --> Service : the appointment number
+        deactivate RefNo
+        note right of RefNo
+          The number comes from a stored
+          procedure and a counter table, not
+          from counting rows. Two receptionists
+          saving in the same instant would both
+          count the same total and produce the
+          same number; a locked counter row
+          cannot.
+        end note
+
+        Service -> Builder : builder().appointmentNo(..).patient(..)\n.dentist(..).treatment(..).on(..).at(..).build()
+        activate Builder
+        Builder --> Service : Appointment
+        deactivate Builder
+        note right of Builder
+          <<Builder>> - every value is named,
+          so the dentist and the treatment
+          cannot be swapped by accident.
+        end note
+
+        Service -> Repo : save(appointment)
+        activate Repo
+        Repo -> DB : INSERT INTO appointments
+        activate DB
+        DB -> DB : trg_appointments_before_insert\nchecks opening hours again
+        DB -> DB : UNIQUE index on slot_key\nblocks a double booking
+        DB -> DB : trg_appointments_after_insert\nwrites the audit row
+        DB --> Repo : saved
+        deactivate DB
+        Repo --> Service : Appointment
+        deactivate Repo
+        note right of DB
+          The same two rules are enforced here
+          a second time. The Java check gives
+          the receptionist a readable sentence;
+          this one cannot be beaten by two
+          people saving at the same instant, or
+          by anyone writing to the database
+          another way.
+        end note
+
+        Service -> Observer : announce(onAppointmentBooked)
+        activate Observer
+        Observer -> Observer : log it, and send an email\nif notifications are on
+        Observer --> Service : (failures are caught and ignored)
+        deactivate Observer
+        note right of Observer
+          <<Observer>> - the service does not
+          know who is listening. Each observer
+          is called inside its own try, because
+          a mail server being down must never
+          undo an appointment the patient is
+          expecting.
+        end note
+
+        Service --> Ctrl : the saved Appointment
+        deactivate Service
+
+        Ctrl --> Page : 302 redirect to\n/appointments/APT-20260908-0001
+        Page -> User : the details screen,\n"Appointment ... has been registered."
+        note right of Ctrl
+          A redirect, not a returned page.
+          Pressing refresh now re-reads the
+          appointment instead of booking a
+          second one.
+        end note
+    end
+end
+
+deactivate Ctrl
+deactivate Page
+
+@enduml
