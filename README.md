@@ -1,7 +1,12 @@
-# Sunrise Dental Clinic - Appointment & Patient Management System
+# 🦷 Sunrise Dental Clinic – Appointment & Patient Management System
 
 [![Build and test](https://github.com/OGGY404/sunrise-dental-clinic/actions/workflows/ci.yml/badge.svg)](https://github.com/OGGY404/sunrise-dental-clinic/actions/workflows/ci.yml)
-
+![Java](https://img.shields.io/badge/Java%2017-ED8B00?style=flat-square&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203.3-6DB33F?style=flat-square&logo=springboot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL%208-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white)
+![JUnit 5](https://img.shields.io/badge/JUnit%205-25A162?style=flat-square&logo=junit5&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=flat-square&logo=thymeleaf&logoColor=white)
 
 Coursework project for **CIS6003 Advanced Programming (WRIT1)**
 ICBT Campus / Cardiff Metropolitan University — BSc (Hons) Software Engineering
