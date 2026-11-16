@@ -11,7 +11,9 @@
 <head th:replace="~{fragments :: head('Patients')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='patients'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
@@ -44,15 +46,15 @@
     </div>
 
     <div class="card" th:if="${results != null}">
-        <h2 th:text="|${results.size()} patient(s) found|">results</h2>
+        <h2 th:text="${results.size() == 1} ? '1 patient found' : (${results.size()} + ' patients found')">results</h2>
 
         <p class="empty" th:if="${results.isEmpty()}">
             Nobody matched that search. If this is a new patient, they are added
             automatically the first time you
-            <a th:href="@{/appointments/new}">register an appointment</a> for them.
+            <a th:href="@{/appointments/new}">book an appointment</a> for them.
         </p>
 
-        <table th:unless="${results.isEmpty()}">
+        <table class="stack-table" th:unless="${results.isEmpty()}">
             <thead>
             <tr>
                 <th>Patient number</th>
@@ -64,12 +66,12 @@
             </thead>
             <tbody>
             <tr th:each="patient : ${results}">
-                <td><a th:href="@{/patients/{code}(code=${patient.patientCode})}"
+                <td data-label="Patient number" class="cell-lead"><a class="ref" th:href="@{/patients/{code}(code=${patient.patientCode})}"
                        th:text="${patient.patientCode}">PAT-</a></td>
-                <td th:text="${patient.fullName}">Name</td>
-                <td th:text="${patient.contactNumber}">077</td>
-                <td th:text="${patient.address}">Address</td>
-                <td th:text="${patient.age} ?: '-'">31</td>
+                <td data-label="Name" th:text="${patient.fullName}">Name</td>
+                <td data-label="Contact" class="ref" th:text="${patient.contactNumber}">077</td>
+                <td data-label="Address" th:text="${patient.address}">Address</td>
+                <td data-label="Age" th:text="${patient.age} ?: '-'">31</td>
             </tr>
             </tbody>
         </table>

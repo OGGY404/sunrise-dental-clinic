@@ -16,7 +16,9 @@
 <head th:replace="~{fragments :: head('Reminders')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='reminders'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
@@ -31,7 +33,7 @@
     <div class="counts">
         <div class="count">
             <div class="count-number" th:text="${reminders.size()}">0</div>
-            <div class="count-label">patients due in</div>
+            <div class="count-label" th:text="${reminders.size() == 1} ? 'patient due' : 'patients due'">patients due</div>
         </div>
         <div class="count">
             <div class="count-number" th:text="${emailable}">0</div>
@@ -39,7 +41,7 @@
         </div>
         <div class="count">
             <div class="count-number" th:text="${needTelephoning}">0</div>
-            <div class="count-label">need telephoning</div>
+            <div class="count-label" th:text="${needTelephoning == 1} ? 'needs a phone call' : 'need a phone call'">need a phone call</div>
         </div>
     </div>
 
@@ -64,13 +66,13 @@
     </div>
 
     <div class="card">
-        <h2 th:text="|Due in on ${#temporals.format(date, 'd MMM yyyy')}|">Due in</h2>
+        <h2 th:text="|Due on ${#temporals.format(date, 'd MMM yyyy')}|">Due on</h2>
 
         <p class="empty" th:if="${reminders.isEmpty()}">
             Nobody is booked for that day, so there is nothing to remind anyone about.
         </p>
 
-        <table th:unless="${reminders.isEmpty()}">
+        <table class="stack-table" th:unless="${reminders.isEmpty()}">
             <thead>
             <tr>
                 <th>Time</th>
@@ -84,17 +86,18 @@
             </thead>
             <tbody>
             <tr th:each="r : ${reminders}">
-                <td th:text="${#temporals.format(r.appointmentTime, 'HH:mm')}">09:00</td>
-                <td><a th:href="@{/appointments/{no}(no=${r.appointmentNo})}"
+                <td data-label="Time" class="cell-lead"
+                    th:text="${#temporals.format(r.appointmentTime, 'HH:mm')}">09:00</td>
+                <td data-label="Appointment"><a class="ref" th:href="@{/appointments/{no}(no=${r.appointmentNo})}"
                        th:text="${r.appointmentNo}">APT-</a></td>
-                <td th:text="${r.patientName}">Patient</td>
-                <td th:text="${r.patientContact}">077</td>
-                <td th:text="${r.dentistName}">Dentist</td>
-                <td th:text="${r.treatmentName}">Treatment</td>
-                <td>
+                <td data-label="Patient" th:text="${r.patientName}">Patient</td>
+                <td data-label="Telephone" class="ref" th:text="${r.patientContact}">077</td>
+                <td data-label="Dentist" th:text="${r.dentistName}">Dentist</td>
+                <td data-label="Treatment" th:text="${r.treatmentName}">Treatment</td>
+                <td data-label="Reach by">
                     <span th:if="${r.canBeEmailed()}" class="tag PAID"
                           th:text="${r.patientEmail}">email</span>
-                    <span th:unless="${r.canBeEmailed()}" class="tag UNPAID">telephone them</span>
+                    <span th:unless="${r.canBeEmailed()}" class="tag UNPAID">Phone them</span>
                 </td>
             </tr>
             </tbody>
@@ -117,7 +120,7 @@
 
     <div class="actions no-print">
         <button type="button" onclick="window.print()">Print this list</button>
-        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+        <a class="button secondary" th:href="@{/}">Back to today</a>
     </div>
 </main>
 

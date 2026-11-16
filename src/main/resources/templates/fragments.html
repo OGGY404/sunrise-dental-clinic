@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-  The pieces every screen shares: the head, the bar across the top, the
-  message strip and the footer.
+  The pieces every screen shares: the head, the menu rail, the message strip
+  and the footer.
 
   Writing them once here means the navigation is the same on every page and a
   change to it happens in one file. Each page pulls them in with th:replace.
@@ -14,41 +14,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="|${pageTitle} - Sunrise Dental Clinic|">Sunrise Dental Clinic</title>
+    <link rel="preload" th:href="@{/css/fonts/atkinson-hyperlegible-latin-400-normal.woff2}"
+          as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" th:href="@{/css/clinic.css}">
+    <!-- Small extras only, such as the "now" line. Every page works without it. -->
+    <script th:src="@{/js/clinic.js}" defer></script>
 </head>
 
 <body>
 
 <!--
-  The bar across the top. This is the "menu driven" part the brief asks for:
-  every job a member of staff can do is one click away from wherever they are.
+  The menu rail. This is the "menu driven" part the brief asks for: every job
+  a member of staff can do is one click away from wherever they are.
+
+  Which link is lit up comes from a "section" variable the page sets around
+  this fragment, for example:
+      <th:block th:with="section='home'"> ... nav ... </th:block>
+  A page that sets nothing simply has no link lit up.
 
   The Reports link is only drawn for an administrator. Hiding it is a courtesy,
   not the protection: the real rule is in SecurityConfig, so typing the address
   by hand does not get a receptionist in either.
 -->
 <header th:fragment="nav" class="topbar">
-    <div class="brand">
-        Sunrise Dental Clinic
-        <small>Colombo</small>
-    </div>
+    <a class="brand" th:href="@{/}">
+        <!-- A sun rising over the horizon: the clinic's mark. -->
+        <svg class="brand-mark" viewBox="0 0 34 34" aria-hidden="true">
+            <path d="M6 23a11 11 0 0 1 22 0Z" fill="#E8962E"/>
+            <path d="M3 26.5h28" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            <path d="M17 5v4M7.1 9.1l2.8 2.8M26.9 9.1l-2.8 2.8" stroke="#E8962E"
+                  stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Sunrise Dental<small>Colombo</small></span>
+    </a>
 
-    <nav>
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/appointments/new}">New appointment</a>
-        <a th:href="@{/appointments/search}">Find appointment</a>
-        <a th:href="@{/appointments/schedule}">Day schedule</a>
-        <a th:href="@{/appointments/reminders}">Reminders</a>
-        <a th:href="@{/patients}">Patients</a>
-        <a th:href="@{/bills/unpaid}">Unpaid bills</a>
-        <a th:href="@{/reports}" sec:authorize="hasRole('ADMIN')">Reports</a>
-        <a th:href="@{/help}">Help</a>
+    <nav aria-label="Main menu">
+        <a th:href="@{/}" th:aria-current="${section == 'home'} ? 'page'">Today</a>
+        <a th:href="@{/appointments/new}" th:aria-current="${section == 'book'} ? 'page'">Book appointment</a>
+        <a th:href="@{/appointments/search}" th:aria-current="${section == 'find'} ? 'page'">Find appointment</a>
+        <a th:href="@{/appointments/schedule}" th:aria-current="${section == 'diary'} ? 'page'">Day schedule</a>
+        <a th:href="@{/appointments/reminders}" th:aria-current="${section == 'reminders'} ? 'page'">Reminders</a>
+        <a th:href="@{/patients}" th:aria-current="${section == 'patients'} ? 'page'">Patients</a>
+        <a th:href="@{/bills/unpaid}" th:aria-current="${section == 'bills'} ? 'page'">Unpaid bills</a>
+        <a th:href="@{/reports}" sec:authorize="hasRole('ADMIN')"
+           th:aria-current="${section == 'reports'} ? 'page'">Reports</a>
+        <a th:href="@{/help}" th:aria-current="${section == 'help'} ? 'page'">Help</a>
     </nav>
 
     <div class="who">
-        <span sec:authentication="name">staff</span>
-        <span class="role" sec:authorize="hasRole('ADMIN')">ADMIN</span>
-        <span class="role" sec:authorize="hasRole('RECEPTIONIST')">RECEPTION</span>
+        <span class="who-name" sec:authentication="name">staff</span>
+        <span class="role" sec:authorize="hasRole('ADMIN')">Admin</span>
+        <span class="role" sec:authorize="hasRole('RECEPTIONIST')">Reception</span>
 
         <!--
           FR6 - leave the system safely.
@@ -57,8 +73,8 @@
           something, so it is a POST and it carries the CSRF token, which means
           another website cannot sign a receptionist out without them noticing.
         -->
-        <form th:action="@{/logout}" method="post" style="margin:0">
-            <button type="submit" class="secondary small">Sign out</button>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Sign out</button>
         </form>
     </div>
 </header>
@@ -68,16 +84,30 @@
 
   "message" is good news and "errorMessage" is a refusal. Both are put here, at
   the top of the page the member of staff is already looking at, rather than on
-  a separate page they would have to navigate back from.
+  a separate page they would have to navigate back from. The role tells a
+  screen reader to read them out.
 -->
 <div th:fragment="messages">
-    <div class="message" th:if="${message}" th:text="${message}"></div>
-    <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div class="message" role="status" th:if="${message}" th:text="${message}"></div>
+    <div class="error" role="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 </div>
 
+<!--
+  A status badge, such as "No show" or "Unpaid".
+
+  The value is a status from the Java code, like NO_SHOW. The class keeps the
+  raw value, because that picks the colour in clinic.css. The text is turned
+  into words a person reads: "_" becomes a space, and only the first letter is
+  a capital. Every page uses this one fragment, so no page can show NO_SHOW.
+
+  Use it like this:
+      <span th:replace="~{fragments :: tag(${visit.status})}"></span>
+-->
+<span th:fragment="tag(value)" class="tag" th:classappend="${value}"
+      th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace('' + value, '_', ' ')))}">Booked</span>
+
 <footer th:fragment="footer" class="page-footer">
-    Sunrise Dental Clinic &middot; Appointment and Patient Management System
-    &middot; CIS6003 Advanced Programming
+    Sunrise Dental Clinic, Colombo. Appointment and Patient Management System.
 </footer>
 
 </body>

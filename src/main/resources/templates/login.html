@@ -20,10 +20,23 @@
 
 <body class="signin-page">
 
-<div class="signin-box">
+<main class="signin-box">
 
-    <div class="clinic-name">Sunrise Dental Clinic</div>
-    <div class="clinic-place">Colombo &middot; Staff sign in</div>
+    <div class="signin-brand">
+        <!-- The same sunrise mark as the menu rail, with a navy horizon on white. -->
+        <svg class="brand-mark" viewBox="0 0 34 34" aria-hidden="true">
+            <path d="M6 23a11 11 0 0 1 22 0Z" fill="#E8962E"/>
+            <path d="M3 26.5h28" stroke="#16324F" stroke-width="2" stroke-linecap="round"/>
+            <path d="M17 5v4M7.1 9.1l2.8 2.8M26.9 9.1l-2.8 2.8" stroke="#E8962E"
+                  stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div>
+            <div class="clinic-name">Sunrise Dental Clinic</div>
+            <div class="clinic-place">Colombo</div>
+        </div>
+    </div>
+
+    <h1>Staff sign in</h1>
 
     <!--
       Spring Security adds ?error when the sign in failed.
@@ -32,15 +45,15 @@
       wrong name and a wrong password looked different, somebody guessing could
       first find out which usernames are real and then attack only those.
     -->
-    <div class="error" th:if="${param.error}">
+    <div class="error" role="alert" th:if="${param.error}">
         That username and password do not match. Please try again.
     </div>
 
-    <div class="message" th:if="${param.logout}">
-        You have been signed out. Thank you.
+    <div class="message" role="status" th:if="${param.logout}">
+        You have been signed out.
     </div>
 
-    <div class="warning" th:if="${param.expired}">
+    <div class="warning" role="status" th:if="${param.expired}">
         You were signed out because the screen was left for too long.
         Please sign in again.
     </div>
@@ -59,14 +72,14 @@
                    autocomplete="current-password" required>
         </div>
 
-        <button type="submit">Sign in</button>
+        <button type="submit" class="primary">Sign in</button>
     </form>
 
     <div class="signin-help">
         Only clinic staff may use this system. If you cannot sign in, ask the
         administrator to check your account.
     </div>
-</div>
+</main>
 
 </body>
 </html>
