@@ -11,15 +11,17 @@
 -->
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
-<head th:replace="~{fragments :: head('Register an appointment')}"></head>
+<head th:replace="~{fragments :: head('Book an appointment')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='book'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
 
-    <h1>Register an appointment</h1>
+    <h1>Book an appointment</h1>
     <p class="page-note">
         Every visit gets its own appointment number. A patient who has been here
         before is recognised from their name and telephone number, so their
@@ -137,11 +139,18 @@
                 <div class="field">
                     <label for="appointmentTime">
                         Time
-                        <span class="hint">&mdash; the clinic is open 08:00 to 18:00, in half hours</span>
+                        <span class="hint">&mdash; half-hour slots, 08:00 to 17:30</span>
                     </label>
-                    <input type="time" id="appointmentTime" th:field="*{appointmentTime}"
-                           step="1800" min="08:00" max="18:00"
-                           th:classappend="${#fields.hasErrors('appointmentTime')} ? 'wrong'">
+                    <!-- Half-hour slots from 08:00 to 17:30. th:field keeps the
+                         name "appointmentTime" and re-selects the chosen slot if
+                         the form comes back with an error. -->
+                    <select id="appointmentTime" th:field="*{appointmentTime}"
+                            th:classappend="${#fields.hasErrors('appointmentTime')} ? 'wrong'">
+                        <option value="">Please choose a time</option>
+                        <option th:each="i : ${#numbers.sequence(16, 35)}"
+                                th:with="slot=${#numbers.formatInteger(i / 2, 2) + ':' + (i % 2 == 0 ? '00' : '30')}"
+                                th:value="${slot}" th:text="${slot}">09:00</option>
+                    </select>
                     <span class="field-error" th:if="${#fields.hasErrors('appointmentTime')}"
                           th:errors="*{appointmentTime}">time problem</span>
                 </div>
@@ -157,7 +166,7 @@
         </div>
 
         <div class="actions">
-            <button type="submit">Register the appointment</button>
+            <button type="submit" class="primary">Book appointment</button>
             <a class="button secondary" th:href="@{/}">Cancel</a>
         </div>
     </form>

@@ -12,7 +12,9 @@
 <head th:replace="~{fragments :: head('Dentist workload')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='reports'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
@@ -47,7 +49,9 @@
             There are no active dentists to report on.
         </p>
 
-        <table th:unless="${rows.isEmpty()}">
+        <!-- Many number columns: on a narrow screen this scrolls sideways inside the card. -->
+        <div class="table-scroll" th:unless="${rows.isEmpty()}">
+        <table>
             <thead>
             <tr>
                 <th>Code</th>
@@ -79,6 +83,7 @@
             </tr>
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="actions no-print">

@@ -14,7 +14,9 @@
 <head th:replace="~{fragments :: head('Find an appointment')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='find'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>

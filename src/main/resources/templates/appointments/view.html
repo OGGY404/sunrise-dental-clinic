@@ -13,15 +13,16 @@
 <head th:replace="~{fragments :: head('Appointment details')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='find'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
 
     <h1 th:text="${appointment.appointmentNo}">APT-</h1>
     <p class="page-note">
-        <span class="tag" th:classappend="${appointment.status}"
-              th:text="${appointment.status}">BOOKED</span>
+        <span th:replace="~{fragments :: tag(${appointment.status})}"></span>
         &nbsp;registered on
         <span th:text="${#temporals.format(appointment.createdAt, 'd MMM yyyy, HH:mm')}">date</span>
     </p>
@@ -127,9 +128,13 @@
                 </div>
                 <div class="field">
                     <label for="newTime">New time</label>
-                    <input type="time" id="newTime" name="newTime" step="1800"
-                           min="08:00" max="18:00"
-                           th:value="${appointment.appointmentTime}" required>
+                    <!-- Half-hour slots from 08:00 to 17:30. The current time is chosen. -->
+                    <select id="newTime" name="newTime" required>
+                        <option th:each="i : ${#numbers.sequence(16, 35)}"
+                                th:with="slot=${#numbers.formatInteger(i / 2, 2) + ':' + (i % 2 == 0 ? '00' : '30')}"
+                                th:value="${slot}" th:text="${slot}"
+                                th:selected="${#temporals.format(appointment.appointmentTime, 'HH:mm') == slot}">09:00</option>
+                    </select>
                 </div>
             </div>
             <div class="actions">
@@ -158,7 +163,7 @@
 
     <div class="actions">
         <a class="button secondary" th:href="@{/appointments/search}">Find another appointment</a>
-        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+        <a class="button secondary" th:href="@{/}">Back to today</a>
     </div>
 </main>
 

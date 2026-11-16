@@ -6,19 +6,25 @@
   written for somebody on their first morning at the desk. It is a list of the
   jobs they will actually be asked to do, in the order the day tends to bring
   them, and not a list of the system's features.
+
+  Every button and menu name below is written exactly as it appears on screen,
+  so a new member of staff can match the words to what they see.
 -->
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head th:replace="~{fragments :: head('Help')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='help'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <h1>Help</h1>
     <p class="page-note">
-        Step-by-step instructions for using the clinic system. If something here
-        does not match what you see on screen, ask the administrator.
+        Step-by-step instructions for using the clinic system. The menu is on the
+        left of the screen, or across the top on a phone or small tablet. If
+        something here does not match what you see, ask the administrator.
     </p>
 
     <div class="card">
@@ -26,7 +32,11 @@
         <ol class="steps">
             <li>
                 <div class="step-title">Open the booking form</div>
-                <p>Click <strong>New appointment</strong> in the green bar at the top of any screen.</p>
+                <p>
+                    Click <strong>Book appointment</strong> in the menu, or the
+                    orange <strong>Book appointment</strong> button on the
+                    <strong>Today</strong> screen.
+                </p>
             </li>
             <li>
                 <div class="step-title">Type the patient's details</div>
@@ -40,16 +50,16 @@
             <li>
                 <div class="step-title">Choose the dentist, the treatment, the date and the time</div>
                 <p>
-                    The clinic is open from 08:00 to 18:00 and appointments start
-                    on the half hour. Only dentists who are still practising and
-                    treatments on the current price list appear in the lists.
+                    Times are half-hour slots from 08:00 to 17:30. Only dentists
+                    who are still practising and treatments on the current price
+                    list appear in the lists.
                 </p>
             </li>
             <li>
-                <div class="step-title">Press Register the appointment</div>
+                <div class="step-title">Press Book appointment at the bottom of the form</div>
                 <p>
                     If a box is wrong it turns red and the reason appears
-                    underneath it; correct that box and press the button again.
+                    underneath it. Correct that box and press the button again.
                     Nothing you have typed is lost.
                 </p>
             </li>
@@ -70,8 +80,8 @@
             keep you on the form. This is not a mistake you have made; someone
             else has that slot. Choose another time, or another dentist, and
             press the button again. Two patients can never be given the same
-            dentist at the same moment, even if two people press Register at
-            exactly the same second.
+            dentist at the same moment, even if two people book at exactly the
+            same second.
         </p>
     </div>
 
@@ -81,9 +91,9 @@
             <li>
                 <div class="step-title">Find the visit</div>
                 <p>
-                    Click <strong>Find appointment</strong> and type the number, or
-                    open <strong>Day schedule</strong> and click the appointment in
-                    today's list.
+                    Click the patient in the diary on the <strong>Today</strong>
+                    screen. For another day, open <strong>Day schedule</strong>,
+                    or click <strong>Find appointment</strong> and type the number.
                 </p>
             </li>
             <li>
@@ -127,7 +137,9 @@
                 <p>
                     Cash, card or insurance. A bill can only be paid once. Bills
                     that are still owed are listed under
-                    <strong>Unpaid bills</strong>, oldest first.
+                    <strong>Unpaid bills</strong> in the menu, oldest first, and
+                    the oldest few are also shown on the <strong>Today</strong>
+                    screen.
                 </p>
             </li>
         </ol>
@@ -147,19 +159,22 @@
     <div class="card">
         <h2>Looking up a patient's history</h2>
         <p class="page-note">
-            Click <strong>Patients</strong> and search by telephone number, or by
-            part of the name. Open the patient to see every visit they have ever
-            had, newest first. This is what the old paper system could not do.
+            Click <strong>Patients</strong> in the menu and search by telephone
+            number, or by part of the name. Open the patient to see every visit
+            they have ever had, newest first. This is what the old paper system
+            could not do.
         </p>
     </div>
 
     <div class="card">
-        <h2>Finishing your shift (FR6)</h2>
+        <h2>Finishing your shift</h2>
         <p class="page-note">
-            Press <strong>Sign out</strong> at the right-hand end of the green bar.
-            Always sign out before leaving the desk, so that nobody can use the
-            system under your name. If you walk away and forget, the system signs
-            you out by itself after thirty minutes.
+            Press <strong>Sign out</strong>. On a computer it is at the bottom of
+            the menu on the left, under your name. On a phone or small tablet it
+            is at the top right of the screen. Always sign out before leaving the
+            desk, so that nobody can use the system under your name. If you walk
+            away and forget, the system signs you out by itself after thirty
+            minutes.
         </p>
     </div>
 </main>
