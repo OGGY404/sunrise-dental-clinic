@@ -2,114 +2,209 @@
    Sunrise Dental Clinic - screen styles
    CIS6003 Advanced Programming (WRIT1)
 
-   One stylesheet for the whole system, so every screen looks the same and a
-   change to the colours happens in one place.
+   Design: "Morning diary". The clinic's day runs from 08:00 to 18:00, so the
+   diary is the centre of the design. Navy is the clinic, amber is the sunrise,
+   and amber is used for only two things: the main action and the "now" line.
 
-   The colours are chosen for a reception desk: a calm blue-green for the
-   clinic itself, and strong red and green kept only for messages, so that a
-   warning is never competing with decoration for attention.
+   Detail screens (appointment, patient, bill) use a "record sheet": one white
+   sheet with labelled fields in two columns, like the paper card it replaces.
+
+   The class names from the first version are all kept, so every template
+   keeps working while it is redesigned.
    =========================================================================== */
 
+/* --- font: stored in the project so the desk works without internet ------- */
+
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2");
+    font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("fonts/atkinson-hyperlegible-latin-400-italic.woff2") format("woff2");
+    font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2");
+    font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url("fonts/atkinson-hyperlegible-latin-700-italic.woff2") format("woff2");
+    font-weight: 700; font-style: italic; font-display: swap;
+}
+
+/* --- colours and sizes --------------------------------------------------- */
+
 :root {
-    --clinic:        #0f766e;   /* the clinic's main colour        */
-    --clinic-dark:   #115e59;
-    --clinic-light:  #ccfbf1;
-    --ink:           #1f2937;   /* ordinary text                   */
-    --ink-soft:      #6b7280;   /* labels and quiet text           */
-    --line:          #e5e7eb;   /* borders and table rules         */
-    --paper:         #ffffff;
-    --page:          #f6f7f9;
-    --good:          #047857;
-    --good-bg:       #ecfdf5;
-    --bad:           #b91c1c;
-    --bad-bg:        #fef2f2;
-    --warn:          #b45309;
-    --warn-bg:       #fffbeb;
+    --dawn:       #FBFCFE;   /* page background                    */
+    --paper:      #FFFFFF;   /* sheets, tables, forms              */
+    --navy:       #16324F;   /* the clinic: text, rail, headings   */
+    --navy-soft:  #23476D;   /* hover on the rail                  */
+    --slate:      #5B6B7F;   /* labels and quiet text              */
+    --mist:       #DCE3EC;   /* lines and borders                  */
+    --haze:       #EEF2F7;   /* light fills                        */
+    --amber:      #E8962E;   /* sunrise: main action and "now"     */
+    --amber-dark: #CF7F1A;
+
+    /* status colours, kept apart from the brand colours */
+    --good:    #1E7A4C;  --good-bg: #E6F4EC;
+    --bad:     #B42318;  --bad-bg:  #FDECEA;
+    --warn:    #8A5300;  --warn-bg: #FDF1DE;
+    --info:    #2F5E9E;  --info-bg: #E8EFF8;
+
+    --radius-s: 6px;
+    --radius-m: 10px;
+    --rail:     232px;
 }
 
 * { box-sizing: border-box; }
 
+html { -webkit-text-size-adjust: 100%; }
+
 body {
     margin: 0;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    font-size: 15px;
-    color: var(--ink);
-    background: var(--page);
+    font-family: "Atkinson Hyperlegible", "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px;
     line-height: 1.5;
+    color: var(--navy);
+    background: var(--dawn);
+    font-variant-numeric: tabular-nums;   /* times and money line up */
 }
 
-/* --- the bar across the top ---------------------------------------------- */
+a { color: var(--info); text-underline-offset: 2px; }
+a:hover { color: var(--navy); }
+
+/* One clear focus ring for keyboard users, everywhere. */
+:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+
+/* --- page frame: rail on the left, content on the right ------------------ */
+/* Every page is  header + main + footer  inside body, so a grid on body puts
+   the rail on the left without any page having to change. */
+
+body:has(> .topbar) {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+    /* Paint the rail colour all the way down, however long the page is. */
+    background: linear-gradient(to right, var(--navy) var(--rail), var(--dawn) var(--rail));
+}
+
+body > .topbar { grid-column: 1; grid-row: 1 / span 2; }
+body > main, body > .page-footer { grid-column: 2; }
+
+main { width: 100%; max-width: 1120px; margin: 0 auto; padding: 32px 40px 24px; }
+
+/* --- the rail (was the top bar) ------------------------------------------ */
 
 .topbar {
-    background: var(--clinic);
+    background: var(--navy);
     color: #fff;
-    padding: 0 24px;
     display: flex;
-    align-items: center;
-    gap: 28px;
-    flex-wrap: wrap;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 22px 14px 18px;
+    overflow-y: auto;
 }
 
 .topbar .brand {
-    font-size: 18px;
-    font-weight: 700;
-    padding: 14px 0;
-    margin-right: 8px;
-    white-space: nowrap;
-}
-
-.topbar .brand small {
-    display: block;
-    font-size: 11px;
-    font-weight: 400;
-    opacity: .85;
-    letter-spacing: .04em;
-}
-
-.topbar nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
-
-.topbar nav a {
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.topbar nav a:hover { background: var(--clinic-dark); }
-
-.topbar .who {
-    font-size: 13px;
     display: flex;
     align-items: center;
     gap: 10px;
-    white-space: nowrap;
+    padding: 0 10px 22px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+    text-decoration: none;
 }
 
-.topbar .who .role {
-    background: var(--clinic-dark);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    letter-spacing: .04em;
+.topbar .brand:hover { color: #fff; }
+.topbar .brand small { display: block; font-size: 13px; font-weight: 400; color: #B9C6D6; }
+
+.brand-mark { width: 34px; height: 34px; flex: none; }
+
+.topbar nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+.topbar nav a {
+    color: #D6DFEA;
+    text-decoration: none;
+    padding: 9px 12px;
+    border-radius: var(--radius-s);
+    font-size: 15px;
+    border-left: 3px solid transparent;
 }
 
-/* --- page frame ---------------------------------------------------------- */
+.topbar nav a:hover { background: var(--navy-soft); color: #fff; }
 
-main { max-width: 1080px; margin: 0 auto; padding: 24px; }
+.topbar nav a[aria-current="page"] {
+    color: #fff;
+    font-weight: 700;
+    background: var(--navy-soft);
+    border-left-color: var(--amber);
+}
 
-h1 { font-size: 22px; margin: 0 0 4px; }
-h2 { font-size: 17px; margin: 26px 0 10px; }
+.topbar :focus-visible { outline-color: var(--amber); }
 
-.page-note { color: var(--ink-soft); margin: 0 0 20px; font-size: 14px; }
+.topbar .who {
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    margin-top: 16px;
+    padding: 16px 10px 0;
+    font-size: 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2px 10px;
+}
+
+.topbar .who .who-name { font-weight: 700; }
+.topbar .who .role { grid-column: 1; color: #B9C6D6; font-size: 13px; }
+.topbar .who form { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+
+.topbar .who button {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .35);
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.topbar .who button:hover { background: var(--navy-soft); }
+
+/* --- headings and page intro --------------------------------------------- */
+
+h1 { font-size: 34px; line-height: 1.15; margin: 0 0 6px; letter-spacing: -.01em; }
+h2 { font-size: 20px; line-height: 1.3; margin: 32px 0 12px; }
+h3 { font-size: 16px; margin: 0 0 8px; }
+
+.page-note { color: var(--slate); margin: 0 0 24px; font-size: 16px; max-width: 70ch; }
+
+/* Title on the left, the page's main action on the right. */
+.page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 24px;
+    margin-bottom: 28px;
+}
+
+.page-head .page-note { margin-bottom: 0; }
+
+/* --- plain containers ---------------------------------------------------- */
 
 .card {
     background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 20px 22px;
-    margin-bottom: 18px;
+    border: 1px solid var(--mist);
+    border-radius: var(--radius-m);
+    padding: 22px 24px;
+    margin-bottom: 20px;
 }
 
 .card > h2:first-child { margin-top: 0; }
@@ -117,11 +212,11 @@ h2 { font-size: 17px; margin: 26px 0 10px; }
 /* --- messages ------------------------------------------------------------ */
 
 .message, .error, .warning {
-    border-radius: 8px;
+    border-radius: var(--radius-s);
     padding: 12px 16px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     border-left: 4px solid;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .message { background: var(--good-bg); border-color: var(--good); color: var(--good); }
@@ -130,219 +225,426 @@ h2 { font-size: 17px; margin: 26px 0 10px; }
 
 /* --- forms --------------------------------------------------------------- */
 
-.field { margin-bottom: 16px; }
+.field { margin-bottom: 18px; }
 
 .field label {
     display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink-soft);
-    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
-.field .hint { font-weight: 400; color: var(--ink-soft); }
+.field .hint { font-weight: 400; color: var(--slate); }
 
 input[type=text], input[type=password], input[type=date], input[type=time],
-input[type=number], input[type=tel], input[type=email], select, textarea {
+input[type=number], input[type=tel], input[type=email], input[type=search],
+select, textarea {
     width: 100%;
-    padding: 9px 11px;
-    border: 1px solid #cbd5e1;
-    border-radius: 7px;
-    font-size: 15px;
+    min-height: 44px;            /* big enough for a finger on a tablet */
+    padding: 9px 12px;
+    border: 1px solid #B8C4D3;
+    border-radius: var(--radius-s);
+    font-size: 16px;             /* 16px stops phones zooming in        */
     font-family: inherit;
-    background: #fff;
-    color: var(--ink);
+    background: var(--paper);
+    color: var(--navy);
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--clinic);
-    box-shadow: 0 0 0 3px var(--clinic-light);
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(22, 50, 79, .18);
 }
 
-textarea { resize: vertical; min-height: 70px; }
+textarea { resize: vertical; min-height: 80px; }
 
-/* A box the validator complained about, so the eye goes straight to it. */
-.field input.wrong, .field select.wrong { border-color: var(--bad); background: var(--bad-bg); }
-
-.field .field-error {
-    display: block;
-    color: var(--bad);
-    font-size: 13px;
-    margin-top: 5px;
+.field input.wrong, .field select.wrong, .field textarea.wrong {
+    border-color: var(--bad);
+    background: var(--bad-bg);
 }
 
-.two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
-.three-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 20px; }
+.field .field-error { display: block; color: var(--bad); font-size: 14px; margin-top: 6px; }
 
-@media (max-width: 700px) {
-    .two-columns, .three-columns { grid-template-columns: 1fr; }
-}
+.two-columns   { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+.three-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 24px; }
 
 /* --- buttons ------------------------------------------------------------- */
+/* Navy is the ordinary button. Amber (.primary) is the one main action on a
+   page, so there is never more than one bright button competing. */
 
 .button, button {
-    background: var(--clinic);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 20px;
+    border: 1px solid var(--navy);
+    border-radius: var(--radius-s);
+    background: var(--navy);
     color: #fff;
-    border: none;
-    border-radius: 7px;
-    padding: 10px 18px;
-    font-size: 15px;
     font-family: inherit;
-    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
     text-decoration: none;
-    display: inline-block;
+    cursor: pointer;
 }
 
-.button:hover, button:hover { background: var(--clinic-dark); }
+.button:hover, button:hover { background: var(--navy-soft); color: #fff; }
+
+.button.primary, button.primary {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--navy);
+}
+
+.button.primary:hover, button.primary:hover {
+    background: var(--amber-dark);
+    border-color: var(--amber-dark);
+    color: var(--navy);
+}
 
 .button.secondary, button.secondary {
-    background: #fff;
-    color: var(--ink);
-    border: 1px solid #cbd5e1;
+    background: var(--paper);
+    color: var(--navy);
+    border-color: #B8C4D3;
 }
 
-.button.secondary:hover, button.secondary:hover { background: #f1f5f9; }
+.button.secondary:hover, button.secondary:hover { background: var(--haze); color: var(--navy); }
 
-.button.danger, button.danger { background: var(--bad); }
-.button.danger:hover, button.danger:hover { background: #991b1b; }
+.button.danger, button.danger { background: var(--bad); border-color: var(--bad); }
+.button.danger:hover, button.danger:hover { background: #8F1C13; border-color: #8F1C13; }
 
-.button.small, button.small { padding: 6px 12px; font-size: 13px; }
+.button.small, button.small { min-height: 36px; padding: 6px 14px; font-size: 14px; }
 
-.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 20px; }
 
-/* --- tables -------------------------------------------------------------- */
+/* --- ruled tables -------------------------------------------------------- */
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
 
 th {
     text-align: left;
-    padding: 9px 10px;
-    border-bottom: 2px solid var(--line);
-    color: var(--ink-soft);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .04em;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--navy);
+    color: var(--slate);
+    font-size: 14px;
+    font-weight: 700;
 }
 
-td { padding: 10px; border-bottom: 1px solid var(--line); }
+td { padding: 12px; border-bottom: 1px solid var(--mist); vertical-align: top; }
 
 tr:last-child td { border-bottom: none; }
 
-td.number, th.number { text-align: right; font-variant-numeric: tabular-nums; }
+td.number, th.number { text-align: right; }
 
-tfoot td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: none; }
+tfoot td { font-weight: 700; border-top: 2px solid var(--navy); border-bottom: none; }
 
-.empty { color: var(--ink-soft); padding: 22px 0; text-align: center; font-style: italic; }
+.empty { color: var(--slate); padding: 24px 0; text-align: center; }
+
+/* Wide tables scroll sideways on a phone instead of squashing. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Reference numbers (APT-, BIL-, PAT-) and phone numbers never break in two. */
+.ref { white-space: nowrap; }
 
 /* --- status labels ------------------------------------------------------- */
 
 .tag {
     display: inline-block;
-    padding: 2px 9px;
-    border-radius: 11px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .02em;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-.tag.BOOKED    { background: #dbeafe; color: #1d4ed8; }
+.tag.BOOKED    { background: var(--info-bg); color: var(--info); }
 .tag.COMPLETED { background: var(--good-bg); color: var(--good); }
-.tag.CANCELLED { background: #f3f4f6; color: var(--ink-soft); }
+.tag.CANCELLED { background: var(--haze);    color: var(--slate); }
 .tag.NO_SHOW   { background: var(--warn-bg); color: var(--warn); }
 .tag.PAID      { background: var(--good-bg); color: var(--good); }
-.tag.UNPAID    { background: var(--bad-bg); color: var(--bad); }
+.tag.UNPAID    { background: var(--bad-bg);  color: var(--bad); }
 
-/* --- the menu screen ----------------------------------------------------- */
+/* --- old menu tiles and counters (still used by pages not yet redone) ---- */
 
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 
 .tile {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 18px 20px;
-    text-decoration: none;
-    color: var(--ink);
     display: block;
+    background: var(--paper);
+    border: 1px solid var(--mist);
+    border-radius: var(--radius-m);
+    padding: 18px 20px;
+    color: var(--navy);
+    text-decoration: none;
 }
 
-.tile:hover { border-color: var(--clinic); box-shadow: 0 2px 10px rgba(15, 118, 110, .12); }
-
+.tile:hover { border-color: var(--navy); color: var(--navy); }
 .tile .tile-title { font-weight: 700; margin-bottom: 4px; }
-.tile .tile-note { font-size: 13px; color: var(--ink-soft); }
+.tile .tile-note { font-size: 14px; color: var(--slate); }
 
-.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 22px; }
+.counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
 
 .count {
     background: var(--paper);
-    border: 1px solid var(--line);
-    border-left: 4px solid var(--clinic);
-    border-radius: 10px;
+    border: 1px solid var(--mist);
+    border-radius: var(--radius-m);
     padding: 16px 20px;
 }
 
-.count .count-number { font-size: 27px; font-weight: 700; line-height: 1.1; }
-.count .count-label { font-size: 13px; color: var(--ink-soft); margin-top: 3px; }
+.count .count-number { font-size: 28px; font-weight: 700; line-height: 1.1; }
+.count .count-label { font-size: 14px; color: var(--slate); margin-top: 4px; }
 
-/* --- the sign in screen -------------------------------------------------- */
+/* ===========================================================================
+   DASHBOARD - the morning diary
+   =========================================================================== */
+
+/* The three numbers the desk needs first, in one strip, not three cards. */
+.day-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid var(--mist);
+    border-radius: var(--radius-m);
+    background: var(--paper);
+    margin: 0 0 32px;
+    overflow: hidden;
+}
+
+.day-fact {
+    padding: 16px 22px;
+    color: var(--navy);
+    text-decoration: none;
+}
+
+.day-fact + .day-fact { border-left: 1px solid var(--mist); }
+a.day-fact:hover { background: var(--haze); color: var(--navy); }
+
+.day-fact strong { display: block; font-size: 26px; line-height: 1.2; }
+.day-fact span { font-size: 14px; color: var(--slate); }
+
+.dashboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 40px;
+    align-items: start;
+}
+
+.dashboard h2 { margin-top: 0; }
+
+/* The diary: a time column, a line down the middle, one entry per visit. */
+.diary { list-style: none; margin: 0; padding: 0; position: relative; }
+
+.diary::before {                       /* the line the day hangs on */
+    content: "";
+    position: absolute;
+    left: 77px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--mist);
+}
+
+.diary-entry {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 28px;
+    padding: 8px 0;
+    position: relative;
+}
+
+.diary-time { font-weight: 700; font-size: 17px; text-align: right; padding-top: 12px; }
+
+.diary-entry::after {                  /* the dot on the line */
+    content: "";
+    position: absolute;
+    left: 72px;
+    top: 24px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--slate);
+}
+
+.diary-visit {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 16px;
+    align-items: center;
+    background: var(--paper);
+    border: 1px solid var(--mist);
+    border-left: 4px solid var(--info);
+    border-radius: var(--radius-s);
+    padding: 12px 16px;
+    color: var(--navy);
+    text-decoration: none;
+}
+
+a.diary-visit:hover { border-color: var(--navy); color: var(--navy); }
+
+.diary-visit .patient { font-weight: 700; font-size: 17px; }
+.diary-visit .about   { grid-column: 1; color: var(--slate); font-size: 14px; }
+.diary-visit .tag     { grid-column: 2; grid-row: 1 / span 2; }
+
+.diary-entry.COMPLETED .diary-visit { border-left-color: var(--good); }
+.diary-entry.NO_SHOW   .diary-visit { border-left-color: var(--warn); }
+.diary-entry.CANCELLED .diary-visit { border-left-color: var(--mist); }
+.diary-entry.CANCELLED .patient     { text-decoration: line-through; color: var(--slate); }
+
+.diary-entry.COMPLETED::after { background: var(--good); border-color: var(--good); }
+
+/* Visits whose time has passed are quieter (set by clinic.js). */
+.diary-entry.is-past .diary-time { color: var(--slate); font-weight: 400; }
+
+/* The "now" line. Hidden unless clinic.js is running and places it. */
+.now-line { display: none; }
+
+.now-line.is-placed {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 28px;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.now-line .now-time {
+    justify-self: end;
+    background: var(--amber);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.now-line .now-rule { height: 2px; background: var(--amber); position: relative; }
+
+.now-line .now-rule::before {          /* the sun sitting on the line */
+    content: "";
+    position: absolute;
+    left: -21px;
+    top: -6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 0 4px rgba(232, 150, 46, .25);
+}
+
+.diary-empty {
+    border: 1px dashed #B8C4D3;
+    border-radius: var(--radius-m);
+    padding: 28px;
+    color: var(--slate);
+}
+
+.diary-empty p { margin: 0 0 14px; }
+
+/* Right-hand column on the dashboard. */
+.side-block { margin-bottom: 32px; }
+.side-block h2 { font-size: 17px; margin: 0 0 10px; }
+
+.quick-find { display: flex; gap: 8px; }
+.quick-find input { flex: 1; min-width: 0; }
+
+.owed-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--mist); }
+
+.owed-list li { border-bottom: 1px solid var(--mist); }
+
+.owed-list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0 12px;
+    padding: 10px 4px;
+    color: var(--navy);
+    text-decoration: none;
+}
+
+.owed-list a:hover { background: var(--haze); color: var(--navy); }
+.owed-list .who-owes { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.owed-list .amount { font-weight: 700; text-align: right; }
+.owed-list .bill-ref { grid-column: 1 / -1; font-size: 13px; color: var(--slate); }
+
+.side-link { display: inline-block; margin-top: 10px; font-size: 15px; }
+
+/* ===========================================================================
+   SIGN IN (restyled; markup redone later)
+   =========================================================================== */
 
 .signin-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(140deg, var(--clinic) 0%, var(--clinic-dark) 100%);
+    background: var(--navy);
     padding: 20px;
 }
 
 .signin-box {
     background: var(--paper);
-    border-radius: 12px;
-    padding: 34px;
+    border-radius: var(--radius-m);
+    border-top: 5px solid var(--amber);   /* the sunrise accent */
+    padding: 30px 34px 34px;
     width: 100%;
-    max-width: 380px;
-    box-shadow: 0 12px 34px rgba(0, 0, 0, .22);
+    max-width: 400px;
 }
 
-.signin-box .clinic-name { font-size: 21px; font-weight: 700; color: var(--clinic); }
-.signin-box .clinic-place { color: var(--ink-soft); font-size: 13px; margin-bottom: 24px; }
-.signin-box button { width: 100%; margin-top: 6px; padding: 11px; }
+.signin-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+.signin-brand .brand-mark { width: 44px; height: 44px; }
+
+.signin-box .clinic-name { font-size: 22px; font-weight: 700; line-height: 1.2; color: var(--navy); }
+.signin-box .clinic-place { color: var(--slate); font-size: 14px; }
+.signin-box h1 { font-size: 20px; margin: 0 0 18px; }
+.signin-box button { width: 100%; margin-top: 6px; }
+
+@media (max-width: 480px) {
+    .signin-box { padding: 24px 20px 26px; }
+}
 
 .signin-help {
     margin-top: 22px;
     padding-top: 16px;
-    border-top: 1px solid var(--line);
-    font-size: 12px;
-    color: var(--ink-soft);
+    border-top: 1px solid var(--mist);
+    font-size: 13px;
+    color: var(--slate);
 }
 
-/* --- the receipt --------------------------------------------------------- */
+/* ===========================================================================
+   RECORD SHEET - detail screens and printed papers (redone page by page)
+   =========================================================================== */
 
-.receipt { max-width: 640px; margin: 0 auto; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 30px 34px; }
-.receipt .receipt-head { text-align: center; border-bottom: 2px solid var(--clinic); padding-bottom: 14px; margin-bottom: 20px; }
-.receipt .receipt-head .clinic-name { font-size: 20px; font-weight: 700; color: var(--clinic); }
-.receipt .receipt-head .clinic-place { font-size: 13px; color: var(--ink-soft); }
-.receipt .receipt-head .receipt-word { margin-top: 8px; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; color: var(--ink-soft); }
-.receipt .amount-line { display: flex; justify-content: space-between; padding: 7px 0; }
-.receipt .amount-line.total { border-top: 2px solid var(--line); margin-top: 8px; padding-top: 12px; font-size: 18px; font-weight: 700; }
-.receipt .receipt-foot { margin-top: 26px; padding-top: 14px; border-top: 1px dashed var(--line); text-align: center; font-size: 12px; color: var(--ink-soft); }
+.receipt {
+    max-width: 660px;
+    margin: 0 auto;
+    background: var(--paper);
+    border: 1px solid var(--mist);
+    border-radius: var(--radius-m);
+    padding: 32px 36px;
+}
 
-/* --- description lists used on the details screens ----------------------- */
+.receipt .receipt-head { text-align: center; border-bottom: 2px solid var(--navy); padding-bottom: 14px; margin-bottom: 20px; }
+.receipt .receipt-head .clinic-name { font-size: 21px; font-weight: 700; }
+.receipt .receipt-head .clinic-place { font-size: 14px; color: var(--slate); }
+.receipt .receipt-head .receipt-word { margin-top: 8px; font-size: 15px; font-weight: 700; color: var(--slate); }
+.receipt .amount-line { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; }
+.receipt .amount-line.total { border-top: 2px solid var(--navy); margin-top: 8px; padding-top: 12px; font-size: 19px; font-weight: 700; }
+.receipt .receipt-foot { margin-top: 26px; padding-top: 14px; border-top: 1px dashed var(--mist); text-align: center; font-size: 13px; color: var(--slate); }
 
 .details { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px 24px; }
-.details .detail-label { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .04em; }
-.details .detail-value { font-size: 15px; margin-top: 2px; }
+.details .detail-label { font-size: 14px; color: var(--slate); }
+.details .detail-value { font-size: 16px; margin-top: 2px; }
 
-/* --- the help screen ----------------------------------------------------- */
+/* --- help steps (a real sequence, so numbered) --------------------------- */
 
 .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
 
 .steps li {
     counter-increment: step;
     position: relative;
-    padding: 0 0 18px 44px;
-    border-left: 2px solid var(--line);
+    padding: 0 0 20px 44px;
+    border-left: 2px solid var(--mist);
     margin-left: 13px;
 }
 
@@ -355,7 +657,7 @@ tfoot td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: n
     top: -2px;
     width: 26px;
     height: 26px;
-    background: var(--clinic);
+    background: var(--navy);
     color: #fff;
     border-radius: 50%;
     display: grid;
@@ -365,21 +667,165 @@ tfoot td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: n
 }
 
 .steps li .step-title { font-weight: 700; margin-bottom: 3px; }
-.steps li p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+.steps li p { margin: 0; font-size: 15px; color: var(--slate); }
 
 /* --- footer -------------------------------------------------------------- */
 
-.page-footer { text-align: center; padding: 26px; color: var(--ink-soft); font-size: 12px; }
+.page-footer {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 24px 40px 32px;
+    color: var(--slate);
+    font-size: 13px;
+}
 
-/* --- printing ------------------------------------------------------------
-   The bill is handed to the patient, so when it is printed the navigation,
-   the buttons and the page background must not be on the paper.
-   ------------------------------------------------------------------------- */
+/* ===========================================================================
+   SMALL SCREENS
+   =========================================================================== */
+
+@media (max-width: 1000px) {
+    .dashboard { grid-template-columns: 1fr; gap: 8px; }
+}
+
+@media (max-width: 860px) {
+    /* The rail becomes a bar across the top, with the menu scrolling sideways
+       underneath. No script is needed for this. */
+    body:has(> .topbar) { display: block; }
+
+    .topbar {
+        position: static;
+        height: auto;
+        padding: 12px 16px 0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+    }
+
+    .topbar .brand { padding: 0; font-size: 17px; }
+    .brand-mark { width: 28px; height: 28px; }
+
+    body:has(> .topbar) { background: var(--dawn); }
+
+    /* Brand on the left and Sign out on the right, both on the first row. */
+    .topbar .brand { grid-column: 1; grid-row: 1; }
+
+    .topbar .who {
+        grid-column: 2;
+        grid-row: 1;
+        border-top: none;
+        margin: 0;
+        padding: 0;
+        grid-template-columns: auto;
+    }
+
+    .topbar .who .who-name, .topbar .who .role { display: none; }
+    .topbar .who form { grid-column: 1; grid-row: 1; }
+
+    .topbar nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 4px;
+        margin: 10px -16px 0;
+        padding: 0 12px;
+        scrollbar-width: none;
+    }
+
+    .topbar nav::-webkit-scrollbar { display: none; }
+
+    .topbar nav a {
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        border-radius: var(--radius-s) var(--radius-s) 0 0;
+    }
+
+    .topbar nav a[aria-current="page"] { border-bottom-color: var(--amber); }
+
+    main { padding: 24px 16px 16px; }
+    .page-footer { padding: 16px 16px 28px; }
+
+    h1 { font-size: 27px; }
+}
+
+/* Under 768px a .stack-table turns each row into a small card. Each cell shows
+   its column name from data-label, so the header row is not needed. */
+@media (max-width: 767px) {
+    .stack-table thead { display: none; }
+    .stack-table, .stack-table tbody, .stack-table tfoot { display: block; }
+
+    .stack-table tr {
+        display: block;
+        border: 1px solid var(--mist);
+        border-radius: var(--radius-s);
+        padding: 8px 14px;
+        margin-bottom: 12px;
+        background: var(--paper);
+    }
+
+    .stack-table td {
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr);
+        gap: 12px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--haze);
+        text-align: left;
+    }
+
+    .stack-table tr td:last-child { border-bottom: none; }
+
+    .stack-table td::before {
+        content: attr(data-label);
+        color: var(--slate);
+        font-size: 14px;
+    }
+
+    /* The first cell (time, bill or patient number) is the card's title. */
+    .stack-table td.cell-lead { font-weight: 700; font-size: 17px; }
+
+    /* A badge keeps its own width instead of filling the cell. */
+    .stack-table td > .tag { justify-self: start; }
+
+    /* The rows are cards already, so the card around the table loses its frame. */
+    .card:has(> .stack-table) { border: none; background: none; padding: 0; }
+
+    /* The total row of a stacked table: label and amount on one line. */
+    .stack-table tfoot tr { display: flex; justify-content: space-between; gap: 12px; }
+    .stack-table tfoot td { display: block; border: none; padding: 0; }
+}
+
+@media (max-width: 700px) {
+    .two-columns, .three-columns { grid-template-columns: 1fr; }
+
+    .day-facts { grid-template-columns: 1fr; }
+    .day-fact + .day-fact { border-left: none; border-top: 1px solid var(--mist); }
+    .day-fact { display: flex; align-items: baseline; gap: 10px; padding: 12px 16px; }
+    .day-fact strong { font-size: 21px; }
+
+    .diary::before { left: 58px; }
+    .diary-entry, .now-line.is-placed { grid-template-columns: 48px minmax(0, 1fr); gap: 22px; }
+    .diary-entry::after { left: 53px; }
+    .diary-time { font-size: 15px; }
+    .now-line .now-rule::before { left: -18px; }
+
+    .receipt { padding: 22px 18px; }
+}
+
+/* ===========================================================================
+   PRINTING - only the paper reaches the printer
+   =========================================================================== */
 
 @media print {
-    .topbar, .actions, .page-footer, .no-print { display: none !important; }
+    body:has(> .topbar) { display: block; background: #fff; }
+    .topbar, .actions, .page-footer, .no-print, .now-line { display: none !important; }
     body { background: #fff; font-size: 12pt; }
     main { max-width: none; padding: 0; }
     .receipt, .card { border: none; box-shadow: none; padding: 0; }
     a { text-decoration: none; color: inherit; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }

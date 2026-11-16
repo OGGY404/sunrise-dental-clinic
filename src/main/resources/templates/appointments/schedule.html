@@ -11,7 +11,9 @@
 <head th:replace="~{fragments :: head('Day schedule')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='diary'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
@@ -44,13 +46,14 @@
     </div>
 
     <div class="card">
-        <h2 th:text="|${appointments.size()} appointment(s)|">0 appointments</h2>
+        <h2 th:text="${appointments.size() == 1} ? '1 appointment' : (${appointments.size()} + ' appointments')">0 appointments</h2>
 
         <p class="empty" th:if="${appointments.isEmpty()}">
             Nothing is booked for this day.
         </p>
 
-        <table th:unless="${appointments.isEmpty()}">
+        <!-- stack-table: under 768px each row becomes a card, see clinic.css -->
+        <table class="stack-table" th:unless="${appointments.isEmpty()}">
             <thead>
             <tr>
                 <th>Time</th>
@@ -64,15 +67,15 @@
             </thead>
             <tbody>
             <tr th:each="visit : ${appointments}">
-                <td th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
-                <td><a th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
+                <td data-label="Time" class="cell-lead"
+                    th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
+                <td data-label="Appointment"><a class="ref" th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
                        th:text="${visit.appointmentNo}">APT-</a></td>
-                <td th:text="${visit.patient.fullName}">Patient</td>
-                <td th:text="${visit.patient.contactNumber}">077</td>
-                <td th:text="${visit.dentistName}">Dentist</td>
-                <td th:text="${visit.treatmentName}">Treatment</td>
-                <td><span class="tag" th:classappend="${visit.status}"
-                          th:text="${visit.status}">BOOKED</span></td>
+                <td data-label="Patient" th:text="${visit.patient.fullName}">Patient</td>
+                <td data-label="Contact" class="ref" th:text="${visit.patient.contactNumber}">077</td>
+                <td data-label="Dentist" th:text="${visit.dentistName}">Dentist</td>
+                <td data-label="Treatment" th:text="${visit.treatmentName}">Treatment</td>
+                <td data-label="Status"><span th:replace="~{fragments :: tag(${visit.status})}"></span></td>
             </tr>
             </tbody>
         </table>
@@ -80,7 +83,7 @@
 
     <div class="actions no-print">
         <button type="button" onclick="window.print()">Print this schedule</button>
-        <a class="button secondary" th:href="@{/}">Back to the menu</a>
+        <a class="button secondary" th:href="@{/}">Back to today</a>
     </div>
 </main>
 

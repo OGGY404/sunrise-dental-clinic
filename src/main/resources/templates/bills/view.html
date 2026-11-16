@@ -15,7 +15,9 @@
 <head th:replace="~{fragments :: head('Bill')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='bills'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
@@ -30,7 +32,7 @@
         <div class="details" style="margin-bottom:22px">
             <div>
                 <div class="detail-label">Bill number</div>
-                <div class="detail-value" th:text="${bill.billNo}">BIL-</div>
+                <div class="detail-value ref" th:text="${bill.billNo}">BIL-</div>
             </div>
             <div>
                 <div class="detail-label">Issued</div>
@@ -43,7 +45,7 @@
             </div>
             <div>
                 <div class="detail-label">Appointment</div>
-                <div class="detail-value" th:text="${bill.appointmentNo}">APT-</div>
+                <div class="detail-value ref" th:text="${bill.appointmentNo}">APT-</div>
             </div>
         </div>
 
@@ -66,10 +68,9 @@
         </div>
 
         <div style="margin-top:18px; text-align:center">
-            <span class="tag" th:classappend="${bill.paymentStatus}"
-                  th:text="${bill.paymentStatus}">UNPAID</span>
+            <span th:replace="~{fragments :: tag(${bill.paymentStatus})}"></span>
             <span th:if="${bill.paymentMethod}"
-                  th:text="|paid by ${bill.paymentMethod} on ${#temporals.format(bill.paidAt, 'd MMM yyyy, HH:mm')}|">paid</span>
+                  th:text="|by ${#strings.toLowerCase('' + bill.paymentMethod)} on ${#temporals.format(bill.paidAt, 'd MMM yyyy, HH:mm')}|">by cash</span>
         </div>
 
         <div class="receipt-foot">

@@ -13,7 +13,9 @@
 <head th:replace="~{fragments :: head('Produce a bill')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='bills'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
@@ -52,8 +54,7 @@
             <div>
                 <div class="detail-label">Status</div>
                 <div class="detail-value">
-                    <span class="tag" th:classappend="${appointment.status}"
-                          th:text="${appointment.status}">COMPLETED</span>
+                    <span th:replace="~{fragments :: tag(${appointment.status})}"></span>
                 </div>
             </div>
         </div>

@@ -12,13 +12,15 @@
 <head th:replace="~{fragments :: head('Patient record')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='patients'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
 
     <h1 th:text="${patient.fullName}">Patient</h1>
-    <p class="page-note" th:text="${patient.patientCode}">PAT-</p>
+    <p class="page-note ref" th:text="${patient.patientCode}">PAT-</p>
 
     <div class="card">
         <h2>Details</h2>
@@ -46,19 +48,20 @@
             </div>
             <div th:if="${patient.gender}">
                 <div class="detail-label">Gender</div>
-                <div class="detail-value" th:text="${patient.gender}">MALE</div>
+                <div class="detail-value"
+                     th:text="${#strings.capitalize(#strings.toLowerCase('' + patient.gender))}">Male</div>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <h2 th:text="|Treatment history (${history.size()} visit(s))|">Treatment history</h2>
+        <h2 th:text="${history.size() == 1} ? 'Treatment history (1 visit)' : ('Treatment history (' + ${history.size()} + ' visits)')">Treatment history</h2>
 
         <p class="empty" th:if="${history.isEmpty()}">
             This patient has no visits recorded yet.
         </p>
 
-        <table th:unless="${history.isEmpty()}">
+        <table class="stack-table" th:unless="${history.isEmpty()}">
             <thead>
             <tr>
                 <th>Date</th>
@@ -71,14 +74,14 @@
             </thead>
             <tbody>
             <tr th:each="visit : ${history}">
-                <td th:text="${#temporals.format(visit.appointmentDate, 'd MMM yyyy')}">date</td>
-                <td th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
-                <td><a th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
+                <td data-label="Date" class="cell-lead"
+                    th:text="${#temporals.format(visit.appointmentDate, 'd MMM yyyy')}">date</td>
+                <td data-label="Time" th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
+                <td data-label="Appointment"><a class="ref" th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
                        th:text="${visit.appointmentNo}">APT-</a></td>
-                <td th:text="${visit.treatmentName}">Treatment</td>
-                <td th:text="${visit.dentistName}">Dentist</td>
-                <td><span class="tag" th:classappend="${visit.status}"
-                          th:text="${visit.status}">BOOKED</span></td>
+                <td data-label="Treatment" th:text="${visit.treatmentName}">Treatment</td>
+                <td data-label="Dentist" th:text="${visit.dentistName}">Dentist</td>
+                <td data-label="Status"><span th:replace="~{fragments :: tag(${visit.status})}"></span></td>
             </tr>
             </tbody>
         </table>

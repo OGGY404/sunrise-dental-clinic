@@ -1,103 +1,117 @@
 <!DOCTYPE html>
 <!--
-  The main menu (the "menu driven" system the brief asks for).
+  The main screen: today's diary.
 
-  It shows the two numbers the front desk needs first thing in the morning -
-  how many patients are coming today, and how much money is still owed - and
-  then every job they can do, one click away.
+  The clinic's day is the diary, so it takes most of the page. A line down the
+  middle holds one entry per visit, in time order. When the browser runs
+  clinic.js, an amber "now" line shows where the day has got to; without the
+  script the line is simply not shown and nothing else changes.
+
+  On the right: find a visit by number, and the bills still waiting for
+  payment. Every other job is in the menu rail, which is the "menu driven"
+  part of the brief.
 -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 
-<head th:replace="~{fragments :: head('Home')}"></head>
+<head th:replace="~{fragments :: head('Today')}"></head>
 
 <body>
-<header th:replace="~{fragments :: nav}"></header>
+<th:block th:with="section='home'">
+    <header th:replace="~{fragments :: nav}"></header>
+</th:block>
 
 <main>
     <div th:replace="~{fragments :: messages}"></div>
 
-    <h1>Good day, <span sec:authentication="name">staff</span></h1>
-    <p class="page-note" th:text="|Today is ${#temporals.format(today, 'EEEE, d MMMM yyyy')}|">Today</p>
-
-    <div class="counts">
-        <div class="count">
-            <div class="count-number" th:text="${todayAppointments.size()}">0</div>
-            <div class="count-label">appointments booked for today</div>
+    <div class="page-head">
+        <div>
+            <h1 th:text="${#temporals.format(today, 'EEEE d MMMM')}">Wednesday 2 September</h1>
+            <p class="page-note">Good day, <span sec:authentication="name">staff</span>.</p>
         </div>
-        <div class="count">
-            <div class="count-number" th:text="${unpaidBills.size()}">0</div>
-            <div class="count-label">bills not yet paid</div>
-        </div>
-        <div class="count">
-            <div class="count-number"
-                 th:text="|Rs. ${#numbers.formatDecimal(unpaidTotal, 1, 'COMMA', 2, 'POINT')}|">Rs. 0</div>
-            <div class="count-label">still owed to the clinic</div>
-        </div>
+        <a class="button primary" th:href="@{/appointments/new}">Book appointment</a>
     </div>
 
-    <h2>What would you like to do?</h2>
-    <div class="tiles">
-        <a class="tile" th:href="@{/appointments/new}">
-            <div class="tile-title">Register an appointment</div>
-            <div class="tile-note">Book a visit for a new or returning patient.</div>
+    <!-- The three numbers the desk needs first. Each one opens the full list. -->
+    <div class="day-facts">
+        <a class="day-fact" th:href="@{/appointments/schedule}">
+            <strong th:text="${todayAppointments.size()}">6</strong>
+            <span th:text="${todayAppointments.size() == 1} ? 'appointment today' : 'appointments today'">appointments today</span>
         </a>
-        <a class="tile" th:href="@{/appointments/search}">
-            <div class="tile-title">Find an appointment</div>
-            <div class="tile-note">Look a visit up by its appointment number.</div>
+        <a class="day-fact" th:href="@{/bills/unpaid}">
+            <strong th:text="${unpaidBills.size()}">1</strong>
+            <span th:text="${unpaidBills.size() == 1} ? 'bill not paid yet' : 'bills not paid yet'">bills not paid yet</span>
         </a>
-        <a class="tile" th:href="@{/appointments/schedule}">
-            <div class="tile-title">Day schedule</div>
-            <div class="tile-note">The diary for one day, ready to print.</div>
-        </a>
-        <a class="tile" th:href="@{/patients}">
-            <div class="tile-title">Patients</div>
-            <div class="tile-note">Search a patient and read their treatment history.</div>
-        </a>
-        <a class="tile" th:href="@{/bills/unpaid}">
-            <div class="tile-title">Unpaid bills</div>
-            <div class="tile-note">What is still owed, oldest first.</div>
-        </a>
-        <a class="tile" th:href="@{/reports}" sec:authorize="hasRole('ADMIN')">
-            <div class="tile-title">Management reports</div>
-            <div class="tile-note">Takings by treatment, and how busy each dentist was.</div>
-        </a>
-        <a class="tile" th:href="@{/help}">
-            <div class="tile-title">Help</div>
-            <div class="tile-note">Step-by-step instructions for new staff.</div>
+        <a class="day-fact" th:href="@{/bills/unpaid}">
+            <strong th:text="|Rs. ${#numbers.formatDecimal(unpaidTotal, 1, 'COMMA', 2, 'POINT')}|">Rs. 7,825.00</strong>
+            <span>owed to the clinic</span>
         </a>
     </div>
 
-    <h2 th:text="|Today's diary (${todayAppointments.size()})|">Today's diary</h2>
-    <div class="card">
-        <p class="empty" th:if="${todayAppointments.isEmpty()}">
-            There are no appointments booked for today.
-        </p>
+    <div class="dashboard">
 
-        <table th:unless="${todayAppointments.isEmpty()}">
-            <thead>
-            <tr>
-                <th>Time</th>
-                <th>Appointment</th>
-                <th>Patient</th>
-                <th>Dentist</th>
-                <th>Treatment</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="visit : ${todayAppointments}">
-                <td th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</td>
-                <td><a th:href="@{/appointments/{no}(no=${visit.appointmentNo})}"
-                       th:text="${visit.appointmentNo}">APT-</a></td>
-                <td th:text="${visit.patient.fullName}">Patient</td>
-                <td th:text="${visit.dentistName}">Dentist</td>
-                <td th:text="${visit.treatmentName}">Treatment</td>
-                <td><span class="tag" th:classappend="${visit.status}"
-                          th:text="${visit.status}">BOOKED</span></td>
-            </tr>
-            </tbody>
-        </table>
+        <!-- LEFT: the diary -->
+        <section aria-labelledby="diary-heading">
+            <h2 id="diary-heading">Today's diary</h2>
+
+            <div class="diary-empty" th:if="${todayAppointments.isEmpty()}">
+                <p>No appointments are booked for today.</p>
+                <a class="button secondary" th:href="@{/appointments/new}">Book appointment</a>
+            </div>
+
+            <!-- data-live: this diary is for today, so clinic.js may draw "now". -->
+            <ol class="diary" data-live th:unless="${todayAppointments.isEmpty()}">
+                <!-- clinic.js moves this line to the right place and shows it. -->
+                <li class="now-line" aria-hidden="true">
+                    <span class="now-time">Now</span>
+                    <span class="now-rule"></span>
+                </li>
+
+                <li class="diary-entry" th:each="visit : ${todayAppointments}"
+                    th:classappend="${visit.status}"
+                    th:attr="data-time=${#temporals.format(visit.appointmentTime, 'HH:mm')}">
+                    <span class="diary-time"
+                          th:text="${#temporals.format(visit.appointmentTime, 'HH:mm')}">09:00</span>
+                    <a class="diary-visit" th:href="@{/appointments/{no}(no=${visit.appointmentNo})}">
+                        <span class="patient" th:text="${visit.patient.fullName}">Kamal Silva</span>
+                        <span class="about"
+                              th:text="|${visit.treatmentName} with ${visit.dentistName}|">Tooth Filling with Dr. Nimal Perera</span>
+                        <span th:replace="~{fragments :: tag(${visit.status})}"></span>
+                    </a>
+                </li>
+            </ol>
+        </section>
+
+        <!-- RIGHT: quick jobs -->
+        <aside>
+            <div class="side-block">
+                <h2><label for="quick-find-no">Find an appointment</label></h2>
+                <form class="quick-find" th:action="@{/appointments/search}" method="get">
+                    <input type="text" id="quick-find-no" name="appointmentNo"
+                           placeholder="APT-20260902-0001" autocomplete="off" required>
+                    <button type="submit" class="secondary">Find</button>
+                </form>
+            </div>
+
+            <div class="side-block">
+                <h2>Waiting for payment</h2>
+                <p class="page-note" th:if="${unpaidBills.isEmpty()}">Every bill has been paid.</p>
+
+                <ul class="owed-list" th:unless="${unpaidBills.isEmpty()}">
+                    <li th:each="bill, row : ${unpaidBills}" th:if="${row.index < 5}">
+                        <a th:href="@{/bills/{no}(no=${bill.billNo})}">
+                            <span class="who-owes" th:text="${bill.patientName}">Kamal Silva</span>
+                            <span class="amount"
+                                  th:text="|Rs. ${#numbers.formatDecimal(bill.totalAmount, 1, 'COMMA', 2, 'POINT')}|">Rs. 7,825.00</span>
+                            <span class="bill-ref" th:text="${bill.billNo}">BIL-20260902-0001</span>
+                        </a>
+                    </li>
+                </ul>
+                <a class="side-link" th:href="@{/bills/unpaid}"
+                   th:if="${unpaidBills.size() > 5}"
+                   th:text="|See all ${unpaidBills.size()} unpaid bills|">See all unpaid bills</a>
+            </div>
+        </aside>
     </div>
 </main>
 
